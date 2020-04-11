@@ -1,0 +1,6 @@
+name: ToffyDungeons
+version: ${project.version}
+main: toffydungeons.toffydungeons.ToffyDungeons
+api-version: 1.13
+authors: [Caleb_Britannia]
+description: A custom dungeon generation plugin for minecraft!
