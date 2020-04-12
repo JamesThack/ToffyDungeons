@@ -8,7 +8,6 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.schematic.MCEditSchematicFormat;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 import java.io.File;
 
@@ -31,7 +30,6 @@ public class CalebWorldEditAPI {
         } catch (Exception e) {
             return false;
         }
-
 
     }
 }

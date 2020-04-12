@@ -5,21 +5,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import toffydungeons.toffydungeons.API.CalebWorldEditAPI;
 
 public class TDungeonCommand implements CommandExecutor {
-
-    private Plugin plugin;
-
-    /**
-     * Constructor for command, see description below
-     *
-     * @param plugin The server plugin
-     */
-    public TDungeonCommand(Plugin plugin) {
-        this.plugin = plugin;
-    }
 
     /**
      * This is the main command when the user does /TDungeon, a list of features (in order) is:
