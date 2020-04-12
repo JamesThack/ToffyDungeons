@@ -9,16 +9,35 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import toffydungeons.toffydungeons.API.DungeonRoom;
+import toffydungeons.toffydungeons.API.DungeonRoomLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 
-public class DungeonSelectionMenu implements InventoryHolder, Listener {
+public class DungeonCreationMenu implements InventoryHolder, Listener {
 
     private final Inventory inv;
+    private DungeonRoomLayout layout;
 
-    public DungeonSelectionMenu() {
-        inv = Bukkit.createInventory(this, 18, "Dungeon Selection");
+    public DungeonCreationMenu() {
+        inv = Bukkit.createInventory(this, 54, "Dungeon Creation");
+        this.layout = new DungeonRoomLayout();
+        DungeonRoom room = new DungeonRoom("ExampleRoom", 22);
+        this.layout.addRoom(room);
+        this.layout.setStartingRoom(room);
+        this.updateLayout();
+    }
+
+    public DungeonCreationMenu(DungeonRoomLayout layout) {
+        inv = Bukkit.createInventory(this, 54, "Dungeon Creation");
+    }
+
+    private void updateLayout() {
+        for(int current : this.layout.getPositions()) {
+            this.getInventory().setItem(current, createGuiItem(Material.SMOOTH_BRICK, "Room"));
+        }
     }
 
     public static ItemStack createGuiItem(Material material, String name, String...lore) {
@@ -32,8 +51,7 @@ public class DungeonSelectionMenu implements InventoryHolder, Listener {
     }
 
     public void initaliseItems() {
-        this.getInventory().setItem(9, createGuiItem(Material.REDSTONE_BLOCK, "§cClose Menu"));
-        this.getInventory().setItem(17, createGuiItem(Material.EMERALD_BLOCK, "§2Create New Dungeon"));
+        this.getInventory().setItem(45, createGuiItem(Material.REDSTONE_BLOCK, "§cClose Menu"));
     }
 
     @Override
@@ -45,10 +63,8 @@ public class DungeonSelectionMenu implements InventoryHolder, Listener {
     public void onClick(InventoryClickEvent e) {
         if (e.getView().getTitle().equalsIgnoreCase(this.getInventory().getTitle())) {
             e.setCancelled(true);
-            if (e.getCurrentItem().getType().equals(Material.REDSTONE_BLOCK)) {
-                e.getWhoClicked().closeInventory();
-            } else if (e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
-                DungeonCreationMenu menu = new DungeonCreationMenu();
+            if (e.getCurrentItem().getType() != null &&  e.getCurrentItem().getType().equals(Material.REDSTONE_BLOCK)) {
+                DungeonSelectionMenu menu = new DungeonSelectionMenu();
                 menu.initaliseItems();
                 e.getWhoClicked().openInventory(menu.getInventory());
             }
