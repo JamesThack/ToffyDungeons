@@ -7,6 +7,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import toffydungeons.toffydungeons.API.CalebWorldEditAPI;
+import toffydungeons.toffydungeons.GUIs.DungeonSelectionMenu;
 
 public class TDungeonCommand implements CommandExecutor {
 
@@ -26,17 +27,9 @@ public class TDungeonCommand implements CommandExecutor {
             sender.sendMessage("Only players can preform this command");
             return true;
         }
-        int totalDistance = 0;
-        for (String arg : args) {
-            Location location = ((Player) sender).getLocation();
-            location.setX(location.getX() + totalDistance);
-            int distance = CalebWorldEditAPI.tryLoadSchem(arg, location);
-            if (distance == -1) {
-                sender.sendMessage(ChatColor.RED + "[Toffy Dungeons]: File name " + arg + " not recognised!");
-                return true;
-            }
-            totalDistance += distance;
-        }
+        DungeonSelectionMenu menu = new DungeonSelectionMenu();
+        menu.initaliseItems();
+        ((Player) sender).openInventory(menu.getInventory());
         return true;
     }
 

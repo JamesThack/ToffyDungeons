@@ -8,3 +8,4 @@ description: A custom dungeon generation plugin for minecraft!
 commands:
   TDungeon:
     description: Main command for TDungeon!
+    usage: /tdungeon
