@@ -9,6 +9,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import toffydungeons.toffydungeons.API.DungeonRoom;
+import toffydungeons.toffydungeons.API.DungeonRoomLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;

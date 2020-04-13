@@ -19,17 +19,21 @@ public class CalebWorldEditAPI {
      * @param location The location to paste
      * @return If the loading was successful
      */
-    public static int tryLoadSchem(String fileName, Location location) {
+    public static boolean tryLoadSchem(String fileName, Location location) {
+        return tryLoadSchem(fileName, location, 0);
+    }
+
+    public static boolean tryLoadSchem(String fileName, Location location, int rotation) {
         try {
             WorldEditPlugin worldEditPlugin = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
             File schematic = new File(Bukkit.getPluginManager().getPlugin("ToffyDungeons").getDataFolder() + File.separator + "schematics" + File.separator + fileName + ".schematic");
             EditSession session = worldEditPlugin.getWorldEdit().getEditSessionFactory().getEditSession(new BukkitWorld(location.getWorld()), 10000);
             CuboidClipboard clipboard = MCEditSchematicFormat.getFormat(schematic).load(schematic);
+            clipboard.rotate2D(rotation);
             clipboard.paste(session, new Vector(location.getX(), location.getY(), location.getZ())   , true );
-            return clipboard.getWidth();
+            return true;
         } catch (Exception e) {
-            return -1;
+            return false;
         }
-
     }
 }

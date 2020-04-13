@@ -1,5 +1,13 @@
 package toffydungeons.toffydungeons.API;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import javax.sound.sampled.Line;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 
 /**
@@ -10,9 +18,14 @@ public class DungeonRoomLayout {
 
     private ArrayList<DungeonRoom> rooms;
     private DungeonRoom startingRoom;
+    private ArrayList<DungeonRoom> builtRooms;
 
     public DungeonRoomLayout() {
         this.rooms = new ArrayList<>();
+    }
+
+    public ArrayList<DungeonRoom> getRooms() {
+        return rooms;
     }
 
     public void addRoom(DungeonRoom room) {
@@ -25,10 +38,6 @@ public class DungeonRoomLayout {
         this.startingRoom = room;
     }
 
-    public DungeonRoom getStartingRoom() {
-        return startingRoom;
-    }
-
     public boolean validateRoom(DungeonRoom room) {
         return this.rooms.contains(room);
     }
@@ -39,6 +48,173 @@ public class DungeonRoomLayout {
             positions[i] = rooms.get(i).getPosition();
         }
         return positions;
+    }
+
+    public void generateBuild(Location location) {
+        builtRooms = new ArrayList<>();
+        new GenerateBuild("null", startingRoom, location).run();
+    }
+
+    private boolean isRoomBuild(DungeonRoom room) {
+        return builtRooms.contains(room);
+    }
+
+    public class GenerateBuild extends BukkitRunnable {
+
+        private String direction;
+        private DungeonRoom room;
+        private Location coordinates;
+
+        public GenerateBuild(String direction, DungeonRoom room, Location coordinates) {
+            this.direction = direction;
+            this.room = room;
+            this.coordinates = coordinates;
+        }
+
+        /**
+         * HOLY SHIT this method, I KNOW ITS A MESS OK? This took me a long time to make (at the early hours of the morning)
+         * and in all honesty I am scared to optimise it, esentially this is a recursive runnable task (creates new runnables of itself)
+         * and it takes a starting room and builds every adjacent room, repeating for every room it constructs (makes the room in front
+         * and then does the 3 other directios of that room). It ignores any rooms already created. If any developers want to make this
+         * highly inefficient code better please please go ahead but I am sleeping and forgetting I made this.
+         */
+        @Override
+        public void run() {
+            if (!isRoomBuild(room)) {
+                builtRooms.add(room);
+                File roomStats = new File(Bukkit.getPluginManager().getPlugin("ToffyDungeons").getDataFolder() + File.separator + "schematics" + File.separator + room.getSchematicFile() + ".placement");
+                int[] directions = new int[8];
+                GenerateBuild forward = null;
+                GenerateBuild right = null;
+                GenerateBuild left = null;
+                GenerateBuild back = null;
+                try {
+                    FileReader fr = new FileReader(roomStats);
+                    BufferedReader br = new BufferedReader(fr);
+                    String line;
+                    int i = 0;
+                    while ((line=br.readLine()) != null) {
+                        for (String current : new String[]{"NORTH:", "EAST:", "SOUTH:", "WEST:"}) {
+                            if (line.contains(current)) {
+                                directions[i] = Integer.valueOf(line.split(current)[1].split(",")[0]);
+                                directions[i + 1] = Integer.valueOf(line.split(current)[1].split(",")[1]);
+                                i +=2;
+                            }
+                        }
+                    }
+                    if (direction.equals("forward") || direction.equals("null")) {
+                        CalebWorldEditAPI.tryLoadSchem(room.getSchematicFile(), coordinates);
+                        if (room.getForward() != null) {
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
+                            newCoordinates.setX(newCoordinates.getX() + directions[0]);
+                            newCoordinates.setZ(newCoordinates.getZ() + directions[1]);
+                            forward = new GenerateBuild("forward", room.getForward(), newCoordinates);
+                        }
+                        if (room.getBehind() != null && !direction.equals("forward")) {
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
+                            newCoordinates.setX(newCoordinates.getX() + 1 );
+                            newCoordinates.setZ(newCoordinates.getZ() + directions[5]);
+                            back = new GenerateBuild("behind", room.getBehind(), newCoordinates);
+                        }
+                        if (room.getRight() != null) {
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
+                            newCoordinates.setX(newCoordinates.getX() + directions[2]);
+                            newCoordinates.setZ(newCoordinates.getZ() + directions[3]);
+                            right = new GenerateBuild("right", room.getRight(), newCoordinates);
+                        }
+                        if (room.getLeft() != null) {
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
+                            newCoordinates.setX(newCoordinates.getX() + directions[6]);
+                            newCoordinates.setZ(newCoordinates.getZ() + directions[7]);
+                            left = new GenerateBuild("left", room.getLeft(), newCoordinates);
+                        }
+                    }
+                    if (direction.equals("behind")) {
+                        CalebWorldEditAPI.tryLoadSchem(room.getSchematicFile(), coordinates, 180);
+                        if (room.getBehind() != null) {
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
+                            newCoordinates.setX(newCoordinates.getX() - directions[0]);
+                            newCoordinates.setZ(newCoordinates.getZ() - directions[1]);
+                            back = new GenerateBuild("behind", room.getBehind(), newCoordinates);
+                        }
+                        if (room.getRight() != null) {
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
+                            newCoordinates.setX(newCoordinates.getX() - directions[6]);
+                            newCoordinates.setZ(newCoordinates.getZ() - directions[7]);
+                            right = new GenerateBuild("right", room.getRight(), newCoordinates);
+                        }
+                        if (room.getLeft() != null) {
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
+                            newCoordinates.setX(newCoordinates.getX() - directions[2]);
+                            newCoordinates.setZ(newCoordinates.getZ() - directions[3]);
+                            left = new GenerateBuild("left", room.getLeft(), newCoordinates);
+                        }
+                    }
+                    if (direction.equals("left")) {
+                        CalebWorldEditAPI.tryLoadSchem(room.getSchematicFile(), coordinates, 270);
+                        CalebWorldEditAPI.tryLoadSchem(room.getSchematicFile(), coordinates, 270);
+                        if (room.getForward() != null) {
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
+                            newCoordinates.setX(newCoordinates.getX() + directions[3]);
+                            newCoordinates.setZ(newCoordinates.getZ() - directions[2]);
+                            forward = new GenerateBuild("forward", room.getForward(), newCoordinates);
+                        }
+                        if (room.getBehind() != null) {
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
+                            newCoordinates.setX(newCoordinates.getX() + directions[7] );
+                            newCoordinates.setZ(newCoordinates.getZ() - directions[6]);
+                            back = new GenerateBuild("behind", room.getBehind(), newCoordinates);
+                        }
+                        if (room.getLeft() != null) {
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
+                            newCoordinates.setX(newCoordinates.getX() + directions[1]);
+                            newCoordinates.setZ(newCoordinates.getZ() - directions[0]);
+                            left = new GenerateBuild("left", room.getLeft(), newCoordinates);
+                        }
+                    }
+                    if (direction.equals("right")) {
+                        CalebWorldEditAPI.tryLoadSchem(room.getSchematicFile(), coordinates, 90);
+                        CalebWorldEditAPI.tryLoadSchem(room.getSchematicFile(), coordinates, 90);
+
+                        if (room.getForward() != null) {
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
+                            newCoordinates.setX(newCoordinates.getX() - directions[7]);
+                            newCoordinates.setZ(newCoordinates.getZ() + directions[6]);
+                            forward = new GenerateBuild("forward", room.getForward(), newCoordinates);
+                        }
+
+                        if (room.getBehind() != null) {
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
+                            newCoordinates.setX(newCoordinates.getX() - directions[3] );
+                            newCoordinates.setZ(newCoordinates.getZ() + directions[2]);
+                            back = new GenerateBuild("behind", room.getBehind(), newCoordinates);
+                        }
+
+                        if (room.getRight() != null) {
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
+                            newCoordinates.setX(newCoordinates.getX() - directions[1]);
+                            newCoordinates.setZ(newCoordinates.getZ() + directions[0]);
+                            right = new GenerateBuild("right", room.getRight(), newCoordinates);
+                        }
+                    }
+                    if (forward != null)
+                        forward.run();
+
+                    if (back != null)
+                        back.run();
+
+                    if (right != null)
+                        right.run();
+
+                    if (left != null)
+                        left.run();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+        }
     }
 
 }
