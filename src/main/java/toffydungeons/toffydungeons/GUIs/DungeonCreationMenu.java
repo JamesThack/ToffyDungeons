@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
@@ -22,19 +23,22 @@ public class DungeonCreationMenu implements InventoryHolder, Listener {
 
     private final Inventory inv;
     private DungeonRoomLayout layout;
+    private int[] panDistance;
 
     public DungeonCreationMenu() {
         inv = Bukkit.createInventory(this, 54, "Dungeon Creation");
         DungeonRoomLayout layout = new DungeonRoomLayout();
-        DungeonRoom start = new DungeonRoom("ExampleRoom", 22);
+        DungeonRoom start = new DungeonRoom("ExampleRoom", new int[]{4,2});
         layout.addRoom(start);
         layout.setStartingRoom(start);
         this.layout = layout;
+        this.panDistance = new int[]{0,0};
         this.updateLayout();
     }
 
-    public DungeonCreationMenu(DungeonRoomLayout layout) {
+    public DungeonCreationMenu(DungeonRoomLayout layout, int[] panDistance) {
         inv = Bukkit.createInventory(this, 54, "Dungeon Creation");
+        this.panDistance = panDistance;
         this.layout = layout;
         this.updateLayout();
     }
@@ -50,8 +54,16 @@ public class DungeonCreationMenu implements InventoryHolder, Listener {
     }
 
     private void updateLayout() {
-        for (int current : this.layout.getPositions()) {
-            this.getInventory().setItem(current, createGuiItem(Material.SMOOTH_BRICK, "Room"));
+        for (int[] current : this.layout.getPositions()) {
+            try {
+                int x = (((current[1]) - panDistance[1]) * 9);
+                int y = (current[0] - panDistance[0]);
+                if (y < 9 && y >= 0) {
+                    this.getInventory().setItem(x + y , createGuiItem(Material.SMOOTH_BRICK, "Room"));
+                }
+            } catch (ArrayIndexOutOfBoundsException e) {
+
+            }
         }
     }
 
@@ -75,39 +87,50 @@ public class DungeonCreationMenu implements InventoryHolder, Listener {
     public void onClick(InventoryClickEvent e) {
         if (e.getView().getTitle().equalsIgnoreCase(this.getInventory().getTitle())) {
             e.setCancelled(true);
-            if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.REDSTONE_BLOCK)) {
+            if (e.getClick().equals(ClickType.MIDDLE)) {
+                this.panDistance[0] = this.panDistance[0] + (e.getSlot()%9)-4;
+                this.panDistance[1] = this.panDistance[1] + ((int)e.getSlot()/9)-2;
+                DungeonCreationMenu menu = new DungeonCreationMenu(layout, this.panDistance);
+                menu.initaliseItems();
+                e.getWhoClicked().openInventory(menu.getInventory());
+            }
+            else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.REDSTONE_BLOCK)) {
                 DungeonSelectionMenu menu = new DungeonSelectionMenu();
                 menu.initaliseItems();
                 e.getWhoClicked().openInventory(menu.getInventory());
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.LAPIS_BLOCK)) {
                 layout.generateBuild(e.getWhoClicked().getLocation());
                 DungeonRoomLayout layout = new DungeonRoomLayout();
-                DungeonRoom start = new DungeonRoom("ExampleRoom", 22);
+                DungeonRoom start = new DungeonRoom("ExampleRoom",  new int[]{4,2} );
                 layout.addRoom(start);
                 layout.setStartingRoom(start);
                 this.layout = layout;
+                this.panDistance = new int[]{0,0};
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.AIR)) {
-                DungeonRoom newRoom = new DungeonRoom("ExampleRoom", e.getSlot());
+                int z = e.getSlot() % 9 + this.panDistance[0];
+                int x =  (int) e.getSlot() / 9 + this.panDistance[1];
+                int[] position = new int[]{z,x};
+                System.out.println("New point is " + position[0] + "," + position[1]);
+                DungeonRoom newRoom = new DungeonRoom("ExampleRoom", position);
                 for (DungeonRoom selected : layout.getRooms()) {
-                    if (selected.getPosition() - 9 == newRoom.getPosition()) {
-                        newRoom.setBehind(selected);
-                        selected.setForward(newRoom);
-                    } else if (selected.getPosition() + 9 == newRoom.getPosition()) {
-                        newRoom.setForward(selected);
-                        selected.setBehind(newRoom);
-                    } else if (selected.getPosition() + 1 == newRoom.getPosition()) {
-                        newRoom.setLeft(selected);
+                    if (selected.getPosition()[0] + 1 == newRoom.getPosition()[0] && newRoom.getPosition()[1] == selected.getPosition()[1]) {
                         selected.setRight(newRoom);
-
-                    } else if (selected.getPosition() - 1 == newRoom.getPosition()) {
-                        newRoom.setRight(selected);
+                        newRoom.setLeft(selected);
+                    } else if (selected.getPosition()[0] - 1 == newRoom.getPosition()[0] && newRoom.getPosition()[1] == selected.getPosition()[1]) {
                         selected.setLeft(newRoom);
+                        newRoom.setRight(selected);
+                    } else if (selected.getPosition()[1] + 1 == newRoom.getPosition()[1] && newRoom.getPosition()[0] == selected.getPosition()[0]) {
+                        selected.setBehind(newRoom);
+                        newRoom.setForward(selected);
+                    } else if (selected.getPosition()[1] - 1 == newRoom.getPosition()[1] && newRoom.getPosition()[0] == selected.getPosition()[0]) {
+                        selected.setForward(newRoom);
+                        newRoom.setBehind(selected);
                     }
                 }
                 layout.addRoom(newRoom);
-                DungeonCreationMenu menu = new DungeonCreationMenu(layout);
+                DungeonCreationMenu menu = new DungeonCreationMenu(layout, this.panDistance);
                 menu.initaliseItems();
-                menu.getInventory().setItem(e.getSlot(), createGuiItem(Material.SMOOTH_BRICK, "Room"));
+                menu.updateLayout();
                 e.getWhoClicked().openInventory(menu.getInventory());
             }
         }

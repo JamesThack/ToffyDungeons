@@ -19,6 +19,7 @@ public class DungeonRoomLayout {
     private ArrayList<DungeonRoom> rooms;
     private DungeonRoom startingRoom;
     private ArrayList<DungeonRoom> builtRooms;
+    private int buildTime;
 
     public DungeonRoomLayout() {
         this.rooms = new ArrayList<>();
@@ -52,6 +53,7 @@ public class DungeonRoomLayout {
 
     public void generateBuild(Location location) {
         builtRooms = new ArrayList<>();
+        buildTime = 0;
         new GenerateBuild("null", startingRoom, location).run();
     }
 
@@ -81,6 +83,9 @@ public class DungeonRoomLayout {
         @Override
         public void run() {
             if (!isRoomBuild(room)) {
+                if (buildTime >= 1) {
+                    buildTime -= 1;
+                }
                 builtRooms.add(room);
                 File roomStats = new File(Bukkit.getPluginManager().getPlugin("ToffyDungeons").getDataFolder() + File.separator + "schematics" + File.separator + room.getSchematicFile() + ".placement");
                 int[] directions = new int[12];
@@ -210,17 +215,22 @@ public class DungeonRoomLayout {
                             right = new GenerateBuild("right", room.getRight(), newCoordinates);
                         }
                     }
-                    if (forward != null)
-                        forward.run();
-
-                    if (back != null)
-                        back.run();
-
-                    if (right != null)
-                        right.run();
-
-                    if (left != null)
-                        left.run();
+                    if (forward != null) {
+                        buildTime +=1;
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(Bukkit.getPluginManager().getPlugin("ToffyDungeons"), forward, 20 * buildTime);
+                    }
+                    if (back != null) {
+                        buildTime +=1;
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(Bukkit.getPluginManager().getPlugin("ToffyDungeons"), back, 20 * buildTime);
+                    }
+                    if (right != null) {
+                        buildTime +=1;
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(Bukkit.getPluginManager().getPlugin("ToffyDungeons"), right, 20 * buildTime);
+                    }
+                    if (left != null) {
+                        buildTime +=1;
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(Bukkit.getPluginManager().getPlugin("ToffyDungeons"), left, 20 * buildTime);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
