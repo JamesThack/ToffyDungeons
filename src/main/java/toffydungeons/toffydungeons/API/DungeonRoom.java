@@ -7,13 +7,13 @@ package toffydungeons.toffydungeons.API;
 public class DungeonRoom {
 
     private String schematicFile;
-    private int position;
+    private int[] position;
     private DungeonRoom left;
     private DungeonRoom right;
     private DungeonRoom forward;
     private DungeonRoom behind;
 
-    public DungeonRoom(String schematicFile, int position) {
+    public DungeonRoom(String schematicFile, int[] position) {
         this.position = position;
         this.schematicFile = schematicFile;
     }
@@ -22,7 +22,7 @@ public class DungeonRoom {
         return schematicFile;
     }
 
-    public int getPosition() {
+    public int[] getPosition() {
         return position;
     }
 

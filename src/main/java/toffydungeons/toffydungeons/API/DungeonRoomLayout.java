@@ -42,10 +42,10 @@ public class DungeonRoomLayout {
         return this.rooms.contains(room);
     }
 
-    public int[] getPositions() {
-        int[] positions = new int[rooms.size()];
-        for (int i = 0; i< rooms.size(); i++) {
-            positions[i] = rooms.get(i).getPosition();
+    public ArrayList<int[]> getPositions() {
+        ArrayList<int[]> positions = new ArrayList<>();
+        for (DungeonRoom room : rooms) {
+            positions.add(room.getPosition());
         }
         return positions;
     }
