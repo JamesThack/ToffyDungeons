@@ -82,4 +82,16 @@ public class FileSaving {
         File file = new File(dataSource + fileDest);
         file.delete();
     }
+
+    public static void renameFile(String file, String newName) {
+        File rename = new File(dataSource + file);
+        File newNameFile = new File(dataSource +  newName);
+        rename.renameTo(newNameFile);
+
+        System.out.println(rename.toPath());
+        System.out.println(dataSource +  newName);
+
+
+//        rename.renameTo(new File(dataSource +  newName));
+    }
 }

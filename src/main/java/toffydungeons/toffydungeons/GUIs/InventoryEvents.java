@@ -29,6 +29,7 @@ public class InventoryEvents implements Listener {
                 e.getWhoClicked().openInventory(menu.getInventory());
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
                 DungeonCreationMenu menuNew = new DungeonCreationMenu();
+                menuNew.updateLayout();
                 e.getWhoClicked().openInventory(menuNew.getInventory());
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.SMOOTH_BRICK)) {
                 DungeonRoomLayout layout = DungeonRoomLayout.deserialise(FileSaving.readLines("dungeons" + File.separator + e.getCurrentItem().getItemMeta().getDisplayName())) ;
@@ -94,7 +95,6 @@ public class InventoryEvents implements Listener {
                 e.getWhoClicked().openInventory(menu.getInventory());
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
                 DungeonRoomLayout.deserialise(main.serialise());
-                FileSaving.saveFile("dungeons", ("dungeons" + File.separator + main.getDungeonName() +".dungeon"));
                 FileSaving.writeFile(("dungeons" + File.separator + main.getDungeonName() +".dungeon"), main.serialise());
                 DungeonSelectionMenu menu = new DungeonSelectionMenu();
                 menu.initaliseItems();

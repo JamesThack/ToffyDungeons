@@ -8,6 +8,7 @@ import toffydungeons.toffydungeons.API.DungeonRoom;
 import toffydungeons.toffydungeons.API.DungeonRoomLayout;
 import toffydungeons.toffydungeons.API.FileSaving;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -34,6 +35,8 @@ public class DungeonCreationMenu implements InventoryHolder {
         layout.setStartingRoom(start);
         this.layout = layout;
         this.panDistance = new int[]{0,0};
+        FileSaving.saveFile("dungeons", ("dungeons" + File.separator + getDungeonName() +".dungeon"));
+        FileSaving.writeFile(("dungeons" + File.separator + getDungeonName() +".dungeon"), serialise());
     }
 
     public DungeonCreationMenu(DungeonRoomLayout layout, int[] panDistance, String dungeonName) {
@@ -66,7 +69,7 @@ public class DungeonCreationMenu implements InventoryHolder {
     public ArrayList<String> serialise() {
         ArrayList<String> values = new ArrayList<>();
         for (int[] curPosition : this.layout.getPositions()) {
-            if (Arrays.equals(this.layout.getStartingRoom().getPosition(), curPosition)) {
+             if (Arrays.equals(this.layout.getStartingRoom().getPosition(), curPosition)) {
                 values.add("start:" + curPosition[0] + "," + curPosition[1]);
             } else {
                 values.add("position:" + curPosition[0] + "," + curPosition[1]);
@@ -79,6 +82,9 @@ public class DungeonCreationMenu implements InventoryHolder {
         this.getInventory().setItem(45, createGuiItem(Material.REDSTONE_BLOCK, "§cClose Menu"));
         this.getInventory().setItem(46, createGuiItem(Material.REDSTONE_TORCH_ON, "§4Delete Dungeon"));
         this.getInventory().setItem(49, createGuiItem(Material.LAPIS_BLOCK, "§6Generate Instantly"));
+        this.getInventory().setItem(52, createGuiItem(Material.NAME_TAG, "§9How To Rename", "To rename the dungeon, first save","" +
+                "the dungeon then in chat do","" +
+                "/tdungeon rename " + this.dungeonName+ " (new name)"));
         this.getInventory().setItem(53, createGuiItem(Material.EMERALD_BLOCK, "§2Save Dungeon"));
     }
 
