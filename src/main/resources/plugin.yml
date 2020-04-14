@@ -8,4 +8,4 @@ description: A custom dungeon generation plugin for minecraft!
 commands:
   TDungeon:
     description: Main command for TDungeon!
-    usage: /tdungeon
+    usage: "§6[Toffy Dungeons]: Use /tdungeon to get started!"

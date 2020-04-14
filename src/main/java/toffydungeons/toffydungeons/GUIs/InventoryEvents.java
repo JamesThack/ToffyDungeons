@@ -24,7 +24,9 @@ public class InventoryEvents implements Listener {
             DungeonSelectionMenu holder = (DungeonSelectionMenu) e.getInventory().getHolder();
             e.setCancelled(true);
             if (e.getCurrentItem() != null &&  e.getCurrentItem().getType().equals(Material.REDSTONE_BLOCK)) {
-                e.getWhoClicked().closeInventory();
+                DungeonMainMenu menu = new DungeonMainMenu();
+                menu.initaliseItems();
+                e.getWhoClicked().openInventory(menu.getInventory());
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
                 DungeonCreationMenu menuNew = new DungeonCreationMenu();
                 e.getWhoClicked().openInventory(menuNew.getInventory());

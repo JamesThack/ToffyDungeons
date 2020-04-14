@@ -4,13 +4,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import toffydungeons.toffydungeons.API.FileSaving;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import static toffydungeons.toffydungeons.GUIs.DungeonMainMenu.createGuiItem;
 
 public class DungeonSelectionMenu implements InventoryHolder {
 
@@ -30,16 +28,6 @@ public class DungeonSelectionMenu implements InventoryHolder {
 
     public int getPage() {
         return page;
-    }
-
-    public static ItemStack createGuiItem(Material material, String name, String...lore) {
-        ItemStack item = new ItemStack(material, 1);
-        ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(name);
-        ArrayList<String> metalore = new ArrayList<String>(Arrays.asList(lore));
-        meta.setLore(metalore);
-        item.setItemMeta(meta);
-        return item;
     }
 
     public void initaliseItems() {

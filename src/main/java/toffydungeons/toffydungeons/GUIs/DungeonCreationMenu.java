@@ -4,14 +4,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import toffydungeons.toffydungeons.API.DungeonRoom;
 import toffydungeons.toffydungeons.API.DungeonRoomLayout;
 import toffydungeons.toffydungeons.API.FileSaving;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import static toffydungeons.toffydungeons.GUIs.DungeonMainMenu.createGuiItem;
 
 public class DungeonCreationMenu implements InventoryHolder {
 
@@ -34,7 +34,6 @@ public class DungeonCreationMenu implements InventoryHolder {
         layout.setStartingRoom(start);
         this.layout = layout;
         this.panDistance = new int[]{0,0};
-        this.updateLayout();
     }
 
     public DungeonCreationMenu(DungeonRoomLayout layout, int[] panDistance, String dungeonName) {
@@ -47,16 +46,6 @@ public class DungeonCreationMenu implements InventoryHolder {
 
     public String getDungeonName() {
         return dungeonName;
-    }
-
-    public static ItemStack createGuiItem(Material material, String name, String... lore) {
-        ItemStack item = new ItemStack(material, 1);
-        ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(name);
-        ArrayList<String> metalore = new ArrayList<String>(Arrays.asList(lore));
-        meta.setLore(metalore);
-        item.setItemMeta(meta);
-        return item;
     }
 
     public void updateLayout() {
