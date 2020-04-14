@@ -2,8 +2,6 @@ package toffydungeons.toffydungeons;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import toffydungeons.toffydungeons.GUIs.DungeonCreationMenu;
-import toffydungeons.toffydungeons.GUIs.DungeonSelectionMenu;
 import toffydungeons.toffydungeons.GUIs.InventoryEvents;
 import toffydungeons.toffydungeons.commands.TDungeonCommand;
 
