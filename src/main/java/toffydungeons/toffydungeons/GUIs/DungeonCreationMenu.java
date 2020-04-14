@@ -28,24 +28,40 @@ public class DungeonCreationMenu implements InventoryHolder {
     private final Inventory inv;
     public DungeonRoomLayout layout;
     public int[] panDistance;
+    private String dungeonName;
 
     public DungeonCreationMenu() {
-        inv = Bukkit.createInventory(this, 54, "Dungeon Creation");
+        int adder = 1;
+        this.dungeonName = ("Dungeon_" + (FileSaving.filesInDirectory("dungeons").size() + adder));
+        while (FileSaving.folderContainsFile("dungeons", this.dungeonName + ".dungeon")) {
+            adder +=1;
+            this.dungeonName = ("Dungeon_" + (FileSaving.filesInDirectory("dungeons").size() + adder));
+        }
+        inv = Bukkit.createInventory(this, 54, "Dungeon Creation: " + this.dungeonName);
         DungeonRoomLayout layout = new DungeonRoomLayout();
         DungeonRoom start = new DungeonRoom("ExampleRoom", new int[]{4,2});
         layout.addRoom(start);
         layout.setStartingRoom(start);
+        System.out.println(FileSaving.filesInDirectory("dungeons").size() );
         this.layout = layout;
         this.panDistance = new int[]{0,0};
         this.updateLayout();
     }
 
-
-    public DungeonCreationMenu(DungeonRoomLayout layout, int[] panDistance) {
-        inv = Bukkit.createInventory(this, 54, "Dungeon Creation");
+    public DungeonCreationMenu(DungeonRoomLayout layout, int[] panDistance, String dungeonName) {
+        this.dungeonName = dungeonName;
+        inv = Bukkit.createInventory(this, 54, "Dungeon Creation: " + this.dungeonName);
         this.panDistance = panDistance;
         this.layout = layout;
         this.updateLayout();
+    }
+
+    public String getDungeonName() {
+        return dungeonName;
+    }
+
+    public void setDungeonName(String dungeonName) {
+        this.dungeonName = dungeonName;
     }
 
     public static ItemStack createGuiItem(Material material, String name, String... lore) {

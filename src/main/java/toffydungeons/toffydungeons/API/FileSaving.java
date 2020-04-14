@@ -71,4 +71,12 @@ public class FileSaving {
         }
         return lines;
     }
+
+    public static boolean folderContainsFile(String directory, String check) {
+        List<String> totalFiles = filesInDirectory(directory);
+        for (String str : totalFiles) {
+            if (str.equals(check))
+                return true;
+        }return false;
+    }
 }

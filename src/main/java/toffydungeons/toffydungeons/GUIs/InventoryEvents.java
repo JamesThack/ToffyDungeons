@@ -27,16 +27,12 @@ public class InventoryEvents implements Listener {
             if (e.getCurrentItem() != null &&  e.getCurrentItem().getType().equals(Material.REDSTONE_BLOCK)) {
                 e.getWhoClicked().closeInventory();
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
-                DungeonRoomLayout layout = new DungeonRoomLayout();
-                DungeonRoom start = new DungeonRoom("ExampleRoom", new int[]{4,2});
-                layout.addRoom(start);
-                layout.setStartingRoom(start);
-                DungeonCreationMenu menuNew = new DungeonCreationMenu(layout, new int[]{0,0});
-                menuNew.updateLayout();
+                DungeonCreationMenu menuNew = new DungeonCreationMenu();
                 e.getWhoClicked().openInventory(menuNew.getInventory());
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.SMOOTH_BRICK)) {
                 DungeonRoomLayout layout = DungeonRoomLayout.deserialise(FileSaving.readLines("dungeons" + File.separator + e.getCurrentItem().getItemMeta().getDisplayName())) ;
-                DungeonCreationMenu menu = new DungeonCreationMenu(layout, new int[]{0,0});
+                DungeonCreationMenu menu = new DungeonCreationMenu(layout, new int[]{0,0}, e.getCurrentItem().getItemMeta().getDisplayName().replace(".dungeon", ""));
+                System.out.println(menu.getDungeonName());
                 menu.updateLayout();
                 e.getWhoClicked().openInventory(menu.getInventory());
             }  else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.PAPER )) {
@@ -59,7 +55,7 @@ public class InventoryEvents implements Listener {
             if (e.getClick().equals(ClickType.MIDDLE)) {
                 main.panDistance[0] = main.panDistance[0] + (e.getSlot()%9)-4;
                 main.panDistance[1] = main.panDistance[1] + ((int)e.getSlot()/9)-2;
-                DungeonCreationMenu menu = new DungeonCreationMenu(main.layout, main.panDistance);
+                DungeonCreationMenu menu = new DungeonCreationMenu(main.layout, main.panDistance, main.getDungeonName());
                 menu.initaliseItems();
                 e.getWhoClicked().openInventory(menu.getInventory());
             }
@@ -93,13 +89,13 @@ public class InventoryEvents implements Listener {
                     }
                 }
                 main.layout.addRoom(newRoom);
-                DungeonCreationMenu menu = new DungeonCreationMenu(main.layout, main.panDistance);
+                DungeonCreationMenu menu = new DungeonCreationMenu(main.layout, main.panDistance, main.getDungeonName());
                 menu.updateLayout();
                 e.getWhoClicked().openInventory(menu.getInventory());
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
                 DungeonRoomLayout.deserialise(main.serialise());
-                FileSaving.saveFile("dungeons", ("dungeons" + File.separator + "testFile.dungeon"));
-                FileSaving.writeFile(("dungeons" + File.separator + "testFile.dungeon"), main.serialise());
+                FileSaving.saveFile("dungeons", ("dungeons" + File.separator + main.getDungeonName() +".dungeon"));
+                FileSaving.writeFile(("dungeons" + File.separator + main.getDungeonName() +".dungeon"), main.serialise());
                 DungeonSelectionMenu menu = new DungeonSelectionMenu();
                 menu.initaliseItems();
                 e.getWhoClicked().openInventory(menu.getInventory());
