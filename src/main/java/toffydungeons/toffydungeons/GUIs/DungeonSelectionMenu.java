@@ -31,9 +31,9 @@ public class DungeonSelectionMenu implements InventoryHolder {
     }
 
     public DungeonSelectionMenu(int page) {
+        this.page = page;
         inv = Bukkit.createInventory(this, 54, "Dungeon Selection Page " + page);
         initaliseItems();
-        this.page = page;
     }
 
     public int getPage() {
@@ -52,8 +52,14 @@ public class DungeonSelectionMenu implements InventoryHolder {
 
     public void initaliseItems() {
         List<String> availavleFiles = FileSaving.filesInDirectory("dungeons");
-            for (int i = 0; i < availavleFiles.size(); i++) {
-                this.getInventory().setItem(i, createGuiItem(Material.SMOOTH_BRICK, availavleFiles.get(i)));
+            for (int i = 0 ; i < availavleFiles.size(); i++) {
+                int placement = i;
+                while (placement >= 45) {
+                    placement -= 45;
+                }
+                if (i >= (page - 1) * 45 && i < 45 * page) {
+                    this.getInventory().setItem(placement, createGuiItem(Material.SMOOTH_BRICK, availavleFiles.get(i)));
+                }
         }
         this.getInventory().setItem(45, createGuiItem(Material.REDSTONE_BLOCK, "§cClose Menu"));
         this.getInventory().setItem(46, createGuiItem(Material.PAPER, "Previous Page"));

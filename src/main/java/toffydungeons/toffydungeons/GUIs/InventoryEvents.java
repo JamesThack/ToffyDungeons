@@ -32,7 +32,6 @@ public class InventoryEvents implements Listener {
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.SMOOTH_BRICK)) {
                 DungeonRoomLayout layout = DungeonRoomLayout.deserialise(FileSaving.readLines("dungeons" + File.separator + e.getCurrentItem().getItemMeta().getDisplayName())) ;
                 DungeonCreationMenu menu = new DungeonCreationMenu(layout, new int[]{0,0}, e.getCurrentItem().getItemMeta().getDisplayName().replace(".dungeon", ""));
-                System.out.println(menu.getDungeonName());
                 menu.updateLayout();
                 e.getWhoClicked().openInventory(menu.getInventory());
             }  else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.PAPER )) {

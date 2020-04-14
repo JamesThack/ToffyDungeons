@@ -42,7 +42,6 @@ public class DungeonCreationMenu implements InventoryHolder {
         DungeonRoom start = new DungeonRoom("ExampleRoom", new int[]{4,2});
         layout.addRoom(start);
         layout.setStartingRoom(start);
-        System.out.println(FileSaving.filesInDirectory("dungeons").size() );
         this.layout = layout;
         this.panDistance = new int[]{0,0};
         this.updateLayout();
