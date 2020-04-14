@@ -50,6 +50,9 @@ public class InventoryEvents implements Listener {
         } else if (e.getView().getTitle().contains("Dungeon Creation")) {
             e.setCancelled(true);
             DungeonCreationMenu main = (DungeonCreationMenu) e.getInventory().getHolder();
+            int z = e.getSlot() % 9 + main.panDistance[0];
+            int x = (int) e.getSlot() / 9 + main.panDistance[1];
+            int[] position = new int[]{z, x};
             if (e.getClick().equals(ClickType.MIDDLE)) {
                 main.panDistance[0] = main.panDistance[0] + (e.getSlot()%9)-4;
                 main.panDistance[1] = main.panDistance[1] + ((int)e.getSlot()/9)-2;
@@ -67,25 +70,22 @@ public class InventoryEvents implements Listener {
                 menu.initaliseItems();
                 e.getWhoClicked().openInventory(menu.getInventory());
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.AIR)) {
-                int z = e.getSlot() % 9 + main.panDistance[0];
-                int x =  (int) e.getSlot() / 9 + main.panDistance[1];
-                int[] position = new int[]{z,x};
-                DungeonRoom newRoom = new DungeonRoom("ExampleRoom", position);
-                for (DungeonRoom selected : main.layout.getRooms()) {
-                    if (selected.getPosition()[0] + 1 == newRoom.getPosition()[0] && newRoom.getPosition()[1] == selected.getPosition()[1]) {
-                        selected.setRight(newRoom);
-                        newRoom.setLeft(selected);
-                    } else if (selected.getPosition()[0] - 1 == newRoom.getPosition()[0] && newRoom.getPosition()[1] == selected.getPosition()[1]) {
-                        selected.setLeft(newRoom);
-                        newRoom.setRight(selected);
-                    } else if (selected.getPosition()[1] + 1 == newRoom.getPosition()[1] && newRoom.getPosition()[0] == selected.getPosition()[0]) {
-                        selected.setBehind(newRoom);
-                        newRoom.setForward(selected);
-                    } else if (selected.getPosition()[1] - 1 == newRoom.getPosition()[1] && newRoom.getPosition()[0] == selected.getPosition()[0]) {
-                        selected.setForward(newRoom);
-                        newRoom.setBehind(selected);
+                    DungeonRoom newRoom = new DungeonRoom("ExampleRoom", position);
+                    for (DungeonRoom selected : main.layout.getRooms()) {
+                        if (selected.getPosition()[0] + 1 == newRoom.getPosition()[0] && newRoom.getPosition()[1] == selected.getPosition()[1]) {
+                            selected.setRight(newRoom);
+                            newRoom.setLeft(selected);
+                        } else if (selected.getPosition()[0] - 1 == newRoom.getPosition()[0] && newRoom.getPosition()[1] == selected.getPosition()[1]) {
+                            selected.setLeft(newRoom);
+                            newRoom.setRight(selected);
+                        } else if (selected.getPosition()[1] + 1 == newRoom.getPosition()[1] && newRoom.getPosition()[0] == selected.getPosition()[0]) {
+                            selected.setBehind(newRoom);
+                            newRoom.setForward(selected);
+                        } else if (selected.getPosition()[1] - 1 == newRoom.getPosition()[1] && newRoom.getPosition()[0] == selected.getPosition()[0]) {
+                            selected.setForward(newRoom);
+                            newRoom.setBehind(selected);
+                        }
                     }
-                }
                 main.layout.addRoom(newRoom);
                 DungeonCreationMenu menu = new DungeonCreationMenu(main.layout, main.panDistance, main.getDungeonName());
                 menu.updateLayout();
@@ -98,6 +98,19 @@ public class InventoryEvents implements Listener {
                 menu.initaliseItems();
                 e.getWhoClicked().openInventory(menu.getInventory());
 
+            } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.REDSTONE_TORCH_ON)) {
+                FileSaving.deleteFile("dungeons" + File.separator + main.getDungeonName()  + ".dungeon");
+                DungeonSelectionMenu menu = new DungeonSelectionMenu();
+                menu.initaliseItems();
+                e.getWhoClicked().openInventory(menu.getInventory());
+            } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.SMOOTH_BRICK)) {
+                 if (e.getClick().equals(ClickType.RIGHT)) {
+                    main.layout.removeRoomFromPosition(position);
+                    main.updateLayout();
+                     DungeonCreationMenu menu = new DungeonCreationMenu(main.layout, main.panDistance, main.getDungeonName());
+                     menu.updateLayout();
+                     e.getWhoClicked().openInventory(menu.getInventory());
+                }
             }
         }
     }

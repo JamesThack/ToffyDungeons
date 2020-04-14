@@ -62,6 +62,7 @@ public class FileSaving {
             while ((readLine = reader.readLine()) != null) {
                 lines.add(readLine);
             }
+            reader.close();
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -75,5 +76,10 @@ public class FileSaving {
             if (str.equals(check))
                 return true;
         }return false;
+    }
+
+    public static void deleteFile(String fileDest) {
+        File file = new File(dataSource + fileDest);
+        file.delete();
     }
 }

@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * This is the class that organises the layout of every dungeon, it has an arraylist of rooms which each have their neighbouring
@@ -43,12 +44,13 @@ public class DungeonRoomLayout {
         return startingRoom;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void removeRoomFromPosition(int[] position) {
+        for (DungeonRoom room : this.rooms) {
+            if (Arrays.equals(room.getPosition(), position) && !this.getStartingRoom().equals(room)) {
+                this.safeRemoveRoom(room);
+                break;
+            }
+        }
     }
 
     public boolean validateRoom(DungeonRoom room) {
@@ -63,8 +65,16 @@ public class DungeonRoomLayout {
         return positions;
     }
 
-    public void removeRoom(DungeonRoom room) {
-        if (this.rooms.contains(room)) {
+    public void safeRemoveRoom(DungeonRoom room) {
+        if (!this.getStartingRoom().equals(room)) {
+            if (room.getForward() != null)
+                room.getForward().setBehind(null);
+            if (room.getBehind() != null)
+                room.getBehind().setForward(null);
+            if (room.getLeft() != null)
+                room.getLeft().setRight(null);
+            if (room.getRight() != null)
+                room.getRight().setLeft(null);
             this.rooms.remove(room);
         }
     }

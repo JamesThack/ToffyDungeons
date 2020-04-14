@@ -49,10 +49,6 @@ public class DungeonCreationMenu implements InventoryHolder {
         return dungeonName;
     }
 
-    public void setDungeonName(String dungeonName) {
-        this.dungeonName = dungeonName;
-    }
-
     public static ItemStack createGuiItem(Material material, String name, String... lore) {
         ItemStack item = new ItemStack(material, 1);
         ItemMeta meta = item.getItemMeta();
@@ -92,6 +88,7 @@ public class DungeonCreationMenu implements InventoryHolder {
 
     public void initaliseItems() {
         this.getInventory().setItem(45, createGuiItem(Material.REDSTONE_BLOCK, "§cClose Menu"));
+        this.getInventory().setItem(46, createGuiItem(Material.REDSTONE_TORCH_ON, "§4Delete Dungeon"));
         this.getInventory().setItem(49, createGuiItem(Material.LAPIS_BLOCK, "§6Generate Instantly"));
         this.getInventory().setItem(53, createGuiItem(Material.EMERALD_BLOCK, "§2Save Dungeon"));
     }
