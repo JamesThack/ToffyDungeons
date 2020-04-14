@@ -2,11 +2,13 @@ package toffydungeons.toffydungeons.GUIs;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -14,7 +16,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import toffydungeons.toffydungeons.API.DungeonRoom;
 import toffydungeons.toffydungeons.API.DungeonRoomLayout;
+import toffydungeons.toffydungeons.API.FileSaving;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -53,7 +57,7 @@ public class DungeonCreationMenu implements InventoryHolder, Listener {
         return item;
     }
 
-    private void updateLayout() {
+    public void updateLayout() {
         for (int[] current : this.layout.getPositions()) {
             try {
                 int x = (((current[1]) - panDistance[1]) * 9);
@@ -65,16 +69,43 @@ public class DungeonCreationMenu implements InventoryHolder, Listener {
 
             }
         }
+        this.initaliseItems();
+    }
+
+    public ArrayList<String> serialise() {
+        ArrayList<String> values = new ArrayList<>();
+        for (int[] curPosition : this.layout.getPositions()) {
+            if (Arrays.equals(this.layout.getStartingRoom().getPosition(), curPosition)) {
+                values.add("start:" + curPosition[0] + "," + curPosition[1]);
+            } else {
+                values.add("position:" + curPosition[0] + "," + curPosition[1]);
+            }
+        }
+        return values;
     }
 
     public void initaliseItems() {
         this.getInventory().setItem(45, createGuiItem(Material.REDSTONE_BLOCK, "§cClose Menu"));
         this.getInventory().setItem(49, createGuiItem(Material.LAPIS_BLOCK, "§6Generate Instantly"));
+        this.getInventory().setItem(53, createGuiItem(Material.EMERALD_BLOCK, "§2Save Dungeon"));
     }
 
     @Override
     public Inventory getInventory() {
         return inv;
+    }
+
+    public void openEmptyInventory(Player player) {
+        System.out.println(this.layout.getPositions().size());
+        DungeonRoomLayout newLayout = new DungeonRoomLayout();
+        DungeonRoom start = new DungeonRoom("ExampleRoom", new int[]{4,2});
+        newLayout.addRoom(start);
+        newLayout.setStartingRoom(start);
+        this.layout = newLayout;
+        this.panDistance = new int[]{0,0};
+        System.out.println(this.layout.getPositions().size());
+        player.openInventory(this.getInventory());
+        System.out.println(this.layout.getPositions().size());
     }
 
     /**
@@ -88,11 +119,16 @@ public class DungeonCreationMenu implements InventoryHolder, Listener {
         if (e.getView().getTitle().equalsIgnoreCase(this.getInventory().getTitle())) {
             e.setCancelled(true);
             if (e.getClick().equals(ClickType.MIDDLE)) {
+                System.out.println(this.layout.getPositions().size());
                 this.panDistance[0] = this.panDistance[0] + (e.getSlot()%9)-4;
                 this.panDistance[1] = this.panDistance[1] + ((int)e.getSlot()/9)-2;
+                System.out.println(this.layout.getPositions().size());
                 DungeonCreationMenu menu = new DungeonCreationMenu(layout, this.panDistance);
+                System.out.println(this.layout.getPositions().size());
                 menu.initaliseItems();
+                System.out.println(this.layout.getPositions().size());
                 e.getWhoClicked().openInventory(menu.getInventory());
+                System.out.println(this.layout.getPositions().size());
             }
             else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.REDSTONE_BLOCK)) {
                 DungeonSelectionMenu menu = new DungeonSelectionMenu();
@@ -110,7 +146,6 @@ public class DungeonCreationMenu implements InventoryHolder, Listener {
                 int z = e.getSlot() % 9 + this.panDistance[0];
                 int x =  (int) e.getSlot() / 9 + this.panDistance[1];
                 int[] position = new int[]{z,x};
-                System.out.println("New point is " + position[0] + "," + position[1]);
                 DungeonRoom newRoom = new DungeonRoom("ExampleRoom", position);
                 for (DungeonRoom selected : layout.getRooms()) {
                     if (selected.getPosition()[0] + 1 == newRoom.getPosition()[0] && newRoom.getPosition()[1] == selected.getPosition()[1]) {
@@ -129,9 +164,23 @@ public class DungeonCreationMenu implements InventoryHolder, Listener {
                 }
                 layout.addRoom(newRoom);
                 DungeonCreationMenu menu = new DungeonCreationMenu(layout, this.panDistance);
-                menu.initaliseItems();
                 menu.updateLayout();
                 e.getWhoClicked().openInventory(menu.getInventory());
+            } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
+                DungeonRoomLayout.deserialise(serialise(), e.getWhoClicked().getLocation());
+                FileSaving.saveFile("dungeons", ("dungeons" + File.separator + "testFile.dungeon"));
+                FileSaving.writeFile(("dungeons" + File.separator + "testFile.dungeon"), serialise());
+                DungeonRoomLayout layout = new DungeonRoomLayout();
+                DungeonRoom start = new DungeonRoom("ExampleRoom", new int[]{4,2});
+                layout.addRoom(start);
+                layout.setStartingRoom(start);
+                this.layout = layout;
+                this.panDistance =  new int[]{0,0};
+                this.updateLayout();
+                DungeonSelectionMenu menu = new DungeonSelectionMenu();
+                menu.initaliseItems();
+                e.getWhoClicked().openInventory(menu.getInventory());
+
             }
         }
     }

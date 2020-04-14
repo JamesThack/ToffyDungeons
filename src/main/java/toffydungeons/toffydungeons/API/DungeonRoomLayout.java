@@ -19,6 +19,7 @@ public class DungeonRoomLayout {
     private ArrayList<DungeonRoom> rooms;
     private DungeonRoom startingRoom;
     private ArrayList<DungeonRoom> builtRooms;
+    private String name;
     private int buildTime;
 
     public DungeonRoomLayout() {
@@ -39,6 +40,18 @@ public class DungeonRoomLayout {
         this.startingRoom = room;
     }
 
+    public DungeonRoom getStartingRoom() {
+        return startingRoom;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public boolean validateRoom(DungeonRoom room) {
         return this.rooms.contains(room);
     }
@@ -51,10 +64,50 @@ public class DungeonRoomLayout {
         return positions;
     }
 
+    public void removeRoom(DungeonRoom room) {
+        if (this.rooms.contains(room)) {
+            this.rooms.remove(room);
+        }
+    }
+
     public void generateBuild(Location location) {
         builtRooms = new ArrayList<>();
         buildTime = 0;
         new GenerateBuild("null", startingRoom, location).run();
+    }
+
+    public static DungeonRoomLayout deserialise(ArrayList<String> serialisedData, Location location) {
+        DungeonRoomLayout layout = new DungeonRoomLayout();
+        for (String line : serialisedData) {
+            if (line.contains("start:")) {
+                line = line.substring(6);
+                int[] newPos = new int[]{ Integer.valueOf(line.split(",")[0]),Integer.valueOf(line.split(",")[1]) };
+                DungeonRoom newRoom = new DungeonRoom("ExampleRoom", newPos);
+                layout.addRoom(newRoom);
+                layout.setStartingRoom(newRoom);
+            } else if (line.contains("position:")) {
+                line = line.substring(9);
+                DungeonRoom newRoom = new DungeonRoom("ExampleRoom", new int[]{Integer.valueOf(line.split(",")[0]),Integer.valueOf(line.split(",")[1]) });
+                layout.addRoom(newRoom);
+                for (DungeonRoom selected : layout.getRooms()) {
+                    if (selected.getPosition()[0] + 1 == newRoom.getPosition()[0] && newRoom.getPosition()[1] == selected.getPosition()[1]) {
+                        selected.setRight(newRoom);
+                        newRoom.setLeft(selected);
+                    } else if (selected.getPosition()[0] - 1 == newRoom.getPosition()[0] && newRoom.getPosition()[1] == selected.getPosition()[1]) {
+                        selected.setLeft(newRoom);
+                        newRoom.setRight(selected);
+                    } else if (selected.getPosition()[1] + 1 == newRoom.getPosition()[1] && newRoom.getPosition()[0] == selected.getPosition()[0]) {
+                        selected.setBehind(newRoom);
+                        newRoom.setForward(selected);
+                    } else if (selected.getPosition()[1] - 1 == newRoom.getPosition()[1] && newRoom.getPosition()[0] == selected.getPosition()[0]) {
+                        selected.setForward(newRoom);
+                        newRoom.setBehind(selected);
+                    }
+                }
+            }
+        }
+        layout.generateBuild(location);
+        return layout;
     }
 
     private boolean isRoomBuild(DungeonRoom room) {
