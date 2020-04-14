@@ -14,6 +14,7 @@ import toffydungeons.toffydungeons.API.DungeonRoom;
 import toffydungeons.toffydungeons.API.DungeonRoomLayout;
 import toffydungeons.toffydungeons.API.FileSaving;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -65,6 +66,11 @@ public class DungeonSelectionMenu implements InventoryHolder, Listener {
                 DungeonCreationMenu menuNew = new DungeonCreationMenu(layout, new int[]{0,0});
                 menuNew.updateLayout();
                 menuNew.openEmptyInventory((Player) e.getWhoClicked());
+            } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.SMOOTH_BRICK)) {
+                DungeonRoomLayout layout = DungeonRoomLayout.deserialise(FileSaving.readLines("dungeons" + File.separator + e.getCurrentItem().getItemMeta().getDisplayName())) ;
+                DungeonCreationMenu menu = new DungeonCreationMenu(layout, new int[]{0,0});
+                menu.updateLayout();
+                e.getWhoClicked().openInventory(menu.getInventory());
             }
         }
     }

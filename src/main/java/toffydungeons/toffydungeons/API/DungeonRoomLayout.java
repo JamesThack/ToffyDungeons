@@ -76,7 +76,7 @@ public class DungeonRoomLayout {
         new GenerateBuild("null", startingRoom, location).run();
     }
 
-    public static DungeonRoomLayout deserialise(ArrayList<String> serialisedData, Location location) {
+    public static DungeonRoomLayout deserialise(ArrayList<String> serialisedData) {
         DungeonRoomLayout layout = new DungeonRoomLayout();
         for (String line : serialisedData) {
             if (line.contains("start:")) {
@@ -106,7 +106,6 @@ public class DungeonRoomLayout {
                 }
             }
         }
-        layout.generateBuild(location);
         return layout;
     }
 

@@ -40,6 +40,10 @@ public class DungeonCreationMenu implements InventoryHolder, Listener {
         this.updateLayout();
     }
 
+    private DungeonRoomLayout getLayout(DungeonCreationMenu menu) {
+        return menu.layout;
+    }
+
     public DungeonCreationMenu(DungeonRoomLayout layout, int[] panDistance) {
         inv = Bukkit.createInventory(this, 54, "Dungeon Creation");
         this.panDistance = panDistance;
@@ -119,7 +123,7 @@ public class DungeonCreationMenu implements InventoryHolder, Listener {
         if (e.getView().getTitle().equalsIgnoreCase(this.getInventory().getTitle())) {
             e.setCancelled(true);
             if (e.getClick().equals(ClickType.MIDDLE)) {
-                System.out.println(this.layout.getPositions().size());
+                System.out.println(getLayout(this).getPositions().size());
                 this.panDistance[0] = this.panDistance[0] + (e.getSlot()%9)-4;
                 this.panDistance[1] = this.panDistance[1] + ((int)e.getSlot()/9)-2;
                 System.out.println(this.layout.getPositions().size());
@@ -167,7 +171,7 @@ public class DungeonCreationMenu implements InventoryHolder, Listener {
                 menu.updateLayout();
                 e.getWhoClicked().openInventory(menu.getInventory());
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
-                DungeonRoomLayout.deserialise(serialise(), e.getWhoClicked().getLocation());
+                DungeonRoomLayout.deserialise(serialise());
                 FileSaving.saveFile("dungeons", ("dungeons" + File.separator + "testFile.dungeon"));
                 FileSaving.writeFile(("dungeons" + File.separator + "testFile.dungeon"), serialise());
                 DungeonRoomLayout layout = new DungeonRoomLayout();
