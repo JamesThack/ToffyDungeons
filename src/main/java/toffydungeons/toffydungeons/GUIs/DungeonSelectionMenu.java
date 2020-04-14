@@ -20,12 +20,24 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class DungeonSelectionMenu implements InventoryHolder, Listener {
+public class DungeonSelectionMenu implements InventoryHolder {
 
     private final Inventory inv;
+    private int page;
 
     public DungeonSelectionMenu() {
-        inv = Bukkit.createInventory(this, 54, "Dungeon Selection");
+        inv = Bukkit.createInventory(this, 54, "Dungeon Selection Page 1");
+        this.page = 1;
+    }
+
+    public DungeonSelectionMenu(int page) {
+        inv = Bukkit.createInventory(this, 54, "Dungeon Selection Page " + page);
+        initaliseItems();
+        this.page = page;
+    }
+
+    public int getPage() {
+        return page;
     }
 
     public static ItemStack createGuiItem(Material material, String name, String...lore) {
@@ -44,34 +56,13 @@ public class DungeonSelectionMenu implements InventoryHolder, Listener {
                 this.getInventory().setItem(i, createGuiItem(Material.SMOOTH_BRICK, availavleFiles.get(i)));
         }
         this.getInventory().setItem(45, createGuiItem(Material.REDSTONE_BLOCK, "§cClose Menu"));
+        this.getInventory().setItem(46, createGuiItem(Material.PAPER, "Previous Page"));
+        this.getInventory().setItem(47, createGuiItem(Material.PAPER, "Next Page"));
         this.getInventory().setItem(53, createGuiItem(Material.EMERALD_BLOCK, "§2Create New Dungeon"));
     }
 
     @Override
     public Inventory getInventory() {
         return inv;
-    }
-
-    @EventHandler
-    public void onClick(InventoryClickEvent e) {
-        if (e.getView().getTitle().equalsIgnoreCase(this.getInventory().getTitle())) {
-            e.setCancelled(true);
-            if (e.getCurrentItem() != null &&  e.getCurrentItem().getType().equals(Material.REDSTONE_BLOCK)) {
-                e.getWhoClicked().closeInventory();
-            } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
-                DungeonRoomLayout layout = new DungeonRoomLayout();
-                DungeonRoom start = new DungeonRoom("ExampleRoom", new int[]{4,2});
-                layout.addRoom(start);
-                layout.setStartingRoom(start);
-                DungeonCreationMenu menuNew = new DungeonCreationMenu(layout, new int[]{0,0});
-                menuNew.updateLayout();
-                menuNew.openEmptyInventory((Player) e.getWhoClicked());
-            } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.SMOOTH_BRICK)) {
-                DungeonRoomLayout layout = DungeonRoomLayout.deserialise(FileSaving.readLines("dungeons" + File.separator + e.getCurrentItem().getItemMeta().getDisplayName())) ;
-                DungeonCreationMenu menu = new DungeonCreationMenu(layout, new int[]{0,0});
-                menu.updateLayout();
-                e.getWhoClicked().openInventory(menu.getInventory());
-            }
-        }
     }
 }
