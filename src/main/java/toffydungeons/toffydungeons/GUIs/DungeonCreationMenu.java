@@ -77,10 +77,11 @@ public class DungeonCreationMenu implements InventoryHolder {
     public ArrayList<String> serialise() {
         ArrayList<String> values = new ArrayList<>();
         for (int[] curPosition : this.layout.getPositions()) {
+            DungeonRoom room =  this.layout.getRoomFromPosition(curPosition);
              if (Arrays.equals(this.layout.getStartingRoom().getPosition(), curPosition)) {
-                values.add("start:" + curPosition[0] + "," + curPosition[1] + "," + this.layout.getRoomFromPosition(curPosition).getSchematicFile());
+                values.add("start:" + curPosition[0] + "," + curPosition[1] + "," + room.getSchematicFile() + room.serialiseBorders());
             } else {
-                values.add("position:" + curPosition[0] + "," + curPosition[1] + "," + this.layout.getRoomFromPosition(curPosition).getSchematicFile());
+                values.add("position:" + curPosition[0] + "," + curPosition[1] + "," + room.getSchematicFile() + room.serialiseBorders());
             }
         }
         return values;

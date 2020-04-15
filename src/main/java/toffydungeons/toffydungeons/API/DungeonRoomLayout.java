@@ -36,12 +36,15 @@ public class DungeonRoomLayout {
         }
     }
 
-    public void setDungeonName(String dungeonName) {
-        this.dungeonName = dungeonName;
-    }
-
     public void setStartingRoom(DungeonRoom room) {
         this.startingRoom = room;
+        int[] newSides = room.getBlockedSides();
+        newSides[2] = 1;
+        if (room.getBehind() != null) {
+            room.getBehind().setForward(null);
+            room.setBehind(null);
+        }
+        room.setBlockedSides(newSides);
     }
 
     public DungeonRoom getStartingRoom() {
@@ -80,16 +83,16 @@ public class DungeonRoomLayout {
     public void updateBorders() {
         for (DungeonRoom room : this.rooms) {
             for (DungeonRoom roomToCompare : this.rooms) {
-                if (room.getPosition()[0] + 1 == roomToCompare.getPosition()[0] && roomToCompare.getPosition()[1] == room.getPosition()[1]) {
+                if (room.getPosition()[0] + 1 == roomToCompare.getPosition()[0] && roomToCompare.getPosition()[1] == room.getPosition()[1] && room.getBlockedSides()[1] ==0 && roomToCompare.getBlockedSides()[3] ==0) {
                     room.setRight(roomToCompare);
                     roomToCompare.setLeft(room);
-                } else if (room.getPosition()[0] - 1 == roomToCompare.getPosition()[0] && roomToCompare.getPosition()[1] == room.getPosition()[1]) {
+                } else if (room.getPosition()[0] - 1 == roomToCompare.getPosition()[0] && roomToCompare.getPosition()[1] == room.getPosition()[1] && room.getBlockedSides()[3] ==0 && roomToCompare.getBlockedSides()[1] ==0) {
                     room.setLeft(roomToCompare);
                     roomToCompare.setRight(room);
-                } else if (room.getPosition()[1] + 1 == roomToCompare.getPosition()[1] && roomToCompare.getPosition()[0] == room.getPosition()[0]) {
+                } else if (room.getPosition()[1] + 1 == roomToCompare.getPosition()[1] && roomToCompare.getPosition()[0] == room.getPosition()[0] && room.getBlockedSides()[2] ==0 && roomToCompare.getBlockedSides()[0] ==0) {
                     room.setBehind(roomToCompare);
                     roomToCompare.setForward(room);
-                } else if (room.getPosition()[1] - 1 == roomToCompare.getPosition()[1] && roomToCompare.getPosition()[0] == room.getPosition()[0]) {
+                } else if (room.getPosition()[1] - 1 == roomToCompare.getPosition()[1] && roomToCompare.getPosition()[0] == room.getPosition()[0] && room.getBlockedSides()[0] ==0 && roomToCompare.getBlockedSides()[2] ==0) {
                     room.setForward(roomToCompare);
                     roomToCompare.setBehind(room);
                 }
@@ -124,29 +127,16 @@ public class DungeonRoomLayout {
                 line = line.substring(6);
                 int[] newPos = new int[]{ Integer.valueOf(line.split(",")[0]),Integer.valueOf(line.split(",")[1]) };
                 DungeonRoom newRoom = new DungeonRoom("ExampleRoom", newPos);
+                newRoom.setBlockedSides(new int[]{Integer.valueOf(line.split(",")[3]),Integer.valueOf(line.split(",")[4]), Integer.valueOf(line.split(",")[5]), Integer.valueOf(line.split(",")[6])});
                 layout.addRoom(newRoom);
                 newRoom.setSchematicFile(line.split(",")[2]);
                 layout.setStartingRoom(newRoom);
             } else if (line.contains("position:")) {
                 line = line.substring(9);
                 DungeonRoom newRoom = new DungeonRoom("ExampleRoom", new int[]{Integer.valueOf(line.split(",")[0]),Integer.valueOf(line.split(",")[1]) });
+                newRoom.setBlockedSides(new int[]{Integer.valueOf(line.split(",")[3]),Integer.valueOf(line.split(",")[4]), Integer.valueOf(line.split(",")[5]), Integer.valueOf(line.split(",")[6])});
                 layout.addRoom(newRoom);
                 newRoom.setSchematicFile(line.split(",")[2]);
-//                for (DungeonRoom selected : layout.getRooms()) {
-//                    if (selected.getPosition()[0] + 1 == newRoom.getPosition()[0] && newRoom.getPosition()[1] == selected.getPosition()[1]) {
-//                        selected.setRight(newRoom);
-//                        newRoom.setLeft(selected);
-//                    } else if (selected.getPosition()[0] - 1 == newRoom.getPosition()[0] && newRoom.getPosition()[1] == selected.getPosition()[1]) {
-//                        selected.setLeft(newRoom);
-//                        newRoom.setRight(selected);
-//                    } else if (selected.getPosition()[1] + 1 == newRoom.getPosition()[1] && newRoom.getPosition()[0] == selected.getPosition()[0]) {
-//                        selected.setBehind(newRoom);
-//                        newRoom.setForward(selected);
-//                    } else if (selected.getPosition()[1] - 1 == newRoom.getPosition()[1] && newRoom.getPosition()[0] == selected.getPosition()[0]) {
-//                        selected.setForward(newRoom);
-//                        newRoom.setBehind(selected);
-//                    }
-//                }
             }
         } layout.updateBorders();
         return layout;

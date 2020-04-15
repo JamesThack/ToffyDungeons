@@ -12,14 +12,28 @@ public class DungeonRoom {
     private DungeonRoom right;
     private DungeonRoom forward;
     private DungeonRoom behind;
+    private int[] blockedSides;
 
     public DungeonRoom(String schematicFile, int[] position) {
         this.position = position;
         this.schematicFile = schematicFile;
+        blockedSides = new int[]{0,0,0,0};
     }
 
     public void setSchematicFile(String schematicFile) {
         this.schematicFile = schematicFile;
+    }
+
+    public int[] getBlockedSides() {
+        return blockedSides;
+    }
+
+    public String serialiseBorders() {
+        return ("," + blockedSides[0] + "," + blockedSides[1] + "," + blockedSides[2] + "," + blockedSides[3]);
+    }
+
+    public void setBlockedSides(int[] blockedSides) {
+        this.blockedSides = blockedSides;
     }
 
     public String getSchematicFile() {

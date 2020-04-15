@@ -33,14 +33,18 @@ public class DungeonMainMenu implements InventoryHolder, Listener {
     }
 
 
-    public static ItemStack createGuiItem(Material material, String name, String...lore) {
-        ItemStack item = new ItemStack(material, 1);
+    public static ItemStack createGuiItem(Material material, int materialData, String name, String...lore) {
+        ItemStack item = new ItemStack(material, 1, (short) materialData);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(name);
         ArrayList<String> metalore = new ArrayList<String>(Arrays.asList(lore));
         meta.setLore(metalore);
         item.setItemMeta(meta);
         return item;
+    }
+
+    public static ItemStack createGuiItem(Material material, String name, String...lore) {
+        return createGuiItem(material, 0 , name, lore);
     }
 
     @EventHandler
