@@ -77,6 +77,26 @@ public class DungeonRoomLayout {
         return positions;
     }
 
+    public void updateBorders() {
+        for (DungeonRoom room : this.rooms) {
+            for (DungeonRoom roomToCompare : this.rooms) {
+                if (room.getPosition()[0] + 1 == roomToCompare.getPosition()[0] && roomToCompare.getPosition()[1] == room.getPosition()[1]) {
+                    room.setRight(roomToCompare);
+                    roomToCompare.setLeft(room);
+                } else if (room.getPosition()[0] - 1 == roomToCompare.getPosition()[0] && roomToCompare.getPosition()[1] == room.getPosition()[1]) {
+                    room.setLeft(roomToCompare);
+                    roomToCompare.setRight(room);
+                } else if (room.getPosition()[1] + 1 == roomToCompare.getPosition()[1] && roomToCompare.getPosition()[0] == room.getPosition()[0]) {
+                    room.setBehind(roomToCompare);
+                    roomToCompare.setForward(room);
+                } else if (room.getPosition()[1] - 1 == roomToCompare.getPosition()[1] && roomToCompare.getPosition()[0] == room.getPosition()[0]) {
+                    room.setForward(roomToCompare);
+                    roomToCompare.setBehind(room);
+                }
+            }
+        }
+    }
+
     public void safeRemoveRoom(DungeonRoom room) {
         if (!this.getStartingRoom().equals(room)) {
             if (room.getForward() != null)
@@ -112,23 +132,23 @@ public class DungeonRoomLayout {
                 DungeonRoom newRoom = new DungeonRoom("ExampleRoom", new int[]{Integer.valueOf(line.split(",")[0]),Integer.valueOf(line.split(",")[1]) });
                 layout.addRoom(newRoom);
                 newRoom.setSchematicFile(line.split(",")[2]);
-                for (DungeonRoom selected : layout.getRooms()) {
-                    if (selected.getPosition()[0] + 1 == newRoom.getPosition()[0] && newRoom.getPosition()[1] == selected.getPosition()[1]) {
-                        selected.setRight(newRoom);
-                        newRoom.setLeft(selected);
-                    } else if (selected.getPosition()[0] - 1 == newRoom.getPosition()[0] && newRoom.getPosition()[1] == selected.getPosition()[1]) {
-                        selected.setLeft(newRoom);
-                        newRoom.setRight(selected);
-                    } else if (selected.getPosition()[1] + 1 == newRoom.getPosition()[1] && newRoom.getPosition()[0] == selected.getPosition()[0]) {
-                        selected.setBehind(newRoom);
-                        newRoom.setForward(selected);
-                    } else if (selected.getPosition()[1] - 1 == newRoom.getPosition()[1] && newRoom.getPosition()[0] == selected.getPosition()[0]) {
-                        selected.setForward(newRoom);
-                        newRoom.setBehind(selected);
-                    }
-                }
+//                for (DungeonRoom selected : layout.getRooms()) {
+//                    if (selected.getPosition()[0] + 1 == newRoom.getPosition()[0] && newRoom.getPosition()[1] == selected.getPosition()[1]) {
+//                        selected.setRight(newRoom);
+//                        newRoom.setLeft(selected);
+//                    } else if (selected.getPosition()[0] - 1 == newRoom.getPosition()[0] && newRoom.getPosition()[1] == selected.getPosition()[1]) {
+//                        selected.setLeft(newRoom);
+//                        newRoom.setRight(selected);
+//                    } else if (selected.getPosition()[1] + 1 == newRoom.getPosition()[1] && newRoom.getPosition()[0] == selected.getPosition()[0]) {
+//                        selected.setBehind(newRoom);
+//                        newRoom.setForward(selected);
+//                    } else if (selected.getPosition()[1] - 1 == newRoom.getPosition()[1] && newRoom.getPosition()[0] == selected.getPosition()[0]) {
+//                        selected.setForward(newRoom);
+//                        newRoom.setBehind(selected);
+//                    }
+//                }
             }
-        }
+        } layout.updateBorders();
         return layout;
     }
 

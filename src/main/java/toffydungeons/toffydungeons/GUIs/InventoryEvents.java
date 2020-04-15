@@ -151,14 +151,16 @@ public class InventoryEvents implements Listener {
                 DungeonBlueprintChooser chooser = new DungeonBlueprintChooser(manager.getLayout(), manager.getRoom());
                 chooser.initaliseItems();
                 e.getWhoClicked().openInventory(chooser.getInventory());
-            } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.REDSTONE_BLOCK )) {
-                DungeonCreationMenu creationMenu = new DungeonCreationMenu(manager.getLayout(), new int[]{0,0});
-                creationMenu.initaliseItems();
-                e.getWhoClicked().openInventory(creationMenu.getInventory());
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK )) {
                 DungeonCreationMenu creationMenu = new DungeonCreationMenu(manager.getLayout(), new int[]{0,0});
                 creationMenu.initaliseItems();
+                creationMenu.layout.updateBorders();
                 e.getWhoClicked().openInventory(creationMenu.getInventory());
+            } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.BRICK )) {
+                manager.getLayout().setStartingRoom(manager.getRoom());
+                DungeonRoomManager newManny = new DungeonRoomManager(manager.getRoom(), manager.getLayout());
+                newManny.initialiseItems();
+                e.getWhoClicked().openInventory(newManny.getInventory());
             }
         }
     }

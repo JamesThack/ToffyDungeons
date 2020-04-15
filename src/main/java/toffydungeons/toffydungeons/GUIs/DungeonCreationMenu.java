@@ -65,7 +65,7 @@ public class DungeonCreationMenu implements InventoryHolder {
                 if (y < 9 && y >= 0) {
                     this.getInventory().setItem(x + y , createGuiItem(Material.SMOOTH_BRICK, this.layout.getRoomFromPosition(current).getSchematicFile()));
                     if (Arrays.equals(this.layout.getStartingRoom().getPosition(), current))
-                        this.getInventory().setItem(x + y , createGuiItem(Material.BRICK, "Starting Room"));
+                        this.getInventory().setItem(x + y , createGuiItem(Material.BRICK, this.layout.getRoomFromPosition(current).getSchematicFile()));
                 }
             } catch (ArrayIndexOutOfBoundsException e) {
 

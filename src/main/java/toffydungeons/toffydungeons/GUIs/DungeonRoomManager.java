@@ -31,10 +31,11 @@ public class DungeonRoomManager implements InventoryHolder {
         this.inv.setItem(4, DungeonMainMenu.createGuiItem(Material.PAPER, "§6Change Schematic (" + room.getSchematicFile() + ")"));
         this.inv.setItem(13, DungeonMainMenu.createGuiItem(Material.THIN_GLASS, "§aOpen Side"));
         this.inv.setItem(21, DungeonMainMenu.createGuiItem(Material.THIN_GLASS, "§aOpen Side"));
-        this.inv.setItem(22, DungeonMainMenu.createGuiItem(Material.BRICK, "§3Set as starter block"));
+        if (!layout.getStartingRoom().equals(room))
+            this.inv.setItem(22, DungeonMainMenu.createGuiItem(Material.BRICK, "§3Set as starter block"));
+
         this.inv.setItem(23, DungeonMainMenu.createGuiItem(Material.THIN_GLASS, "§aOpen Side"));
         this.inv.setItem(31, DungeonMainMenu.createGuiItem(Material.THIN_GLASS, "§aOpen Side"));
-        this.inv.setItem(27, DungeonMainMenu.createGuiItem(Material.REDSTONE_BLOCK, "§4§lABORT"));
         this.inv.setItem(35, DungeonMainMenu.createGuiItem(Material.EMERALD_BLOCK, "§a§lSave"));
     }
 
