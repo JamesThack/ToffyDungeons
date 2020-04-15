@@ -19,7 +19,7 @@ public class DungeonRoomLayout {
     private ArrayList<DungeonRoom> rooms;
     private DungeonRoom startingRoom;
     private ArrayList<DungeonRoom> builtRooms;
-    private String name;
+    public String dungeonName;
     private int buildTime;
 
     public DungeonRoomLayout() {
@@ -34,6 +34,10 @@ public class DungeonRoomLayout {
         if (!validateRoom(room)) {
             this.rooms.add(room);
         }
+    }
+
+    public void setDungeonName(String dungeonName) {
+        this.dungeonName = dungeonName;
     }
 
     public void setStartingRoom(DungeonRoom room) {
@@ -51,6 +55,14 @@ public class DungeonRoomLayout {
                 break;
             }
         }
+    }
+
+    public DungeonRoom getRoomFromPosition(int[] position) {
+        for (DungeonRoom room : this.rooms) {
+            if (Arrays.equals(room.getPosition(), position)) {
+                return room;
+            }
+        } return null;
     }
 
     public boolean validateRoom(DungeonRoom room) {
@@ -93,11 +105,13 @@ public class DungeonRoomLayout {
                 int[] newPos = new int[]{ Integer.valueOf(line.split(",")[0]),Integer.valueOf(line.split(",")[1]) };
                 DungeonRoom newRoom = new DungeonRoom("ExampleRoom", newPos);
                 layout.addRoom(newRoom);
+                newRoom.setSchematicFile(line.split(",")[2]);
                 layout.setStartingRoom(newRoom);
             } else if (line.contains("position:")) {
                 line = line.substring(9);
                 DungeonRoom newRoom = new DungeonRoom("ExampleRoom", new int[]{Integer.valueOf(line.split(",")[0]),Integer.valueOf(line.split(",")[1]) });
                 layout.addRoom(newRoom);
+                newRoom.setSchematicFile(line.split(",")[2]);
                 for (DungeonRoom selected : layout.getRooms()) {
                     if (selected.getPosition()[0] + 1 == newRoom.getPosition()[0] && newRoom.getPosition()[1] == selected.getPosition()[1]) {
                         selected.setRight(newRoom);
@@ -148,7 +162,7 @@ public class DungeonRoomLayout {
                     buildTime -= 1;
                 }
                 builtRooms.add(room);
-                File roomStats = new File(Bukkit.getPluginManager().getPlugin("ToffyDungeons").getDataFolder() + File.separator + "schematics" + File.separator + room.getSchematicFile() + ".placement");
+                File roomStats = new File(Bukkit.getPluginManager().getPlugin("ToffyDungeons").getDataFolder() + File.separator + "rooms" + File.separator + room.getSchematicFile() + ".placement");
                 int[] directions = new int[12];
                 GenerateBuild forward = null;
                 GenerateBuild right = null;

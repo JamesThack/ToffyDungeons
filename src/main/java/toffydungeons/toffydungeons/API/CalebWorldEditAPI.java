@@ -26,7 +26,7 @@ public class CalebWorldEditAPI {
     public static boolean tryLoadSchem(String fileName, Location location, int rotation) {
         try {
             WorldEditPlugin worldEditPlugin = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-            File schematic = new File(Bukkit.getPluginManager().getPlugin("ToffyDungeons").getDataFolder() + File.separator + "schematics" + File.separator + fileName + ".schematic");
+            File schematic = new File(Bukkit.getPluginManager().getPlugin("ToffyDungeons").getDataFolder() + File.separator + "rooms" + File.separator + fileName + ".schematic");
             EditSession session = worldEditPlugin.getWorldEdit().getEditSessionFactory().getEditSession(new BukkitWorld(location.getWorld()), 10000);
             CuboidClipboard clipboard = MCEditSchematicFormat.getFormat(schematic).load(schematic);
             clipboard.rotate2D(rotation);

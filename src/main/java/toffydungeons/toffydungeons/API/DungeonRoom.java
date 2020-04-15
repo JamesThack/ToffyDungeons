@@ -18,6 +18,10 @@ public class DungeonRoom {
         this.schematicFile = schematicFile;
     }
 
+    public void setSchematicFile(String schematicFile) {
+        this.schematicFile = schematicFile;
+    }
+
     public String getSchematicFile() {
         return schematicFile;
     }
