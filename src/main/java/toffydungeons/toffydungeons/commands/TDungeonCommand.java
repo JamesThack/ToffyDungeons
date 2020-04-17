@@ -5,7 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import toffydungeons.toffydungeons.API.FileSaving;
-import toffydungeons.toffydungeons.GUIs.DungeonCreationMenu;
+import toffydungeons.toffydungeons.GUIs.DungeonLayout.DungeonCreationMenu;
 import toffydungeons.toffydungeons.GUIs.DungeonMainMenu;
 import toffydungeons.toffydungeons.GUIs.DungeonSelectionMenu;
 
