@@ -1,4 +1,4 @@
-package toffydungeons.toffydungeons.GUIs;
+package toffydungeons.toffydungeons.GUIs.DungeonLayout;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -7,6 +7,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import toffydungeons.toffydungeons.API.DungeonRoom;
 import toffydungeons.toffydungeons.API.DungeonRoomLayout;
+import toffydungeons.toffydungeons.GUIs.DungeonMainMenu;
 
 public class DungeonRoomManager implements InventoryHolder {
 

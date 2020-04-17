@@ -1,4 +1,4 @@
-package toffydungeons.toffydungeons.GUIs;
+package toffydungeons.toffydungeons.GUIs.DungeonLayout;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

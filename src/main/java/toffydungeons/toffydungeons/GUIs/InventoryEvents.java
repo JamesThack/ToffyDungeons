@@ -8,6 +8,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import toffydungeons.toffydungeons.API.DungeonRoom;
 import toffydungeons.toffydungeons.API.DungeonRoomLayout;
 import toffydungeons.toffydungeons.API.FileSaving;
+import toffydungeons.toffydungeons.GUIs.DungeonLayout.DungeonBlueprintChooser;
+import toffydungeons.toffydungeons.GUIs.DungeonLayout.DungeonCreationMenu;
+import toffydungeons.toffydungeons.GUIs.DungeonLayout.DungeonGenerationMenu;
+import toffydungeons.toffydungeons.GUIs.DungeonLayout.DungeonRoomManager;
 
 import java.io.File;
 
@@ -67,7 +71,13 @@ public class InventoryEvents implements Listener {
                 menu.initaliseItems();
                 e.getWhoClicked().openInventory(menu.getInventory());
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.LAPIS_BLOCK)) {
-                main.layout.generateBuild(e.getWhoClicked().getLocation());
+                if (e.getClick().equals(ClickType.SHIFT_LEFT)) {
+                    main.layout.generateBuild(e.getWhoClicked().getLocation());
+                } else {
+                    DungeonGenerationMenu menu = new DungeonGenerationMenu(main.layout);
+                    menu.initialiseItems();
+                    e.getWhoClicked().openInventory(menu.getInventory());
+                }
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.AIR)) {
                 DungeonRoom newRoom = new DungeonRoom("ExampleRoom", position);
                 for (DungeonRoom selected : main.layout.getRooms()) {
