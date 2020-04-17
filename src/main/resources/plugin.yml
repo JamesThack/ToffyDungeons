@@ -4,3 +4,8 @@ main: toffydungeons.toffydungeons.ToffyDungeons
 api-version: 1.13
 authors: [Caleb_Britannia]
 description: A custom dungeon generation plugin for minecraft!
+
+commands:
+  TDungeon:
+    description: Main command for TDungeon!
+    usage: "§6[Toffy Dungeons]: Use /tdungeon to get started!"
