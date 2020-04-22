@@ -74,6 +74,7 @@ public class InventoryEvents implements Listener {
                 if (e.getClick().equals(ClickType.SHIFT_LEFT)) {
                     main.layout.generateBuild(e.getWhoClicked().getLocation());
                 } else {
+                    main.layout.setCachedView(main.panDistance);
                     DungeonGenerationMenu menu = new DungeonGenerationMenu(main.layout);
                     menu.initialiseItems();
                     e.getWhoClicked().openInventory(menu.getInventory());
@@ -110,6 +111,7 @@ public class InventoryEvents implements Listener {
                 e.getWhoClicked().openInventory(menu.getInventory());
             } else if (e.getCurrentItem() != null && (e.getCurrentItem().getType().equals(Material.SMOOTH_BRICK) || e.getCurrentItem().getType().equals(Material.BRICK))) {
                 if (e.getClick().equals(ClickType.LEFT)) {
+                    main.layout.setCachedView(main.panDistance);
                     DungeonRoomManager manager = new DungeonRoomManager(main.layout.getRoomFromPosition(position), main.layout);
                     manager.initialiseItems();
                     e.getWhoClicked().openInventory(manager.getInventory());
@@ -161,7 +163,7 @@ public class InventoryEvents implements Listener {
                 chooser.initaliseItems();
                 e.getWhoClicked().openInventory(chooser.getInventory());
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
-                DungeonCreationMenu creationMenu = new DungeonCreationMenu(manager.getLayout(), new int[]{0, 0});
+                DungeonCreationMenu creationMenu = new DungeonCreationMenu(manager.getLayout(), manager.getLayout().getCachedView());
                 creationMenu.initaliseItems();
                 creationMenu.layout.updateBorders();
                 e.getWhoClicked().openInventory(creationMenu.getInventory());

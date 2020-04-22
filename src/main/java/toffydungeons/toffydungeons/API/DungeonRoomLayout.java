@@ -22,6 +22,7 @@ public class DungeonRoomLayout {
     private ArrayList<DungeonRoom> builtRooms;
     public String dungeonName;
     private int buildTime;
+    private int[] cachedView;
 
     public DungeonRoomLayout() {
         this.rooms = new ArrayList<>();
@@ -35,6 +36,14 @@ public class DungeonRoomLayout {
         if (!validateRoom(room)) {
             this.rooms.add(room);
         }
+    }
+
+    public int[] getCachedView() {
+        return cachedView;
+    }
+
+    public void setCachedView(int[] cachedView) {
+        this.cachedView = cachedView;
     }
 
     public void setStartingRoom(DungeonRoom room) {
