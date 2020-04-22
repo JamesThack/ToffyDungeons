@@ -50,12 +50,20 @@ public class DungeonRoomDesign {
     public boolean save() {
         FileSaving.saveFile("rooms", "rooms" + File.separator + this.name + ".placement");
         ArrayList<String> saveData = new ArrayList<>();
+        Location loc1 = new Location(origin.getWorld(), Math.min(origin.getX(), endPoint.getX()), Math.min(origin.getY(), endPoint.getY()), Math.min(origin.getZ(), endPoint.getZ()));
+        Location loc2 = new Location(origin.getWorld(), Math.max(origin.getX(), endPoint.getX()), Math.max(origin.getY(), endPoint.getY()), Math.max(origin.getZ(), endPoint.getZ()));
+        this.safeDoors();
         saveData.add("NORTH:" + (int)(northDoor.getX() - southDoor.getX()) + "," +  (int)(northDoor.getY() - southDoor.getY()) + "," +  (int)(northDoor.getZ() - southDoor.getZ()));
         saveData.add("EAST:" + (int)(eastDoor.getX() - southDoor.getX()) + "," + (int)(eastDoor.getY() - southDoor.getY()) + "," + (int)(eastDoor.getZ() - southDoor.getZ()));
         saveData.add("SOUTH:" + "0,0,0");
         saveData.add("WEST:" + (int)(westDoor.getX() - southDoor.getX()) + "," + (int)(westDoor.getY() -  southDoor.getY()) + "," + (int)(westDoor.getZ() - southDoor.getZ()));
         FileSaving.writeFile("rooms" + File.separator + this.name + ".placement", saveData);
-        return CalebWorldEditAPI.trySaveSchem(origin, endPoint, this.name, new Vector(this.origin.getX() - this.southDoor.getX(), this.origin.getY() - this.southDoor.getY(),  this.origin.getZ() - this.southDoor.getZ()));
+
+
+        System.out.println(loc1.toString());
+        System.out.println(loc2.toString());
+
+        return CalebWorldEditAPI.trySaveSchem(loc1, loc2, this.name, new Vector(loc1.getX() - this.southDoor.getX(), loc1.getY() - this.southDoor.getY(),  loc1.getZ() - this.southDoor.getZ()));
     }
 
     public void setCurrentOperation(int operation) {
@@ -91,15 +99,17 @@ public class DungeonRoomDesign {
         this.name = name;
     }
 
+    public Location getSouthDoor() {
+        return southDoor;
+    }
+
     public void safeDoors() {
         if (this.northDoor == null)
-            this.northDoor = new Location(this.origin.getWorld(),0,0,0);
+            this.northDoor = this.southDoor;
         if (this.eastDoor == null)
-            this.eastDoor = new Location(this.origin.getWorld(),0,0,0);
-        if (this.southDoor == null)
-            this.southDoor = new Location(this.origin.getWorld(),0,0,0);
+            this.eastDoor = this.southDoor;
         if (this.westDoor == null)
-            this.westDoor = new Location(this.origin.getWorld(),0,0,0);
+            this.westDoor = this.southDoor;
 
     }
 }

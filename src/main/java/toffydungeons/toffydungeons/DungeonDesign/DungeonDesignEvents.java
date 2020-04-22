@@ -25,7 +25,7 @@ public class DungeonDesignEvents implements Listener {
         if (getPlayerEditor(player) == null) {
             DungeonRoomDesign design = new DungeonRoomDesign(player);
             this.currentEdits.add(design);
-            player.sendMessage("§a[Toffy Dungeons]: You have started creating a new dungeon!");
+            player.sendMessage("§a[Toffy Dungeons]: You have started creating a new room!");
         } else {
             player.sendMessage("§c[Toffy Dungeons]: You already have an editor open!");
         }
@@ -87,10 +87,13 @@ public class DungeonDesignEvents implements Listener {
                 if (customiser.designer.getName().equals("UNNAMED")) {
                     e.getWhoClicked().closeInventory();
                     e.getWhoClicked().sendMessage("§c[Toffy Dungeons]: Choose room name with /tdungeon roomname (name)");
+                } else if (customiser.designer.getSouthDoor() == null) {
+                    e.getWhoClicked().closeInventory();
+                    e.getWhoClicked().sendMessage("§c[Toffy Dungeons]: Please select a south door (this is the rooms entrance)");
                 } else {
                     if (customiser.designer.getOrigin() != null && customiser.designer.getEndPoint() !=null) {
-                        customiser.designer.safeDoors();
                         customiser.designer.save();
+                        this.currentEdits.remove(customiser.designer);
                         e.getWhoClicked().closeInventory();
                         e.getWhoClicked().sendMessage("§a[Toffy Dungeons]: Created new dungeon room: " + customiser.designer.getName());
                     } else {

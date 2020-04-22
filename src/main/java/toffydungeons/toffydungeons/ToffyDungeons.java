@@ -35,4 +35,5 @@ public final class ToffyDungeons extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
     }
+
 }
