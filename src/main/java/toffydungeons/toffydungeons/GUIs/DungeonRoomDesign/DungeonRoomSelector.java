@@ -51,5 +51,6 @@ public class DungeonRoomSelector implements InventoryHolder {
         this.getInventory().setItem(45, createGuiItem(Material.REDSTONE_BLOCK, "§cClose Menu"));
         this.getInventory().setItem(46, createGuiItem(Material.PAPER, "Previous Page"));
         this.getInventory().setItem(47, createGuiItem(Material.PAPER, "Next Page"));
+        this.getInventory().setItem(49, createGuiItem(Material.REDSTONE_TORCH_ON, "§cShift Click To Delete Blueprints"));
     }
 }

@@ -219,8 +219,18 @@ public class InventoryEvents implements Listener {
                     menu.initaliseItems();
                     e.getWhoClicked().openInventory(menu.getInventory());
                 }
+            } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.WOOL) && e.getCurrentItem().getItemMeta() != null && e.getClick().isShiftClick()) {
+                FileSaving.deleteFile("rooms" + File.separator + e.getCurrentItem().getItemMeta().getDisplayName() + ".schematic");
+                FileSaving.deleteFile("rooms" + File.separator + e.getCurrentItem().getItemMeta().getDisplayName() + ".placement");
+                DungeonRoomSelector menu = new DungeonRoomSelector(chooser.getPage());
+                menu.initaliseItems();
+                e.getWhoClicked().openInventory(menu.getInventory());
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.WOOL) && e.getCurrentItem().getItemMeta() != null) {
                 Bukkit.dispatchCommand(e.getWhoClicked(), "tdungeon roomedit " + e.getCurrentItem().getItemMeta().getDisplayName());
+            } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.REDSTONE_BLOCK)) {
+                DungeonMainMenu mainMenu = new DungeonMainMenu();
+                mainMenu.initaliseItems();
+                e.getWhoClicked().openInventory(mainMenu.getInventory());
             }
         }
     }
