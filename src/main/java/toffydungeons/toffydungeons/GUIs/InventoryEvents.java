@@ -1,5 +1,6 @@
 package toffydungeons.toffydungeons.GUIs;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,6 +13,7 @@ import toffydungeons.toffydungeons.GUIs.DungeonLayout.DungeonBlueprintChooser;
 import toffydungeons.toffydungeons.GUIs.DungeonLayout.DungeonCreationMenu;
 import toffydungeons.toffydungeons.GUIs.DungeonLayout.DungeonGenerationMenu;
 import toffydungeons.toffydungeons.GUIs.DungeonLayout.DungeonRoomManager;
+import toffydungeons.toffydungeons.GUIs.DungeonRoomDesign.DungeonRoomSelector;
 
 import java.io.File;
 
@@ -200,6 +202,25 @@ public class InventoryEvents implements Listener {
                     newManny.initialiseItems();
                     e.getWhoClicked().openInventory(newManny.getInventory());
                 }
+            }
+            /**
+             * All the code for the blueprint selection menu
+             */
+        } else if (e.getView().getTitle().contains("Dungeon Blueprint Editor Page")) {
+            e.setCancelled(true);
+            DungeonRoomSelector chooser = (DungeonRoomSelector) e.getInventory().getHolder();
+            if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.PAPER)) {
+                if (e.getCurrentItem().getItemMeta().getDisplayName().equals("Previous Page") && chooser.getPage() > 1) {
+                    DungeonRoomSelector menu = new DungeonRoomSelector(chooser.getPage() - 1);
+                    menu.initaliseItems();
+                    e.getWhoClicked().openInventory(menu.getInventory());
+                } else if (e.getCurrentItem().getItemMeta().getDisplayName().equals("Next Page")) {
+                    DungeonRoomSelector menu = new DungeonRoomSelector(chooser.getPage() + 1);
+                    menu.initaliseItems();
+                    e.getWhoClicked().openInventory(menu.getInventory());
+                }
+            } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.WOOL) && e.getCurrentItem().getItemMeta() != null) {
+                Bukkit.dispatchCommand(e.getWhoClicked(), "tdungeon roomedit " + e.getCurrentItem().getItemMeta().getDisplayName());
             }
         }
     }

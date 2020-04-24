@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public class DungeonDesignEvents implements Listener {
 
-    private ArrayList<DungeonRoomDesign> currentEdits;
+    public ArrayList<DungeonRoomDesign> currentEdits;
 
     public DungeonDesignEvents() {
         this.currentEdits = new ArrayList<>();
@@ -29,7 +29,26 @@ public class DungeonDesignEvents implements Listener {
         } else {
             player.sendMessage("§c[Toffy Dungeons]: You already have an editor open!");
         }
+    }
 
+    public void closeEditor(Player player) {
+        if (getPlayerEditor(player) != null) {
+            this.currentEdits.remove(getPlayerEditor(player));
+            player.sendMessage("§a[Toffy Dungeons]: Closed editor WITHOUT SAVING");
+        } else {
+            player.sendMessage("§c[Toffy Dungeons]: No editor open!");
+        }
+
+    }
+
+    public void startNewDungeonEditor(Player player, String editName) {
+        if (getPlayerEditor(player) == null) {
+            DungeonRoomDesign design = new DungeonRoomDesign(player, editName);
+            this.currentEdits.add(design);
+            player.sendMessage("§a[Toffy Dungeons]: You have started editing " + editName);
+        } else {
+            player.sendMessage("§c[Toffy Dungeons]: You already have an editor open!");
+        }
     }
 
     public DungeonRoomDesign getPlayerEditor(Player player) {
@@ -68,7 +87,6 @@ public class DungeonDesignEvents implements Listener {
     public void onDrop(PlayerDropItemEvent e) {
         DungeonRoomDesign designer = this.getPlayerEditor(e.getPlayer());
         if (e.getItemDrop().getItemStack().getType().equals(Material.RECORD_9) && designer != null) {
-            System.out.println(designer.getCurrentOperation());
             e.setCancelled(true);
             DungeonRoomWandCustomiser customiser = new DungeonRoomWandCustomiser(designer);
             customiser.initaliseItems();
@@ -95,7 +113,10 @@ public class DungeonDesignEvents implements Listener {
                         customiser.designer.save();
                         this.currentEdits.remove(customiser.designer);
                         e.getWhoClicked().closeInventory();
-                        e.getWhoClicked().sendMessage("§a[Toffy Dungeons]: Created new dungeon room: " + customiser.designer.getName());
+                        if (!customiser.designer.isEditing())
+                            e.getWhoClicked().sendMessage("§a[Toffy Dungeons]: Created new dungeon room: " + customiser.designer.getName());
+                        else
+                            e.getWhoClicked().sendMessage("§a[Toffy Dungeons]: Finished editing dungeon room: " + customiser.designer.getName());
                     } else {
                         e.getWhoClicked().sendMessage("§c[Toffy Dungeons]: Please select 2 points for the region!");
                     }

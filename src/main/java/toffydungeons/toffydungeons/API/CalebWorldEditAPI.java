@@ -4,6 +4,7 @@ import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.extent.Extent;
@@ -19,6 +20,7 @@ import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.WorldData;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -33,6 +35,20 @@ public class CalebWorldEditAPI {
      */
     public static boolean tryLoadSchem(String fileName, Location location, Vector offset) {
         return tryLoadSchem(fileName, location, 0, offset);
+    }
+
+    public static void setBlock(Location loc1, Location loc2, Material block) {
+        try {
+            WorldEditPlugin worldEditPlugin = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
+            EditSession session = worldEditPlugin.getWorldEdit().getEditSessionFactory().getEditSession(new BukkitWorld(loc1.getWorld()), 10000);
+            World weWorld = new BukkitWorld(loc1.getWorld());
+            Vector pos1 = new Vector(loc1.getX(), loc1.getY(), loc1.getZ()); //First corner of your cuboid
+            Vector pos2 = new Vector(loc2.getX(), loc2.getY(), loc2.getZ()); //Second corner fo your cuboid
+            CuboidRegion region = new CuboidRegion(weWorld, pos1, pos2);
+            session.setBlocks(region, new BaseBlock(block.getId()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static boolean tryLoadSchem(String fileName, Location location, int rotation, Vector offset) {
@@ -82,11 +98,32 @@ public class CalebWorldEditAPI {
             stream.close();
 
             changeOffset(fileName, offset);
-
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
         return false;
+    }
+
+    public static int getWidth(String fileName) {
+        try {
+            File schematic = new File(Bukkit.getPluginManager().getPlugin("ToffyDungeons").getDataFolder() + File.separator + "rooms" + File.separator + fileName + ".schematic");
+            CuboidClipboard clipboard = MCEditSchematicFormat.getFormat(schematic).load(schematic);
+            return clipboard.getWidth();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    public static int getLength(String fileName) {
+        try {
+            File schematic = new File(Bukkit.getPluginManager().getPlugin("ToffyDungeons").getDataFolder() + File.separator + "rooms" + File.separator + fileName + ".schematic");
+            CuboidClipboard clipboard = MCEditSchematicFormat.getFormat(schematic).load(schematic);
+            return clipboard.getLength();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 }

@@ -2,6 +2,7 @@ package toffydungeons.toffydungeons.DungeonDesign;
 
 import com.sk89q.worldedit.Vector;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import toffydungeons.toffydungeons.API.CalebWorldEditAPI;
 import toffydungeons.toffydungeons.API.FileSaving;
@@ -16,6 +17,7 @@ public class DungeonRoomDesign {
     private Location endPoint;
     private String name;
     private int currentOperation;
+    private boolean editing;
     private Location northDoor;
     private Location eastDoor;
     private Location southDoor;
@@ -24,7 +26,44 @@ public class DungeonRoomDesign {
     public DungeonRoomDesign(Player player) {
         this.playerUUID = player.getUniqueId().toString();
         this.name= "UNNAMED";
+        this.editing = false;
         this.currentOperation = 0;
+    }
+
+    public DungeonRoomDesign(Player player, String editName) {
+        this.playerUUID = player.getUniqueId().toString();
+        this.name = editName;
+        this.editing = true;
+        this.currentOperation = 0;
+        this.southDoor = new Location(player.getWorld(), (int) player.getLocation().getX(), (int) player.getLocation().getY(), (int) player.getLocation().getZ());
+        try {
+            for (String line : FileSaving.readLines("rooms" + File.separator + editName + ".placement")) {
+                if (line.contains("NORTH:")) {
+                    String linex = line.replace("NORTH:", "");
+                    this.northDoor = new Location(this.southDoor.getWorld(), (int) this.southDoor.getX() + Integer.valueOf(linex.split(",")[0]), (int)this.southDoor.getY() + Integer.valueOf(linex.split(",")[1]), (int)this.southDoor.getZ() + Integer.valueOf(linex.split(",")[2]));
+                } else if (line.contains("EAST:")) {
+                    String linex = line.replace("EAST:", "");
+                    this.eastDoor = new Location(this.southDoor.getWorld(), (int)this.southDoor.getX() + Integer.valueOf(linex.split(",")[0]), (int)this.southDoor.getY() + Integer.valueOf(linex.split(",")[1]), (int)this.southDoor.getZ() + Integer.valueOf(linex.split(",")[2]));
+                } else if  (line.contains("SOUTH")) {
+                    String linex = line.replace("SOUTH:", "");
+                    this.origin = new Location(this.southDoor.getWorld(), (int)this.southDoor.getX() - Integer.valueOf(linex.split(",")[0]), (int)this.southDoor.getY() - Integer.valueOf(linex.split(",")[1]), (int)this.southDoor.getZ() - Integer.valueOf(linex.split(",")[2]));
+                } else if  (line.contains("WEST:")) {
+                    String linex = line.replace("WEST:", "");
+                    this.westDoor = new Location(this.southDoor.getWorld(), (int)this.southDoor.getX() + Integer.valueOf(linex.split(",")[0]), (int)this.southDoor.getY() + Integer.valueOf(linex.split(",")[1]), (int)this.southDoor.getZ() + Integer.valueOf(linex.split(",")[2]));
+                } else if  (line.contains("BORDER:")) {
+                    String linex = line.replace("BORDER:", "");
+                    this.endPoint = new Location(this.southDoor.getWorld(), (int)this.southDoor.getX() + Integer.valueOf(linex.split(",")[0]), (int)this.southDoor.getY() + Integer.valueOf(linex.split(",")[1]), (int)this.southDoor.getZ() + Integer.valueOf(linex.split(",")[2]));
+                }
+            }
+            CalebWorldEditAPI.tryLoadSchem(editName, player.getLocation(), new Vector(0, 0, 0));
+        } catch (Exception e) {
+            e.printStackTrace();
+            player.sendMessage("[Toffy Dungeons]: An error was found when attempting to load the room! Please send the .placement file to a developer if unsure.");
+        }
+    }
+
+    public boolean isEditing() {
+        return editing;
     }
 
     public boolean editorContainsPlayer(Player player) {
@@ -55,15 +94,13 @@ public class DungeonRoomDesign {
         this.safeDoors();
         saveData.add("NORTH:" + (int)(northDoor.getX() - southDoor.getX()) + "," +  (int)(northDoor.getY() - southDoor.getY()) + "," +  (int)(northDoor.getZ() - southDoor.getZ()));
         saveData.add("EAST:" + (int)(eastDoor.getX() - southDoor.getX()) + "," + (int)(eastDoor.getY() - southDoor.getY()) + "," + (int)(eastDoor.getZ() - southDoor.getZ()));
-        saveData.add("SOUTH:" + "0,0,0");
+        saveData.add("SOUTH:" + (int)(southDoor.getX() - loc1.getX()) + "," + (int)(southDoor.getY() - loc1.getY()) + "," + (int)(southDoor.getZ() - loc1.getZ()));
         saveData.add("WEST:" + (int)(westDoor.getX() - southDoor.getX()) + "," + (int)(westDoor.getY() -  southDoor.getY()) + "," + (int)(westDoor.getZ() - southDoor.getZ()));
+        saveData.add("BORDER:" + (int)(loc2.getX() - southDoor.getX()) + "," + (int)(loc2.getY() -  southDoor.getY()) + "," + (int)(loc2.getZ() - southDoor.getZ()));
         FileSaving.writeFile("rooms" + File.separator + this.name + ".placement", saveData);
-
-
-        System.out.println(loc1.toString());
-        System.out.println(loc2.toString());
-
-        return CalebWorldEditAPI.trySaveSchem(loc1, loc2, this.name, new Vector(loc1.getX() - this.southDoor.getX(), loc1.getY() - this.southDoor.getY(),  loc1.getZ() - this.southDoor.getZ()));
+        CalebWorldEditAPI.trySaveSchem(loc1, loc2, this.name, new Vector(loc1.getX() - this.southDoor.getX(), loc1.getY() - this.southDoor.getY(),  loc1.getZ() - this.southDoor.getZ()));
+        CalebWorldEditAPI.setBlock(loc1, loc2, Material.AIR);
+        return true;
     }
 
     public void setCurrentOperation(int operation) {
