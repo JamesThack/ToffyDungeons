@@ -56,9 +56,11 @@ public class CalebWorldEditAPI {
             WorldEditPlugin worldEditPlugin = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
             File schematic = new File(Bukkit.getPluginManager().getPlugin("ToffyDungeons").getDataFolder() + File.separator + "rooms" + File.separator + fileName + ".schematic");
             EditSession session = worldEditPlugin.getWorldEdit().getEditSessionFactory().getEditSession(new BukkitWorld(location.getWorld()), 10000);
+            session.enableQueue();
             CuboidClipboard clipboard = MCEditSchematicFormat.getFormat(schematic).load(schematic);
             clipboard.rotate2D(rotation);
             clipboard.paste(session, new Vector(location.getX(), location.getY(), location.getZ())   , true );
+            session.disableQueue();
             return true;
         } catch (Exception e) {
             return false;
