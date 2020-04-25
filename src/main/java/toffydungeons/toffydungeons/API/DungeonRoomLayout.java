@@ -1,5 +1,6 @@
 package toffydungeons.toffydungeons.API;
 
+import com.sk89q.worldedit.Vector;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -21,6 +22,7 @@ public class DungeonRoomLayout {
     private ArrayList<DungeonRoom> builtRooms;
     public String dungeonName;
     private int buildTime;
+    private int[] cachedView;
 
     public DungeonRoomLayout() {
         this.rooms = new ArrayList<>();
@@ -34,6 +36,14 @@ public class DungeonRoomLayout {
         if (!validateRoom(room)) {
             this.rooms.add(room);
         }
+    }
+
+    public int[] getCachedView() {
+        return cachedView;
+    }
+
+    public void setCachedView(int[] cachedView) {
+        this.cachedView = cachedView;
     }
 
     public void setStartingRoom(DungeonRoom room) {
@@ -193,8 +203,10 @@ public class DungeonRoomLayout {
                             }
                         }
                     }
+                    Vector offset = new Vector(directions[6], directions[7], directions[8]);
                     if (direction.equals("forward") || direction.equals("null")) {
-                        CalebWorldEditAPI.tryLoadSchem(room.getSchematicFile(), coordinates);
+                        offset = new Vector(-directions[6], directions[7], -directions[8]);
+                        CalebWorldEditAPI.tryLoadSchem(room.getSchematicFile(), coordinates, offset);
                         if (room.getForward() != null) {
                             Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
                             newCoordinates.setX(newCoordinates.getX() + directions[0]);
@@ -224,7 +236,7 @@ public class DungeonRoomLayout {
                         }
                     }
                     if (direction.equals("behind")) {
-                        CalebWorldEditAPI.tryLoadSchem(room.getSchematicFile(), coordinates, 180);
+                        CalebWorldEditAPI.tryLoadSchem(room.getSchematicFile(), coordinates, 180, offset);
                         if (room.getBehind() != null) {
                             Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
                             newCoordinates.setX(newCoordinates.getX() - directions[0]);
@@ -248,8 +260,7 @@ public class DungeonRoomLayout {
                         }
                     }
                     if (direction.equals("left")) {
-                        CalebWorldEditAPI.tryLoadSchem(room.getSchematicFile(), coordinates, 270);
-                        CalebWorldEditAPI.tryLoadSchem(room.getSchematicFile(), coordinates, 270);
+                        CalebWorldEditAPI.tryLoadSchem(room.getSchematicFile(), coordinates, 270, offset);
                         if (room.getForward() != null) {
                             Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
                             newCoordinates.setX(newCoordinates.getX() + directions[5]);
@@ -273,8 +284,7 @@ public class DungeonRoomLayout {
                         }
                     }
                     if (direction.equals("right")) {
-                        CalebWorldEditAPI.tryLoadSchem(room.getSchematicFile(), coordinates, 90);
-                        CalebWorldEditAPI.tryLoadSchem(room.getSchematicFile(), coordinates, 90);
+                        CalebWorldEditAPI.tryLoadSchem(room.getSchematicFile(), coordinates, 90, offset);
 
                         if (room.getForward() != null) {
                             Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());

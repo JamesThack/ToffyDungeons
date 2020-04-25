@@ -1,5 +1,6 @@
 package toffydungeons.toffydungeons.GUIs;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,6 +13,7 @@ import toffydungeons.toffydungeons.GUIs.DungeonLayout.DungeonBlueprintChooser;
 import toffydungeons.toffydungeons.GUIs.DungeonLayout.DungeonCreationMenu;
 import toffydungeons.toffydungeons.GUIs.DungeonLayout.DungeonGenerationMenu;
 import toffydungeons.toffydungeons.GUIs.DungeonLayout.DungeonRoomManager;
+import toffydungeons.toffydungeons.GUIs.DungeonRoomDesign.DungeonRoomSelector;
 
 import java.io.File;
 
@@ -74,6 +76,7 @@ public class InventoryEvents implements Listener {
                 if (e.getClick().equals(ClickType.SHIFT_LEFT)) {
                     main.layout.generateBuild(e.getWhoClicked().getLocation());
                 } else {
+                    main.layout.setCachedView(main.panDistance);
                     DungeonGenerationMenu menu = new DungeonGenerationMenu(main.layout);
                     menu.initialiseItems();
                     e.getWhoClicked().openInventory(menu.getInventory());
@@ -110,6 +113,7 @@ public class InventoryEvents implements Listener {
                 e.getWhoClicked().openInventory(menu.getInventory());
             } else if (e.getCurrentItem() != null && (e.getCurrentItem().getType().equals(Material.SMOOTH_BRICK) || e.getCurrentItem().getType().equals(Material.BRICK))) {
                 if (e.getClick().equals(ClickType.LEFT)) {
+                    main.layout.setCachedView(main.panDistance);
                     DungeonRoomManager manager = new DungeonRoomManager(main.layout.getRoomFromPosition(position), main.layout);
                     manager.initialiseItems();
                     e.getWhoClicked().openInventory(manager.getInventory());
@@ -161,7 +165,7 @@ public class InventoryEvents implements Listener {
                 chooser.initaliseItems();
                 e.getWhoClicked().openInventory(chooser.getInventory());
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
-                DungeonCreationMenu creationMenu = new DungeonCreationMenu(manager.getLayout(), new int[]{0, 0});
+                DungeonCreationMenu creationMenu = new DungeonCreationMenu(manager.getLayout(), manager.getLayout().getCachedView());
                 creationMenu.initaliseItems();
                 creationMenu.layout.updateBorders();
                 e.getWhoClicked().openInventory(creationMenu.getInventory());
@@ -198,6 +202,35 @@ public class InventoryEvents implements Listener {
                     newManny.initialiseItems();
                     e.getWhoClicked().openInventory(newManny.getInventory());
                 }
+            }
+            /**
+             * All the code for the blueprint selection menu
+             */
+        } else if (e.getView().getTitle().contains("Dungeon Blueprint Editor Page")) {
+            e.setCancelled(true);
+            DungeonRoomSelector chooser = (DungeonRoomSelector) e.getInventory().getHolder();
+            if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.PAPER)) {
+                if (e.getCurrentItem().getItemMeta().getDisplayName().equals("Previous Page") && chooser.getPage() > 1) {
+                    DungeonRoomSelector menu = new DungeonRoomSelector(chooser.getPage() - 1);
+                    menu.initaliseItems();
+                    e.getWhoClicked().openInventory(menu.getInventory());
+                } else if (e.getCurrentItem().getItemMeta().getDisplayName().equals("Next Page")) {
+                    DungeonRoomSelector menu = new DungeonRoomSelector(chooser.getPage() + 1);
+                    menu.initaliseItems();
+                    e.getWhoClicked().openInventory(menu.getInventory());
+                }
+            } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.WOOL) && e.getCurrentItem().getItemMeta() != null && e.getClick().isShiftClick()) {
+                FileSaving.deleteFile("rooms" + File.separator + e.getCurrentItem().getItemMeta().getDisplayName() + ".schematic");
+                FileSaving.deleteFile("rooms" + File.separator + e.getCurrentItem().getItemMeta().getDisplayName() + ".placement");
+                DungeonRoomSelector menu = new DungeonRoomSelector(chooser.getPage());
+                menu.initaliseItems();
+                e.getWhoClicked().openInventory(menu.getInventory());
+            } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.WOOL) && e.getCurrentItem().getItemMeta() != null) {
+                Bukkit.dispatchCommand(e.getWhoClicked(), "tdungeon roomedit " + e.getCurrentItem().getItemMeta().getDisplayName());
+            } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.REDSTONE_BLOCK)) {
+                DungeonMainMenu mainMenu = new DungeonMainMenu();
+                mainMenu.initaliseItems();
+                e.getWhoClicked().openInventory(mainMenu.getInventory());
             }
         }
     }

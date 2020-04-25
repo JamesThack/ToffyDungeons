@@ -45,9 +45,7 @@ public class GenerationEvents implements Listener {
 
     @EventHandler
     public void onPlace(PlayerEggThrowEvent e) {
-        System.out.println(e.getEgg().getName());
         if (e.getEgg().getName().contains("dungeon.egg.")) {
-            System.out.println("2");
             DungeonRoomLayout layout = DungeonRoomLayout.deserialise(FileSaving.readLines("dungeons" + File.separator + e.getEgg().getName().replace("dungeon.egg.", "") + ".dungeon"));
             layout.generateBuild(e.getEgg().getLocation());
         }
