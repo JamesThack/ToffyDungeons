@@ -124,8 +124,11 @@ public class DungeonDesignEvents implements Listener {
             if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.WOOD_DOOR)) {
                 String[] possibilities = new String[]{"North", "East", "West", "South"};
                 for (int i = 0; i <possibilities.length; i++) {
-                    if (e.getCurrentItem().getItemMeta().getDisplayName().contains(possibilities[i]))
+                    if (e.getCurrentItem().getItemMeta().getDisplayName().contains(possibilities[i])) {
                         customiser.designer.setCurrentOperation(i + 1);
+                        e.getWhoClicked().sendMessage("§a[Toffy Dungeons]: Click where you would like to locate the " + possibilities[i] + " door");
+                        e.getWhoClicked().closeInventory();
+                    }
                 }
             }
 
