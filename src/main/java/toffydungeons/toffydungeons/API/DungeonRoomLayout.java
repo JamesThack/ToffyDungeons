@@ -138,6 +138,7 @@ public class DungeonRoomLayout {
 
     private void checkRegister() {
         if (builtRooms.size() == rooms.size()) {
+            FileSaving.saveFile("active_dungeons", "active_dungeons" + File.separator +  "noread.check");
             int adder = 1;
             String name = ("Dungeon_" + (FileSaving.filesInDirectory("active_dungeons").size() + adder));
             while (FileSaving.folderContainsFile("active_dungeons", name + ".adungeon")) {
@@ -150,7 +151,7 @@ public class DungeonRoomLayout {
             savedData.addAll(this.roomDatas);
             savedData.add(builtLoc.getWorld().getName() + "," +  (int) builtLoc.getX() + "," +  (int) builtLoc.getY() + "," + (int) builtLoc.getZ());
             FileSaving.writeFile("active_dungeons" + File.separator + name + ".adungeon", savedData);
-
+            FileSaving.deleteFile("active_dungeons" + File.separator + "noread.check");
         }
     }
 

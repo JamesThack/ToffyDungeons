@@ -1,6 +1,7 @@
 package toffydungeons.toffydungeons.GUIs;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -272,6 +273,18 @@ public class InventoryEvents implements Listener {
                 ActiveDungeonMenu menu = new ActiveDungeonMenu(1);
                 menu.initialiseItems();
                 e.getWhoClicked().openInventory(menu.getInventory());
+            } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.ENDER_PEARL)) {
+                for (String curLine : FileSaving.readLines("active_dungeons" + File.separator + chooser.getTitle().replace("Active Dungeon Editor: ", "") + ".adungeon")) {
+                    if (curLine.split(",").length == 4) {
+                        try {
+                            e.getWhoClicked().closeInventory();
+                            e.getWhoClicked().teleport(new Location(Bukkit.getWorld(curLine.split(",")[0]), Integer.valueOf(curLine.split(",")[1]), Integer.valueOf(curLine.split(",")[2]) + 1, Integer.valueOf(curLine.split(",")[3])));
+                            break;
+                        } catch (Exception ex) {
+                            System.out.println("[Toffy Dungeons]: ERROR FOUND IN FILE " + chooser.getTitle().replace("Active Dungeon Editor: ", "") + ".adungeon");
+                        }
+                    }
+                }
             }
         }
     }

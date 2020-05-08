@@ -2,6 +2,7 @@ package toffydungeons.toffydungeons;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import toffydungeons.toffydungeons.CurrentEvents.ConstantEvents;
 import toffydungeons.toffydungeons.DungeonDesign.DungeonDesignEvents;
 import toffydungeons.toffydungeons.GUIs.DungeonLayout.GenerationEvents;
 import toffydungeons.toffydungeons.GUIs.DungeonMainMenu;
@@ -25,6 +26,7 @@ public final class ToffyDungeons extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new GenerationEvents(), this);
             getServer().getPluginManager().registerEvents(new InventoryEvents(), this);
             getServer().getPluginManager().registerEvents(new DungeonMainMenu(), this);
+            getServer().getPluginManager().registerEvents(new ConstantEvents(), this);
             getServer().getPluginManager().registerEvents(designEvents, this);
 
             this.getCommand("TDungeon").setExecutor(new TDungeonCommand(designEvents));

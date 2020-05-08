@@ -14,7 +14,8 @@ public class ActiveDungeonInfo implements InventoryHolder {
     }
 
     public void initaliseItems() {
-        this.inv.setItem(10, DungeonMainMenu.createGuiItem(Material.REDSTONE_TORCH_ON, "§0DELETE DUNGEON"));
+        this.inv.setItem(10, DungeonMainMenu.createGuiItem(Material.REDSTONE_TORCH_ON, "§3DELETE DUNGEON"));
+        this.inv.setItem(12, DungeonMainMenu.createGuiItem(Material.ENDER_PEARL, "§dEnter Dungeon"));
     }
 
     public String getTitle() {
