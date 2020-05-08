@@ -232,6 +232,47 @@ public class InventoryEvents implements Listener {
                 mainMenu.initaliseItems();
                 e.getWhoClicked().openInventory(mainMenu.getInventory());
             }
+
+            /**
+             * All the code for the active dungeon menu
+             */
+        } else if (e.getView().getTitle().contains("Active Dungeons Page")) {
+            e.setCancelled(true);
+            ActiveDungeonMenu chooser = (ActiveDungeonMenu) e.getInventory().getHolder();
+            if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.PAPER)) {
+                if (e.getCurrentItem().getItemMeta().getDisplayName().equals("Previous Page") && chooser.getPage() > 1) {
+                    ActiveDungeonMenu menu = new ActiveDungeonMenu(chooser.getPage() - 1);
+                    menu.initialiseItems();
+                    e.getWhoClicked().openInventory(menu.getInventory());
+                } else if (e.getCurrentItem().getItemMeta().getDisplayName().equals("Next Page")) {
+                    ActiveDungeonMenu menu = new ActiveDungeonMenu(chooser.getPage() + 1);
+                    menu.initialiseItems();
+                    e.getWhoClicked().openInventory(menu.getInventory());
+                }
+            } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.SMOOTH_BRICK)) {
+                ActiveDungeonInfo mainMenu = new ActiveDungeonInfo(e.getCurrentItem().getItemMeta().getDisplayName().replace(".adungeon", ""));
+                mainMenu.initaliseItems();
+                e.getWhoClicked().openInventory(mainMenu.getInventory());
+            }else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.REDSTONE_BLOCK)) {
+                DungeonMainMenu mainMenu = new DungeonMainMenu();
+                mainMenu.initaliseItems();
+                e.getWhoClicked().openInventory(mainMenu.getInventory());
+            }
+
+            /**
+             * All the code for active dungeon editor
+             */
+        } else if (e.getView().getTitle().contains("Active Dungeon Editor: ")) {
+            e.setCancelled(true);
+            ActiveDungeonInfo chooser = (ActiveDungeonInfo) e.getInventory().getHolder();
+            if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.REDSTONE_TORCH_ON)) {
+                String dungeon = chooser.getTitle().replace("Active Dungeon Editor: ", "");
+                DungeonRoomLayout.unloadRoom(dungeon);
+                FileSaving.deleteFile("active_dungeons" + File.separator + dungeon  +".adungeon");
+                ActiveDungeonMenu menu = new ActiveDungeonMenu(1);
+                menu.initialiseItems();
+                e.getWhoClicked().openInventory(menu.getInventory());
+            }
         }
     }
 }

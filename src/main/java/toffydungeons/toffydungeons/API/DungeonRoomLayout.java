@@ -3,7 +3,9 @@ package toffydungeons.toffydungeons.API;
 import com.sk89q.worldedit.Vector;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.scheduler.BukkitRunnable;
+import toffydungeons.toffydungeons.DungeonDesign.DungeonRoomDesign;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -23,6 +25,8 @@ public class DungeonRoomLayout {
     public String dungeonName;
     private int buildTime;
     private int[] cachedView;
+    private Location builtLoc;
+    private  ArrayList<String> roomDatas;
 
     public DungeonRoomLayout() {
         this.rooms = new ArrayList<>();
@@ -125,9 +129,45 @@ public class DungeonRoomLayout {
     }
 
     public void generateBuild(Location location) {
+        this.builtLoc = location;
+        this.roomDatas = new ArrayList<>();
         builtRooms = new ArrayList<>();
         buildTime = 0;
-        new GenerateBuild("null", startingRoom, location).run();
+        new GenerateBuild("null", startingRoom, location, this.roomDatas).run();
+    }
+
+    private void checkRegister() {
+        if (builtRooms.size() == rooms.size()) {
+            int adder = 1;
+            String name = ("Dungeon_" + (FileSaving.filesInDirectory("active_dungeons").size() + adder));
+            while (FileSaving.folderContainsFile("active_dungeons", name + ".adungeon")) {
+                adder +=1;
+                name = ("Dungeon_" + (FileSaving.filesInDirectory("active_dungeons").size() + adder));
+            }
+            FileSaving.saveFile("active_dungeons", "Active_Dungeons" + File.separator + name + ".adungeon");
+            ArrayList<String> savedData = new ArrayList<>();
+            savedData.add(dungeonName);
+            savedData.addAll(this.roomDatas);
+            savedData.add(builtLoc.getWorld().getName() + "," +  (int) builtLoc.getX() + "," +  (int) builtLoc.getY() + "," + (int) builtLoc.getZ());
+            FileSaving.writeFile("active_dungeons" + File.separator + name + ".adungeon", savedData);
+
+        }
+    }
+
+    public static void unloadRoom(String roomToRemove) {
+        int buildTime = 0;
+        for (String line : FileSaving.readLines("active_dungeons" + File.separator + roomToRemove + ".adungeon")) {
+            if (line.split(",").length==11) {
+                String[] splitLine  = line.split(",");
+                Location loc1 = new Location(Bukkit.getWorld(splitLine[1]), Integer.valueOf(splitLine[5]), Integer.valueOf(splitLine[6]), Integer.valueOf(splitLine[7]));
+                Location loc2 = new Location(Bukkit.getWorld(splitLine[1]), Integer.valueOf(splitLine[8]), Integer.valueOf(splitLine[9]), Integer.valueOf(splitLine[10]));
+                UnloadBuild unloader = new UnloadBuild(loc1, loc2);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Bukkit.getPluginManager().getPlugin("ToffyDungeons"), unloader, 20 * buildTime);
+                buildTime += 1;
+            } else {
+                System.out.println(line.split(",").length);;
+            }
+        }
     }
 
     public static DungeonRoomLayout deserialise(ArrayList<String> serialisedData) {
@@ -156,16 +196,34 @@ public class DungeonRoomLayout {
         return builtRooms.contains(room);
     }
 
+    public static class UnloadBuild extends BukkitRunnable {
+
+        private Location loc1;
+        private Location loc2;
+
+        public UnloadBuild(Location loc1, Location loc2) {
+            this.loc1 = new Location (loc1.getWorld(), Math.min(loc1.getX(), loc2.getX()), Math.min(loc1.getY(), loc2.getY()), Math.min(loc1.getZ(), loc2.getZ()));
+            this.loc2 = new Location (loc1.getWorld(), Math.max(loc1.getX(), loc2.getX()), Math.max(loc1.getY(), loc2.getY()), Math.max(loc1.getZ(), loc2.getZ()));
+        }
+
+        @Override
+        public void run() {
+            CalebWorldEditAPI.setBlock(loc1, loc2, Material.AIR);
+        }
+    }
+
     public class GenerateBuild extends BukkitRunnable {
 
         private String direction;
         private DungeonRoom room;
         private Location coordinates;
+        private ArrayList<String> posData;
 
-        public GenerateBuild(String direction, DungeonRoom room, Location coordinates) {
+        public GenerateBuild(String direction, DungeonRoom room, Location coordinates, ArrayList<String> posData) {
             this.direction = direction;
             this.room = room;
             this.coordinates = coordinates;
+            this.posData = posData;
         }
 
         /**
@@ -182,6 +240,11 @@ public class DungeonRoomLayout {
                     buildTime -= 1;
                 }
                 builtRooms.add(room);
+                String saveData = room.getSchematicFile() + ",";
+                saveData += coordinates.getWorld().getName() + "," + coordinates.getBlockX() + "," + coordinates.getBlockY() + "," + coordinates.getBlockZ();
+                saveData += DungeonRoomDesign.calculateCoords(room.getSchematicFile(), coordinates, direction);
+                posData.add(saveData);
+                checkRegister();
                 File roomStats = new File(Bukkit.getPluginManager().getPlugin("ToffyDungeons").getDataFolder() + File.separator + "rooms" + File.separator + room.getSchematicFile() + ".placement");
                 int[] directions = new int[12];
                 GenerateBuild forward = null;
@@ -212,27 +275,27 @@ public class DungeonRoomLayout {
                             newCoordinates.setX(newCoordinates.getX() + directions[0]);
                             newCoordinates.setY(newCoordinates.getY() + directions[1]);
                             newCoordinates.setZ(newCoordinates.getZ() + directions[2]);
-                            forward = new GenerateBuild("forward", room.getForward(), newCoordinates);
+                            forward = new GenerateBuild("forward", room.getForward(), newCoordinates, posData);
                         }
                         if (room.getBehind() != null && !direction.equals("forward")) {
                             Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
                             newCoordinates.setX(newCoordinates.getX() + 1 );
                             newCoordinates.setZ(newCoordinates.getZ() + directions[6]);
-                            back = new GenerateBuild("behind", room.getBehind(), newCoordinates);
+                            back = new GenerateBuild("behind", room.getBehind(), newCoordinates, posData);
                         }
                         if (room.getRight() != null) {
                             Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
                             newCoordinates.setX(newCoordinates.getX() + directions[3]);
                             newCoordinates.setY(newCoordinates.getY() + directions[4]);
                             newCoordinates.setZ(newCoordinates.getZ() + directions[5]);
-                            right = new GenerateBuild("right", room.getRight(), newCoordinates);
+                            right = new GenerateBuild("right", room.getRight(), newCoordinates, posData);
                         }
                         if (room.getLeft() != null) {
                             Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
                             newCoordinates.setX(newCoordinates.getX() + directions[9]);
                             newCoordinates.setY(newCoordinates.getY() + directions[10]);
                             newCoordinates.setZ(newCoordinates.getZ() + directions[11]);
-                            left = new GenerateBuild("left", room.getLeft(), newCoordinates);
+                            left = new GenerateBuild("left", room.getLeft(), newCoordinates, posData);
                         }
                     }
                     if (direction.equals("behind")) {
@@ -242,21 +305,21 @@ public class DungeonRoomLayout {
                             newCoordinates.setX(newCoordinates.getX() - directions[0]);
                             newCoordinates.setY(newCoordinates.getY() + directions[1]);
                             newCoordinates.setZ(newCoordinates.getZ() - directions[2]);
-                            back = new GenerateBuild("behind", room.getBehind(), newCoordinates);
+                            back = new GenerateBuild("behind", room.getBehind(), newCoordinates, posData);
                         }
                         if (room.getRight() != null) {
                             Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
                             newCoordinates.setX(newCoordinates.getX() - directions[9]);
                             newCoordinates.setY(newCoordinates.getY() + directions[10]);
                             newCoordinates.setZ(newCoordinates.getZ() - directions[11]);
-                            right = new GenerateBuild("right", room.getRight(), newCoordinates);
+                            right = new GenerateBuild("right", room.getRight(), newCoordinates, posData);
                         }
                         if (room.getLeft() != null) {
                             Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
                             newCoordinates.setX(newCoordinates.getX() - directions[3]);
                             newCoordinates.setY(newCoordinates.getY() + directions[4]);
                             newCoordinates.setZ(newCoordinates.getZ() - directions[5]);
-                            left = new GenerateBuild("left", room.getLeft(), newCoordinates);
+                            left = new GenerateBuild("left", room.getLeft(), newCoordinates, posData);
                         }
                     }
                     if (direction.equals("left")) {
@@ -266,21 +329,21 @@ public class DungeonRoomLayout {
                             newCoordinates.setX(newCoordinates.getX() + directions[5]);
                             newCoordinates.setY(newCoordinates.getY() + directions[4]);
                             newCoordinates.setZ(newCoordinates.getZ() - directions[3]);
-                            forward = new GenerateBuild("forward", room.getForward(), newCoordinates);
+                            forward = new GenerateBuild("forward", room.getForward(), newCoordinates, posData);
                         }
                         if (room.getBehind() != null) {
                             Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
                             newCoordinates.setX(newCoordinates.getX() + directions[11] );
                             newCoordinates.setY(newCoordinates.getY() + directions[10]);
                             newCoordinates.setZ(newCoordinates.getZ() - directions[9]);
-                            back = new GenerateBuild("behind", room.getBehind(), newCoordinates);
+                            back = new GenerateBuild("behind", room.getBehind(), newCoordinates, posData);
                         }
                         if (room.getLeft() != null) {
                             Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
                             newCoordinates.setX(newCoordinates.getX() + directions[2]);
                             newCoordinates.setY(newCoordinates.getY() + directions[1]);
                             newCoordinates.setZ(newCoordinates.getZ() - directions[0]);
-                            left = new GenerateBuild("left", room.getLeft(), newCoordinates);
+                            left = new GenerateBuild("left", room.getLeft(), newCoordinates, posData);
                         }
                     }
                     if (direction.equals("right")) {
@@ -291,7 +354,7 @@ public class DungeonRoomLayout {
                             newCoordinates.setX(newCoordinates.getX() - directions[11]);
                             newCoordinates.setY(newCoordinates.getY() + directions[10]);
                             newCoordinates.setZ(newCoordinates.getZ() + directions[9]);
-                            forward = new GenerateBuild("forward", room.getForward(), newCoordinates);
+                            forward = new GenerateBuild("forward", room.getForward(), newCoordinates, posData);
                         }
 
                         if (room.getBehind() != null) {
@@ -299,7 +362,7 @@ public class DungeonRoomLayout {
                             newCoordinates.setX(newCoordinates.getX() - directions[5] );
                             newCoordinates.setY(newCoordinates.getY() + directions[4]);
                             newCoordinates.setZ(newCoordinates.getZ() + directions[3]);
-                            back = new GenerateBuild("behind", room.getBehind(), newCoordinates);
+                            back = new GenerateBuild("behind", room.getBehind(), newCoordinates, posData);
                         }
 
                         if (room.getRight() != null) {
@@ -307,7 +370,7 @@ public class DungeonRoomLayout {
                             newCoordinates.setX(newCoordinates.getX() - directions[2]);
                             newCoordinates.setY(newCoordinates.getY() + directions[1]);
                             newCoordinates.setZ(newCoordinates.getZ() + directions[0]);
-                            right = new GenerateBuild("right", room.getRight(), newCoordinates);
+                            right = new GenerateBuild("right", room.getRight(), newCoordinates, posData);
                         }
                     }
                     if (forward != null) {

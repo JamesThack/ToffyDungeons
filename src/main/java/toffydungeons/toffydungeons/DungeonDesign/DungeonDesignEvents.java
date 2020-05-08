@@ -75,7 +75,7 @@ public class DungeonDesignEvents implements Listener {
             } else if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && !compareLocations(e.getClickedBlock().getLocation(), designer.getEndPoint()) && designer.getCurrentOperation() == 0) {
                 designer.setEndPoint(e.getClickedBlock().getLocation());
                 e.getPlayer().sendMessage("§a[Toffy Dungeons]: Changed point 2");
-            } else if (e.getAction().equals(Action.LEFT_CLICK_BLOCK)  && designer.getCurrentOperation() > 0 &&designer.getCurrentOperation() < 5) {
+            } else if (designer.getCurrentOperation() > 0 &&designer.getCurrentOperation() < 5) {
                 designer.setDoor(e.getClickedBlock().getLocation());
                 e.getPlayer().sendMessage("§a[Toffy Dungeons]: Updated door position!");
             }
@@ -126,7 +126,7 @@ public class DungeonDesignEvents implements Listener {
                 for (int i = 0; i <possibilities.length; i++) {
                     if (e.getCurrentItem().getItemMeta().getDisplayName().contains(possibilities[i])) {
                         customiser.designer.setCurrentOperation(i + 1);
-                        e.getWhoClicked().sendMessage("§a[Toffy Dungeons]: Click where you would like to locate the " + possibilities[i] + " door");
+                        e.getWhoClicked().sendMessage("§a[Toffy Dungeons]: Click with the wand where you would like to locate the " + possibilities[i] + " door");
                         e.getWhoClicked().closeInventory();
                     }
                 }

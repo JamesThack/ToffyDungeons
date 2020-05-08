@@ -9,3 +9,4 @@ commands:
   TDungeon:
     description: Main command for TDungeon!
     usage: "§6[Toffy Dungeons]: Use /tdungeon to get started!"
+    aliases: [td]

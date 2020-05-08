@@ -28,6 +28,7 @@ public class DungeonMainMenu implements InventoryHolder, Listener {
         this.inventory.setItem(12, createGuiItem(Material.EMERALD_BLOCK, "§2Dungeon Creator"));
         this.inventory.setItem(14, createGuiItem(Material.PAPER, "§3Blueprint Designer"));
         this.inventory.setItem(16, createGuiItem(Material.WOOD_DOOR, "§2Blueprint Creator"));
+        this.inventory.setItem(28, createGuiItem(Material.MOB_SPAWNER, "§cActive Dungeons"));
         this.inventory.setItem(45, createGuiItem(Material.REDSTONE_BLOCK, "§cClose Menu"));
     }
 
@@ -66,7 +67,9 @@ public class DungeonMainMenu implements InventoryHolder, Listener {
             }
             if (e.getCurrentItem() != null &&  e.getCurrentItem().getType().equals(Material.REDSTONE_BLOCK)) {
                 e.getWhoClicked().closeInventory();
-            } if (e.getCurrentItem() != null &&  e.getCurrentItem().getType().equals(Material.PAPER)) {
+            }
+
+            if (e.getCurrentItem() != null &&  e.getCurrentItem().getType().equals(Material.PAPER)) {
                 DungeonRoomSelector selector = new DungeonRoomSelector();
                 selector.initaliseItems();
                 e.getWhoClicked().openInventory(selector.getInventory());
@@ -74,6 +77,12 @@ public class DungeonMainMenu implements InventoryHolder, Listener {
             if (e.getCurrentItem() != null &&  e.getCurrentItem().getType().equals(Material.WOOD_DOOR)) {
                 e.getWhoClicked().closeInventory();
                 Bukkit.dispatchCommand(e.getWhoClicked(), "tdungeon roomcreate");
+            }
+
+            if (e.getCurrentItem() != null &&  e.getCurrentItem().getType().equals(Material.MOB_SPAWNER)) {
+                ActiveDungeonMenu selector = new ActiveDungeonMenu();
+                selector.initialiseItems();
+                e.getWhoClicked().openInventory(selector.getInventory());
             }
         }
     }

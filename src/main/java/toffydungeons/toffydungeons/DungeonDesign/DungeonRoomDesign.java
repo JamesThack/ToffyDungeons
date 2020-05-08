@@ -62,6 +62,42 @@ public class DungeonRoomDesign {
         }
     }
 
+    public static String calculateCoords(String fileName, Location southDoor, String direction) {
+        String reurnLine = "";
+        for (String line : FileSaving.readLines("rooms" + File.separator + fileName + ".placement")) {
+             if  (line.contains("SOUTH")) {
+                String linex = line.replace("SOUTH:", "");
+                Location getLoc = southDoor;
+                if (direction.equals("null") || direction.equals("forward")) {
+                    System.out.println("Here");
+                    getLoc = new Location(southDoor.getWorld(), (int) southDoor.getX() - Integer.valueOf(linex.split(",")[0]), (int) southDoor.getY() - Integer.valueOf(linex.split(",")[1]), (int) southDoor.getZ() - Integer.valueOf(linex.split(",")[2]));
+                } else if (direction.equals("left")) {
+                    getLoc = new Location(southDoor.getWorld(), (int) southDoor.getX() - Integer.valueOf(linex.split(",")[2]), (int) southDoor.getY() - Integer.valueOf(linex.split(",")[1]), (int) southDoor.getZ() + Integer.valueOf(linex.split(",")[0]));
+                } else if (direction.equals("right")) {
+                    getLoc = new Location(southDoor.getWorld(), (int) southDoor.getX() + Integer.valueOf(linex.split(",")[2]), (int) southDoor.getY() - Integer.valueOf(linex.split(",")[1]), (int) southDoor.getZ() - Integer.valueOf(linex.split(",")[0]));
+                } else if (direction.equals("behind")) {
+                    getLoc = new Location(southDoor.getWorld(), (int) southDoor.getX() + Integer.valueOf(linex.split(",")[0]), (int) southDoor.getY() - Integer.valueOf(linex.split(",")[1]), (int) southDoor.getZ() + Integer.valueOf(linex.split(",")[2]));
+                }
+                reurnLine += ("," + getLoc.getBlockX() + "," + getLoc.getBlockY() + "," + getLoc.getBlockZ());
+             } else if  (line.contains("BORDER:")) {
+                String linex = line.replace("BORDER:", "");
+                 Location getLoc = southDoor;
+                 if (direction.equals("null") || direction.equals("forward")) {
+                     System.out.println("Here");
+                     getLoc = new Location(southDoor.getWorld(), (int) southDoor.getX() + Integer.valueOf(linex.split(",")[0]), (int) southDoor.getY() + Integer.valueOf(linex.split(",")[1]), (int) southDoor.getZ() + Integer.valueOf(linex.split(",")[2]));
+                 } else if (direction.equals("left")) {
+                     getLoc = new Location(southDoor.getWorld(), (int) southDoor.getX() + Integer.valueOf(linex.split(",")[2]), (int) southDoor.getY() + Integer.valueOf(linex.split(",")[1]), (int) southDoor.getZ() - Integer.valueOf(linex.split(",")[0]));
+                 } else if (direction.equals("right")) {
+                     getLoc = new Location(southDoor.getWorld(), (int) southDoor.getX() - Integer.valueOf(linex.split(",")[2]), (int) southDoor.getY() + Integer.valueOf(linex.split(",")[1]), (int) southDoor.getZ() + Integer.valueOf(linex.split(",")[0]));
+                 } else if (direction.equals("behind")) {
+                     getLoc = new Location(southDoor.getWorld(), (int) southDoor.getX() - Integer.valueOf(linex.split(",")[0]), (int) southDoor.getY() + Integer.valueOf(linex.split(",")[1]), (int) southDoor.getZ() - Integer.valueOf(linex.split(",")[2]));
+                 }
+                 reurnLine += ("," + getLoc.getBlockX() + "," + getLoc.getBlockY() + "," + getLoc.getBlockZ());
+            }
+        }
+        return reurnLine;
+    }
+
     public boolean isEditing() {
         return editing;
     }
