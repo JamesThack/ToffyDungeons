@@ -1,37 +1,25 @@
 package toffydungeons.toffydungeons.GUIs.DungeonLayout;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import toffydungeons.toffydungeons.API.DungeonRoom;
 import toffydungeons.toffydungeons.API.DungeonRoomLayout;
-import toffydungeons.toffydungeons.API.FileSaving;
+import toffydungeons.toffydungeons.GUIs.DungeonRoomDesign.DungeonRoomSelector;
 
-import java.util.List;
+public class DungeonBlueprintChooser extends DungeonRoomSelector {
 
-import static toffydungeons.toffydungeons.GUIs.DungeonMainMenu.createGuiItem;
-
-public class DungeonBlueprintChooser implements InventoryHolder {
-
-    private final Inventory inv;
-    private int page;
     private DungeonRoomLayout layout;
     private DungeonRoom room;
 
     public DungeonBlueprintChooser(DungeonRoomLayout layout, DungeonRoom room) {
-        inv = Bukkit.createInventory(this, 54, "Blueprint Selection Page 1");
-        this.page = 1;
+        super("Blueprint Selection", "rooms");
         this.layout = layout;
         this.room = room;
     }
 
     public DungeonBlueprintChooser(int page, DungeonRoomLayout layout, DungeonRoom room) {
-        this.page = page;
-        inv = Bukkit.createInventory(this, 54, "Blueprint Selection Page " + page);
+        super("Blueprint Selection", "rooms", page);
         this.layout = layout;
         this.room = room;
-        initaliseItems();
+        initialiseItems();
     }
 
     public DungeonRoomLayout getLayout() {
@@ -42,31 +30,4 @@ public class DungeonBlueprintChooser implements InventoryHolder {
         return room;
     }
 
-    public int getPage() {
-        return page;
-    }
-
-    public void initaliseItems() {
-        List<String> availavleFiles = FileSaving.filesInDirectory("rooms");
-        int count = 0;
-        for (int i = 0; i < availavleFiles.size(); i++) {
-            if (availavleFiles.get(i).contains(".schematic") && availavleFiles.contains(availavleFiles.get(i).replace(".schematic", ".placement"))) {
-                int placement = count;
-                while (placement >= 45) {
-                    placement -= 45;
-                }
-                if (count >= (page - 1) * 45 && count < 45 * page) {
-                    this.getInventory().setItem(placement, createGuiItem(Material.WOOL, availavleFiles.get(i).replace(".schematic", "")));
-                } count +=1;
-            }
-        }
-        this.getInventory().setItem(45, createGuiItem(Material.REDSTONE_BLOCK, "§cClose Menu"));
-        this.getInventory().setItem(46, createGuiItem(Material.PAPER, "Previous Page"));
-        this.getInventory().setItem(47, createGuiItem(Material.PAPER, "Next Page"));
-    }
-
-    @Override
-    public Inventory getInventory() {
-        return inv;
-    }
 }

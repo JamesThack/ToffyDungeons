@@ -1,4 +1,4 @@
-package toffydungeons.toffydungeons.GUIs;
+package toffydungeons.toffydungeons.GUIs.extendable;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -10,19 +10,23 @@ import java.util.List;
 
 import static toffydungeons.toffydungeons.GUIs.DungeonMainMenu.createGuiItem;
 
-public class ActiveDungeonMenu implements InventoryHolder {
+public class AbstractFileMenu implements InventoryHolder {
+
 
     private Inventory inv;
     private int page;
+    private String folder;
 
-    public ActiveDungeonMenu() {
-        this.inv = Bukkit.createInventory(this, 54, "Active Dungeons Page 1");
+    public AbstractFileMenu(String title, String folder) {
+        this.inv = Bukkit.createInventory(this, 54, title + " Page 1");
         this.page = 1;
+        this.folder = folder;
     }
 
-    public ActiveDungeonMenu(int page) {
-        this.inv = Bukkit.createInventory(this, 54, "Active Dungeons Page " + page);
+    public AbstractFileMenu(String title, String folder, int page) {
+        this.inv = Bukkit.createInventory(this, 54, title + " Page " + page);
         this.page = page;
+        this.folder = folder;
     }
 
     public int getPage() {
@@ -30,7 +34,7 @@ public class ActiveDungeonMenu implements InventoryHolder {
     }
 
     public void initialiseItems() {
-        List<String> availavleFiles = FileSaving.filesInDirectory("active_dungeons");
+        List<String> availavleFiles = FileSaving.filesInDirectory(folder);
         for (int i = 0 ; i < availavleFiles.size(); i++) {
             int placement = i;
             while (placement >= 45) {
@@ -44,6 +48,10 @@ public class ActiveDungeonMenu implements InventoryHolder {
         this.getInventory().setItem(46, createGuiItem(Material.PAPER, "Previous Page"));
         this.getInventory().setItem(47, createGuiItem(Material.PAPER, "Next Page"));
 
+    }
+
+    public void addBonusItem(String title, Material material, int slot) {
+        this.getInventory().setItem(slot, createGuiItem(material, title));
     }
 
     @Override

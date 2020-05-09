@@ -1,40 +1,33 @@
 package toffydungeons.toffydungeons.GUIs.DungeonRoomDesign;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import toffydungeons.toffydungeons.API.FileSaving;
+import toffydungeons.toffydungeons.GUIs.extendable.AbstractFileMenu;
 
 import java.util.List;
 
 import static toffydungeons.toffydungeons.GUIs.DungeonMainMenu.createGuiItem;
 
-public class DungeonRoomSelector implements InventoryHolder {
-
-    private Inventory inv;
-    private int page;
+public class DungeonRoomSelector extends AbstractFileMenu {
 
     public DungeonRoomSelector() {
-        this.inv = Bukkit.createInventory(this, 54, "Dungeon Blueprint Editor Page 1");
-        this.page = 1;
+        super("Dungeon Blueprint Editor", "rooms");
     }
 
     public DungeonRoomSelector(int page) {
-        this.page = page;
-        this.inv = Bukkit.createInventory(this, 54, "Dungeon Blueprint Editor Page " + this.page);
+        super("Dungeon Blueprint Editor", "rooms", page);
+    }
+
+    public DungeonRoomSelector(String title, String folder) {
+        super(title, folder);
+    }
+
+    public DungeonRoomSelector(String titie, String folder, int page) {
+        super(titie, folder, page);
     }
 
     @Override
-    public Inventory getInventory() {
-        return this.inv;
-    }
-
-    public int getPage() {
-        return page;
-    }
-
-    public void initaliseItems() {
+    public void initialiseItems() {
         List<String> availavleFiles = FileSaving.filesInDirectory("rooms");
         int count = 0;
         for (int i = 0; i < availavleFiles.size(); i++) {
@@ -43,7 +36,7 @@ public class DungeonRoomSelector implements InventoryHolder {
                 while (placement >= 45) {
                     placement -= 45;
                 }
-                if (count >= (page - 1) * 45 && count < 45 * page) {
+                if (count >= (getPage() - 1) * 45 && count < 45 * getPage()) {
                     this.getInventory().setItem(placement, createGuiItem(Material.WOOL, availavleFiles.get(i).replace(".schematic", "")));
                 } count +=1;
             }

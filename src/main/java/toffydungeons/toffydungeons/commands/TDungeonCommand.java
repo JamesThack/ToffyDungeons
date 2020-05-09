@@ -1,5 +1,6 @@
 package toffydungeons.toffydungeons.commands;
 
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -8,7 +9,7 @@ import toffydungeons.toffydungeons.API.FileSaving;
 import toffydungeons.toffydungeons.DungeonDesign.DungeonDesignEvents;
 import toffydungeons.toffydungeons.GUIs.DungeonLayout.DungeonCreationMenu;
 import toffydungeons.toffydungeons.GUIs.DungeonMainMenu;
-import toffydungeons.toffydungeons.GUIs.DungeonSelectionMenu;
+import toffydungeons.toffydungeons.GUIs.extendable.AbstractFileMenu;
 
 import java.io.File;
 
@@ -42,8 +43,9 @@ public class TDungeonCommand implements CommandExecutor {
             ((Player) sender).openInventory(menu.getInventory());
             return true;
         } else if (args.length == 1 && args[0].equalsIgnoreCase("dungeons")) {
-            DungeonSelectionMenu menu = new DungeonSelectionMenu();
-            menu.initaliseItems();
+            AbstractFileMenu menu = new AbstractFileMenu("Dungeon Selection", "dungeons");
+            menu.initialiseItems();
+            menu.addBonusItem("§aCreate New Dungeon", Material.EMERALD_BLOCK, 53);
             ((Player) sender).openInventory(menu.getInventory());
             return true;
         } else if (args.length == 1 && args[0].equalsIgnoreCase("roomcreate")) {

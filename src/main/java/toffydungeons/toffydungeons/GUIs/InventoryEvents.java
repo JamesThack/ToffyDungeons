@@ -15,6 +15,7 @@ import toffydungeons.toffydungeons.GUIs.DungeonLayout.DungeonCreationMenu;
 import toffydungeons.toffydungeons.GUIs.DungeonLayout.DungeonGenerationMenu;
 import toffydungeons.toffydungeons.GUIs.DungeonLayout.DungeonRoomManager;
 import toffydungeons.toffydungeons.GUIs.DungeonRoomDesign.DungeonRoomSelector;
+import toffydungeons.toffydungeons.GUIs.extendable.AbstractFileMenu;
 
 import java.io.File;
 
@@ -28,7 +29,7 @@ public class InventoryEvents implements Listener {
          */
 
         if (e.getView().getTitle().contains("Dungeon Selection Page")) {
-            DungeonSelectionMenu holder = (DungeonSelectionMenu) e.getInventory().getHolder();
+            AbstractFileMenu holder = (AbstractFileMenu) e.getInventory().getHolder();
             e.setCancelled(true);
             if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.REDSTONE_BLOCK)) {
                 DungeonMainMenu menu = new DungeonMainMenu();
@@ -45,10 +46,14 @@ public class InventoryEvents implements Listener {
                 e.getWhoClicked().openInventory(menu.getInventory());
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.PAPER)) {
                 if (e.getCurrentItem().getItemMeta().getDisplayName().equals("Previous Page") && holder.getPage() > 1) {
-                    DungeonSelectionMenu menu = new DungeonSelectionMenu(holder.getPage() - 1);
+                    AbstractFileMenu menu = new AbstractFileMenu("Dungeon Selection", "dungeons", holder.getPage() - 1);
+                    menu.addBonusItem("§aCreate New Dungeon", Material.EMERALD_BLOCK, 53);
+                    menu.initialiseItems();
                     e.getWhoClicked().openInventory(menu.getInventory());
                 } else if (e.getCurrentItem().getItemMeta().getDisplayName().equals("Next Page")) {
-                    DungeonSelectionMenu menu = new DungeonSelectionMenu(holder.getPage() + 1);
+                    AbstractFileMenu menu = new AbstractFileMenu("Dungeon Selection", "dungeons", holder.getPage() + 1);
+                    menu.addBonusItem("§aCreate New Dungeon", Material.EMERALD_BLOCK, 53);
+                    menu.initialiseItems();
                     e.getWhoClicked().openInventory(menu.getInventory());
                 }
             }
@@ -70,8 +75,9 @@ public class InventoryEvents implements Listener {
                 menu.initaliseItems();
                 e.getWhoClicked().openInventory(menu.getInventory());
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.REDSTONE_BLOCK)) {
-                DungeonSelectionMenu menu = new DungeonSelectionMenu();
-                menu.initaliseItems();
+                AbstractFileMenu menu = new AbstractFileMenu("Dungeon Selection", "dungeons");
+                menu.addBonusItem("§aCreate New Dungeon", Material.EMERALD_BLOCK, 53);
+                menu.initialiseItems();
                 e.getWhoClicked().openInventory(menu.getInventory());
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.LAPIS_BLOCK)) {
                 if (e.getClick().equals(ClickType.SHIFT_LEFT)) {
@@ -109,8 +115,9 @@ public class InventoryEvents implements Listener {
 
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.REDSTONE_TORCH_ON)) {
                 FileSaving.deleteFile("dungeons" + File.separator + main.getDungeonName() + ".dungeon");
-                DungeonSelectionMenu menu = new DungeonSelectionMenu();
-                menu.initaliseItems();
+                AbstractFileMenu menu = new AbstractFileMenu("Dungeon Selection", "dungeons");
+                menu.initialiseItems();
+                menu.addBonusItem("§aCreate New Dungeon", Material.EMERALD_BLOCK, 53);
                 e.getWhoClicked().openInventory(menu.getInventory());
             } else if (e.getCurrentItem() != null && (e.getCurrentItem().getType().equals(Material.SMOOTH_BRICK) || e.getCurrentItem().getType().equals(Material.BRICK))) {
                 if (e.getClick().equals(ClickType.LEFT)) {
@@ -163,7 +170,7 @@ public class InventoryEvents implements Listener {
             DungeonRoomManager manager = (DungeonRoomManager) e.getInventory().getHolder();
             if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.PAPER)) {
                 DungeonBlueprintChooser chooser = new DungeonBlueprintChooser(manager.getLayout(), manager.getRoom());
-                chooser.initaliseItems();
+                chooser.initialiseItems();
                 e.getWhoClicked().openInventory(chooser.getInventory());
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
                 DungeonCreationMenu creationMenu = new DungeonCreationMenu(manager.getLayout(), manager.getLayout().getCachedView());
@@ -213,18 +220,18 @@ public class InventoryEvents implements Listener {
             if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.PAPER)) {
                 if (e.getCurrentItem().getItemMeta().getDisplayName().equals("Previous Page") && chooser.getPage() > 1) {
                     DungeonRoomSelector menu = new DungeonRoomSelector(chooser.getPage() - 1);
-                    menu.initaliseItems();
+                    menu.initialiseItems();
                     e.getWhoClicked().openInventory(menu.getInventory());
                 } else if (e.getCurrentItem().getItemMeta().getDisplayName().equals("Next Page")) {
                     DungeonRoomSelector menu = new DungeonRoomSelector(chooser.getPage() + 1);
-                    menu.initaliseItems();
+                    menu.initialiseItems();
                     e.getWhoClicked().openInventory(menu.getInventory());
                 }
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.WOOL) && e.getCurrentItem().getItemMeta() != null && e.getClick().isShiftClick()) {
                 FileSaving.deleteFile("rooms" + File.separator + e.getCurrentItem().getItemMeta().getDisplayName() + ".schematic");
                 FileSaving.deleteFile("rooms" + File.separator + e.getCurrentItem().getItemMeta().getDisplayName() + ".placement");
                 DungeonRoomSelector menu = new DungeonRoomSelector(chooser.getPage());
-                menu.initaliseItems();
+                menu.initialiseItems();
                 e.getWhoClicked().openInventory(menu.getInventory());
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.WOOL) && e.getCurrentItem().getItemMeta() != null) {
                 Bukkit.dispatchCommand(e.getWhoClicked(), "tdungeon roomedit " + e.getCurrentItem().getItemMeta().getDisplayName());
@@ -239,14 +246,14 @@ public class InventoryEvents implements Listener {
              */
         } else if (e.getView().getTitle().contains("Active Dungeons Page")) {
             e.setCancelled(true);
-            ActiveDungeonMenu chooser = (ActiveDungeonMenu) e.getInventory().getHolder();
+            AbstractFileMenu chooser = (AbstractFileMenu) e.getInventory().getHolder();
             if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.PAPER)) {
                 if (e.getCurrentItem().getItemMeta().getDisplayName().equals("Previous Page") && chooser.getPage() > 1) {
-                    ActiveDungeonMenu menu = new ActiveDungeonMenu(chooser.getPage() - 1);
+                    AbstractFileMenu menu = new AbstractFileMenu("Active Dungeons", "active_dungeons", chooser.getPage() - 1);
                     menu.initialiseItems();
                     e.getWhoClicked().openInventory(menu.getInventory());
                 } else if (e.getCurrentItem().getItemMeta().getDisplayName().equals("Next Page")) {
-                    ActiveDungeonMenu menu = new ActiveDungeonMenu(chooser.getPage() + 1);
+                    AbstractFileMenu menu = new AbstractFileMenu("Active Dungeons", "active_dungeons", chooser.getPage() + 1);
                     menu.initialiseItems();
                     e.getWhoClicked().openInventory(menu.getInventory());
                 }
@@ -270,7 +277,7 @@ public class InventoryEvents implements Listener {
                 String dungeon = chooser.getTitle().replace("Active Dungeon Editor: ", "");
                 DungeonRoomLayout.unloadRoom(dungeon);
                 FileSaving.deleteFile("active_dungeons" + File.separator + dungeon  +".adungeon");
-                ActiveDungeonMenu menu = new ActiveDungeonMenu(1);
+                AbstractFileMenu menu = new AbstractFileMenu("Active Dungeons", "active_dungeons", 1);
                 menu.initialiseItems();
                 e.getWhoClicked().openInventory(menu.getInventory());
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.ENDER_PEARL)) {

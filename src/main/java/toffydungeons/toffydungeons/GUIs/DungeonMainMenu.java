@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import toffydungeons.toffydungeons.GUIs.DungeonLayout.DungeonCreationMenu;
 import toffydungeons.toffydungeons.GUIs.DungeonRoomDesign.DungeonRoomSelector;
+import toffydungeons.toffydungeons.GUIs.extendable.AbstractFileMenu;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,8 +58,9 @@ public class DungeonMainMenu implements InventoryHolder, Listener {
         if (e.getView().getTitle().equals("Toffy Dungeons")) {
             e.setCancelled(true);
             if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.GOLD_PICKAXE)) {
-                DungeonSelectionMenu menu = new DungeonSelectionMenu();
-                menu.initaliseItems();
+                AbstractFileMenu menu = new AbstractFileMenu("Dungeon Selection", "dungeons");
+                menu.initialiseItems();
+                menu.addBonusItem("§aCreate New Dungeon", Material.EMERALD_BLOCK, 53);
                 e.getWhoClicked().openInventory(menu.getInventory());
             }if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
                 DungeonCreationMenu menu = new DungeonCreationMenu();
@@ -71,7 +73,7 @@ public class DungeonMainMenu implements InventoryHolder, Listener {
 
             if (e.getCurrentItem() != null &&  e.getCurrentItem().getType().equals(Material.PAPER)) {
                 DungeonRoomSelector selector = new DungeonRoomSelector();
-                selector.initaliseItems();
+                selector.initialiseItems();
                 e.getWhoClicked().openInventory(selector.getInventory());
             }
             if (e.getCurrentItem() != null &&  e.getCurrentItem().getType().equals(Material.WOOD_DOOR)) {
@@ -80,7 +82,7 @@ public class DungeonMainMenu implements InventoryHolder, Listener {
             }
 
             if (e.getCurrentItem() != null &&  e.getCurrentItem().getType().equals(Material.MOB_SPAWNER)) {
-                ActiveDungeonMenu selector = new ActiveDungeonMenu();
+                AbstractFileMenu selector = new AbstractFileMenu("Active Dungeons", "active_dungeons");
                 selector.initialiseItems();
                 e.getWhoClicked().openInventory(selector.getInventory());
             }

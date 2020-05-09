@@ -81,7 +81,7 @@ public class ConstantEvents implements Listener {
         } return new int[]{0,0,0};
     }
 
-    private String getDirection(Location loc1, Location loc2) {
+    public static String getDirection(Location loc1, Location loc2) {
         if (loc1.getBlockX() < loc2.getBlockX() && loc1.getBlockZ() < loc2.getBlockZ()) {
             return "posx";
         }
