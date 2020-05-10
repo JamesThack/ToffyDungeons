@@ -12,6 +12,10 @@ import java.util.ArrayList;
 
 public class DungeonRoomDesign {
 
+    /**
+     * The individual editor for each player (should only be one per player)
+     */
+
     private String playerUUID;
     private Location origin;
     private Location endPoint;

@@ -16,6 +16,10 @@ import java.io.File;
 
 public class GenerationEvents implements Listener {
 
+    /**
+     * All of the inventory and throw events to handle dungeon generation, split off from inventory events due to the size
+     */
+
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
         if (e.getView().getTitle().equals("Dungeon Generation")) {

@@ -6,6 +6,10 @@ import toffydungeons.toffydungeons.GUIs.DungeonRoomDesign.DungeonRoomSelector;
 
 public class DungeonBlueprintChooser extends DungeonRoomSelector {
 
+    /**
+     * Another class for choosing a dungeon room, however it supports caching both a room and a dungeon layout
+     */
+
     private DungeonRoomLayout layout;
     private DungeonRoom room;
 

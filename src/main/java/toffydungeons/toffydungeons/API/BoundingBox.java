@@ -5,6 +5,9 @@ import org.bukkit.entity.Entity;
 
 public class BoundingBox {
 
+    /**
+     * This is a bounding box, essentialy you can construct a 3d box with coordinates and check for things (such as players)
+     */
     private Location loc1;
     private Location loc2;
 

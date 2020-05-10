@@ -16,6 +16,11 @@ import static toffydungeons.toffydungeons.GUIs.DungeonMainMenu.createGuiItem;
 
 public class DungeonCreationMenu implements InventoryHolder {
 
+    /**
+     * The interface for creating a dungeon, works by having a 2d plane (x and y coordinate) and moving the viewpoint
+     * to accomodate what should be visible.
+     */
+
     private final Inventory inv;
     public DungeonRoomLayout layout;
     public int[] panDistance;

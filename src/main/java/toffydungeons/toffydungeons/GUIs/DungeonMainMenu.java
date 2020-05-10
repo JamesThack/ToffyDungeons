@@ -18,6 +18,10 @@ import java.util.Arrays;
 
 public class DungeonMainMenu implements InventoryHolder, Listener {
 
+    /**
+     * The main menu when doing /tdungeon (links to other main menus).
+     */
+
     private Inventory inventory;
 
     public DungeonMainMenu() {

@@ -9,6 +9,10 @@ import toffydungeons.toffydungeons.GUIs.DungeonMainMenu;
 
 public class DungeonGenerationMenu implements InventoryHolder {
 
+    /**
+     * The menu for choosing what form to spawn a dungeon as
+     */
+
     private Inventory inv;
     public DungeonRoomLayout layout;
 

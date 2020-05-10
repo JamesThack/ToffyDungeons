@@ -10,6 +10,11 @@ import static toffydungeons.toffydungeons.GUIs.DungeonMainMenu.createGuiItem;
 
 public class DungeonRoomSelector extends AbstractFileMenu {
 
+    /**
+     * Expands from the abstract file menu, essentialy a way to select rooms however checks both a .schematic and a .placement
+     * file exists as asbtract only supports one file type.
+     */
+
     public DungeonRoomSelector() {
         super("Dungeon Blueprint Editor", "rooms");
     }

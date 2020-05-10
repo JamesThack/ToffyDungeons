@@ -11,6 +11,11 @@ import toffydungeons.toffydungeons.GUIs.DungeonMainMenu;
 
 public class DungeonRoomManager implements InventoryHolder {
 
+    /**
+     * This class represents the menu for handling specific rooms in a dungeon layout (links to dungeon layout
+     * menu)
+     */
+
     private Inventory inv;
     private DungeonRoom room;
     private DungeonRoomLayout layout;

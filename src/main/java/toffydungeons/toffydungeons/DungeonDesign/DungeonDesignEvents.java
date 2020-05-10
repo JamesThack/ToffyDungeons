@@ -15,6 +15,9 @@ import java.util.ArrayList;
 
 public class DungeonDesignEvents implements Listener {
 
+    /**
+     * Handles a list of editors that are currently active for all players on the server
+     */
     public ArrayList<DungeonRoomDesign> currentEdits;
 
     public DungeonDesignEvents() {

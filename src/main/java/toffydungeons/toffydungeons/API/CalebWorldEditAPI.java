@@ -26,13 +26,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 public class CalebWorldEditAPI {
-
     /**
-     * This is a static method to make loading world edit schematics easier.
-     * @param fileName A string of the exact file name, do not bother with file extension (ExampleRoom not ExampleRoom.schematic)
-     * @param location The location to paste
-     * @return If the loading was successful
+     * This is the API I made to better deal with world edit instead of manually having to write the schematic code,
+     * this is optimised for WORLD EDIT 6
      */
+
     public static boolean tryLoadSchem(String fileName, Location location, Vector offset) {
         return tryLoadSchem(fileName, location, 0, offset);
     }

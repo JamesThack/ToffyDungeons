@@ -10,6 +10,10 @@ import toffydungeons.toffydungeons.GUIs.DungeonMainMenu;
 
 public class DungeonRoomWandCustomiser implements InventoryHolder, Listener {
 
+    /**
+     * Controls what the dungeon room customisaition menu looks like (when dropping the wand)
+     */
+
     private Inventory inv;
     public DungeonRoomDesign designer;
 

@@ -13,6 +13,11 @@ import java.util.Objects;
 
 public class FileSaving {
 
+    /**
+     * A (mostly) static class to be used for handling files within the plugin, by default all file locations start
+     * with the plugin resources folder so only the sub folders need to be handled.
+     */
+
     public static String dataSource = Bukkit.getPluginManager().getPlugin("ToffyDungeons").getDataFolder() + File.separator;
 
     public static void saveFile(String fileDirectory, String file) {

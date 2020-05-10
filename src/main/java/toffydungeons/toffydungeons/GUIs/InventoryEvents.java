@@ -21,6 +21,10 @@ import java.io.File;
 
 public class InventoryEvents implements Listener {
 
+    /**
+     * A huge event! This is where most of the menu code goes (comments to seperate them)
+     */
+
     @EventHandler
     public void onClick(InventoryClickEvent e) {
 

@@ -7,6 +7,10 @@ import org.bukkit.inventory.InventoryHolder;
 
 public class ActiveDungeonInfo implements InventoryHolder {
 
+    /**
+     * The menu that contains options for the active dungeons.
+     */
+
     private Inventory inv;
 
     public ActiveDungeonInfo(String title) {

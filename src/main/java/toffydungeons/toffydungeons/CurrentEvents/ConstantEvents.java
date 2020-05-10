@@ -15,6 +15,11 @@ import java.io.File;
 
 public class ConstantEvents implements Listener {
 
+    /**
+     * This is the events class that constantly checks for player information related to a dungeon (are they in one?
+     * where are they in a dungeon?)
+     */
+
     @EventHandler
     public void onBreak(BlockBreakEvent e) {
         if (playerInDungeon(e.getPlayer())) {
