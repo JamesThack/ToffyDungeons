@@ -40,10 +40,12 @@ public class GenerationEvents implements Listener {
 
     @EventHandler
     public void onThrow(ProjectileLaunchEvent e) {
-        Player player = (Player) e.getEntity().getShooter();
-        String eggName = player.getInventory().getItemInMainHand().getItemMeta().getDisplayName();
-        if (eggName != null && player.getInventory().getItemInMainHand().getType() == Material.EGG && eggName.contains("§6Dungeon Egg: ")) {
-            e.getEntity().setCustomName("dungeon.egg." + eggName.replace("§6Dungeon Egg: ", ""));
+        if (e.getEntity().getShooter() instanceof Player) {
+            Player player = (Player) e.getEntity().getShooter();
+            String eggName = player.getInventory().getItemInMainHand().getItemMeta().getDisplayName();
+            if (eggName != null && player.getInventory().getItemInMainHand().getType() == Material.EGG && eggName.contains("§6Dungeon Egg: ")) {
+                e.getEntity().setCustomName("dungeon.egg." + eggName.replace("§6Dungeon Egg: ", ""));
+            }
         }
     }
 

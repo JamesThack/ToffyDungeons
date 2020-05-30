@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import toffydungeons.toffydungeons.GUIs.DungeonLayout.DungeonCreationMenu;
 import toffydungeons.toffydungeons.GUIs.DungeonRoomDesign.DungeonRoomSelector;
+import toffydungeons.toffydungeons.GUIs.DungeonTraps.DungeonTrapType;
 import toffydungeons.toffydungeons.GUIs.extendable.AbstractFileMenu;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class DungeonMainMenu implements InventoryHolder, Listener {
         this.inventory.setItem(14, createGuiItem(Material.PAPER, "§3Blueprint Designer"));
         this.inventory.setItem(16, createGuiItem(Material.WOOD_DOOR, "§2Blueprint Creator"));
         this.inventory.setItem(28, createGuiItem(Material.MOB_SPAWNER, "§cActive Dungeons"));
+        this.inventory.setItem(30, createGuiItem(Material.TRIPWIRE_HOOK, "§aCreate Trap"));
         this.inventory.setItem(45, createGuiItem(Material.REDSTONE_BLOCK, "§cClose Menu"));
     }
 
@@ -89,6 +91,12 @@ public class DungeonMainMenu implements InventoryHolder, Listener {
                 AbstractFileMenu selector = new AbstractFileMenu("Active Dungeons", "active_dungeons");
                 selector.initialiseItems();
                 e.getWhoClicked().openInventory(selector.getInventory());
+            }
+
+            if (e.getCurrentItem() != null &&  e.getCurrentItem().getType().equals(Material.TRIPWIRE_HOOK)) {
+                DungeonTrapType type = new DungeonTrapType();
+                type.initaliseItems();
+                e.getWhoClicked().openInventory(type.getInventory());
             }
         }
     }

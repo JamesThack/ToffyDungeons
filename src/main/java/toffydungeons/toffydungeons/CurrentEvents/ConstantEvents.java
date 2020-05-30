@@ -40,7 +40,7 @@ public class ConstantEvents implements Listener {
     public void onMove(PlayerMoveEvent e) {
         if (playerInDungeon(e.getPlayer())) {
             int[] directions = getRoomLocation(e.getPlayer());
-            System.out.println(directions[0] + "," + directions[1] + "," + directions[2]);
+
         }
     }
 
