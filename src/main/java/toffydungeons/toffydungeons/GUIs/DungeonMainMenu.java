@@ -36,6 +36,7 @@ public class DungeonMainMenu implements InventoryHolder, Listener {
         this.inventory.setItem(16, createGuiItem(Material.WOOD_DOOR, "§2Blueprint Creator"));
         this.inventory.setItem(28, createGuiItem(Material.MOB_SPAWNER, "§cActive Dungeons"));
         this.inventory.setItem(30, createGuiItem(Material.TRIPWIRE_HOOK, "§aCreate Trap"));
+        this.inventory.setItem(32, createGuiItem(Material.REDSTONE, "§fEdit Trap"));
         this.inventory.setItem(45, createGuiItem(Material.REDSTONE_BLOCK, "§cClose Menu"));
     }
 
@@ -97,6 +98,12 @@ public class DungeonMainMenu implements InventoryHolder, Listener {
                 DungeonTrapType type = new DungeonTrapType();
                 type.initaliseItems();
                 e.getWhoClicked().openInventory(type.getInventory());
+            }
+
+            if (e.getCurrentItem() != null &&  e.getCurrentItem().getType().equals(Material.REDSTONE)) {
+               AbstractFileMenu traps = new AbstractFileMenu("Current Traps", "traps");
+               traps.initialiseItems();
+               e.getWhoClicked().openInventory(traps.getInventory());
             }
         }
     }

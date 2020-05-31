@@ -11,7 +11,6 @@ import java.util.List;
 import static toffydungeons.toffydungeons.GUIs.DungeonMainMenu.createGuiItem;
 
 public class AbstractFileMenu implements InventoryHolder {
-
     /**
      * A basic class used to create a menu that supports loading files, requires both a directory and a menu title
      * (will load all items in the directory)
@@ -62,4 +61,5 @@ public class AbstractFileMenu implements InventoryHolder {
     public Inventory getInventory() {
         return this.inv;
     }
+
 }

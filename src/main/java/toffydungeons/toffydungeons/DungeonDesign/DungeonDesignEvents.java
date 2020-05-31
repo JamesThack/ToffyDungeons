@@ -104,6 +104,8 @@ public class DungeonDesignEvents implements Listener {
             DungeonRoomWandCustomiser customiser = (DungeonRoomWandCustomiser) e.getInventory().getHolder();
             if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.STICK))
                 customiser.designer.setCurrentOperation(0);
+            e.getWhoClicked().closeInventory();
+            e.getWhoClicked().sendMessage("§a[Toffy Dungeons]: Select borders (left click point 1, right click point 2)");
             if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.PAPER))
                 if (customiser.designer.getName().equals("UNNAMED")) {
                     e.getWhoClicked().closeInventory();
@@ -133,6 +135,9 @@ public class DungeonDesignEvents implements Listener {
                         e.getWhoClicked().closeInventory();
                     }
                 }
+            }
+            if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.TRIPWIRE_HOOK)) {
+
             }
 
         }

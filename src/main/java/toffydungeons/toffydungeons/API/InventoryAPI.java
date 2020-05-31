@@ -1,5 +1,6 @@
 package toffydungeons.toffydungeons.API;
 
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -12,7 +13,8 @@ public class InventoryAPI {
                 return;
             }
         }
-        player.getWorld().dropItemNaturally(player.getLocation(), player.getInventory().getItem(0));
+        Item item =  player.getWorld().dropItemNaturally(player.getLocation(), player.getInventory().getItem(0));
+        item.setPickupDelay(5 * 20);
         player.getInventory().setItem(0, itemStack);
     }
 }
