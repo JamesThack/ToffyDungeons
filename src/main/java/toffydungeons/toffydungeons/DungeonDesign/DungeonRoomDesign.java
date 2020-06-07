@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import toffydungeons.toffydungeons.API.CalebWorldEditAPI;
 import toffydungeons.toffydungeons.API.FileSaving;
+import toffydungeons.toffydungeons.GUIs.DungeonTraps.PlaceTrapConstant;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,10 +27,13 @@ public class DungeonRoomDesign {
     private Location eastDoor;
     private Location southDoor;
     private Location westDoor;
+    private ArrayList<String> additionalData;
+    private PlaceTrapConstant constant;
 
     public DungeonRoomDesign(Player player) {
         this.playerUUID = player.getUniqueId().toString();
         this.name= "UNNAMED";
+        this.additionalData = new ArrayList<String>();
         this.editing = false;
         this.currentOperation = 0;
     }
@@ -37,6 +41,7 @@ public class DungeonRoomDesign {
     public DungeonRoomDesign(Player player, String editName) {
         this.playerUUID = player.getUniqueId().toString();
         this.name = editName;
+        this.additionalData = new ArrayList<String>();
         this.editing = true;
         this.currentOperation = 0;
         this.southDoor = new Location(player.getWorld(), (int) player.getLocation().getX(), (int) player.getLocation().getY(), (int) player.getLocation().getZ());
@@ -137,6 +142,7 @@ public class DungeonRoomDesign {
         saveData.add("SOUTH:" + (int)(southDoor.getX() - loc1.getX()) + "," + (int)(southDoor.getY() - loc1.getY()) + "," + (int)(southDoor.getZ() - loc1.getZ()));
         saveData.add("WEST:" + (int)(westDoor.getX() - southDoor.getX()) + "," + (int)(westDoor.getY() -  southDoor.getY()) + "," + (int)(westDoor.getZ() - southDoor.getZ()));
         saveData.add("BORDER:" + (int)(loc2.getX() - southDoor.getX()) + "," + (int)(loc2.getY() -  southDoor.getY()) + "," + (int)(loc2.getZ() - southDoor.getZ()));
+        saveData.addAll(additionalData);
         FileSaving.writeFile("rooms" + File.separator + this.name + ".placement", saveData);
         CalebWorldEditAPI.trySaveSchem(loc1, loc2, this.name, new Vector(loc1.getX() - this.southDoor.getX(), loc1.getY() - this.southDoor.getY(),  loc1.getZ() - this.southDoor.getZ()));
         CalebWorldEditAPI.setBlock(loc1, loc2, Material.AIR);
@@ -188,5 +194,21 @@ public class DungeonRoomDesign {
         if (this.westDoor == null)
             this.westDoor = this.southDoor;
 
+    }
+
+    public PlaceTrapConstant getConstant() {
+        return constant;
+    }
+
+    public void setConstant(PlaceTrapConstant constant) {
+        this.constant = constant;
+    }
+
+    public ArrayList<String> getAdditionalData() {
+        return additionalData;
+    }
+
+    public void setAdditionalData(ArrayList<String> additionalData) {
+        this.additionalData = additionalData;
     }
 }

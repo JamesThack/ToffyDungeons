@@ -9,7 +9,9 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import toffydungeons.toffydungeons.CurrentEvents.ConstantEvents;
 import toffydungeons.toffydungeons.GUIs.DungeonRoomDesign.DungeonRoomWandCustomiser;
+import toffydungeons.toffydungeons.GUIs.DungeonTraps.PlaceTrapConstant;
 
 import java.util.ArrayList;
 
@@ -67,6 +69,23 @@ public class DungeonDesignEvents implements Listener {
         return false;
     }
 
+    private int[] getRelativeLocation(DungeonRoomDesign design, Location validLoc) {
+        Location origin = design.getOrigin();
+        Location endPoint = design.getEndPoint();
+        Location loc1 = new Location(origin.getWorld(), Math.min(origin.getX(), endPoint.getX()), Math.min(origin.getY(), endPoint.getY()), Math.min(origin.getZ(), endPoint.getZ()));
+        Location loc2 = new Location(origin.getWorld(), Math.max(origin.getX(), endPoint.getX()), Math.max(origin.getY(), endPoint.getY()), Math.max(origin.getZ(), endPoint.getZ()));
+        if (ConstantEvents.getDirection(loc1, loc2).equals("posx")) {
+            return new int[]{design.getSouthDoor().getBlockZ() - validLoc.getBlockZ(), validLoc.getBlockY() - design.getSouthDoor().getBlockY(), validLoc.getBlockX() - design.getSouthDoor().getBlockX()};
+        } else if (ConstantEvents.getDirection(loc1, loc2).equals("negx")) {
+            return new int[]{validLoc.getBlockZ() - design.getSouthDoor().getBlockZ(), validLoc.getBlockY() - design.getSouthDoor().getBlockY(), design.getSouthDoor().getBlockX() - validLoc.getBlockX()};
+        } else if (ConstantEvents.getDirection(loc1, loc2).equals("posz")) {
+            return new int[]{validLoc.getBlockX() - design.getSouthDoor().getBlockX(), validLoc.getBlockY() - design.getSouthDoor().getBlockY(), validLoc.getBlockZ() - design.getSouthDoor().getBlockZ()};
+        } else if (ConstantEvents.getDirection(loc1, loc2).equals("negz")) {
+            return new int[]{design.getSouthDoor().getBlockX() - validLoc.getBlockX(), validLoc.getBlockY() - design.getSouthDoor().getBlockY(), design.getSouthDoor().getBlockZ() -  validLoc.getBlockZ()};
+        }
+        return new int[]{0,0,0};
+    }
+
     @EventHandler
     public void onClick(PlayerInteractEvent e) {
         DungeonRoomDesign designer = this.getPlayerEditor(e.getPlayer());
@@ -81,6 +100,17 @@ public class DungeonDesignEvents implements Listener {
             } else if (designer.getCurrentOperation() > 0 &&designer.getCurrentOperation() < 5) {
                 designer.setDoor(e.getClickedBlock().getLocation());
                 e.getPlayer().sendMessage("§a[Toffy Dungeons]: Updated door position!");
+            } else if (designer.getCurrentOperation() == 5) {
+                if (e.getPlayer().isSneaking()) {
+                    designer.getConstant().setSpawnLoc(getRelativeLocation(designer, e.getClickedBlock().getLocation()));
+                    e.getPlayer().sendMessage("§a[Toffy Dungeons]: Updated trap spawn");
+                } else if (e.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
+                    designer.getConstant().setLoc1(getRelativeLocation(designer, e.getClickedBlock().getLocation()));
+                    e.getPlayer().sendMessage("§a[Toffy Dungeons]: Updated trap region point 1");
+                }else if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+                    designer.getConstant().setLoc2(getRelativeLocation(designer, e.getClickedBlock().getLocation()));
+                    e.getPlayer().sendMessage("§a[Toffy Dungeons]: Updated trap region point 2");
+                }
             }
 
         }
@@ -90,10 +120,21 @@ public class DungeonDesignEvents implements Listener {
     public void onDrop(PlayerDropItemEvent e) {
         DungeonRoomDesign designer = this.getPlayerEditor(e.getPlayer());
         if (e.getItemDrop().getItemStack().getType().equals(Material.RECORD_9) && designer != null) {
-            e.setCancelled(true);
-            DungeonRoomWandCustomiser customiser = new DungeonRoomWandCustomiser(designer);
-            customiser.initaliseItems();
-            e.getPlayer().openInventory(customiser.getInventory());
+            if (designer.getConstant() != null) {
+                designer.setAdditionalData(designer.getConstant().saveTrapInfo(designer.getAdditionalData()));
+                e.getPlayer().sendMessage("§a[Toffy Dungeons]: Finished adding the trap");
+                for(String current : designer.getAdditionalData()) {
+                    System.out.println(current);
+                }
+                e.setCancelled(true);
+                designer.setCurrentOperation(0);
+                designer.setConstant(null);
+            } else {
+                e.setCancelled(true);
+                DungeonRoomWandCustomiser customiser = new DungeonRoomWandCustomiser(designer);
+                customiser.initaliseItems();
+                e.getPlayer().openInventory(customiser.getInventory());
+            }
         }
     }
 
@@ -102,11 +143,12 @@ public class DungeonDesignEvents implements Listener {
         if (e.getView().getTitle().equals("Wand Customiser")) {
             e.setCancelled(true);
             DungeonRoomWandCustomiser customiser = (DungeonRoomWandCustomiser) e.getInventory().getHolder();
-            if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.STICK))
+            if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.STICK)) {
                 customiser.designer.setCurrentOperation(0);
-            e.getWhoClicked().closeInventory();
-            e.getWhoClicked().sendMessage("§a[Toffy Dungeons]: Select borders (left click point 1, right click point 2)");
-            if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.PAPER))
+                e.getWhoClicked().closeInventory();
+                e.getWhoClicked().sendMessage("§a[Toffy Dungeons]: Select borders (left click point 1, right click point 2)");
+            }
+            if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.PAPER)) {
                 if (customiser.designer.getName().equals("UNNAMED")) {
                     e.getWhoClicked().closeInventory();
                     e.getWhoClicked().sendMessage("§c[Toffy Dungeons]: Choose room name with /tdungeon roomname (name)");
@@ -114,7 +156,7 @@ public class DungeonDesignEvents implements Listener {
                     e.getWhoClicked().closeInventory();
                     e.getWhoClicked().sendMessage("§c[Toffy Dungeons]: Please select a south door (this is the rooms entrance)");
                 } else {
-                    if (customiser.designer.getOrigin() != null && customiser.designer.getEndPoint() !=null) {
+                    if (customiser.designer.getOrigin() != null && customiser.designer.getEndPoint() != null) {
                         customiser.designer.save();
                         this.currentEdits.remove(customiser.designer);
                         e.getWhoClicked().closeInventory();
@@ -126,6 +168,7 @@ public class DungeonDesignEvents implements Listener {
                         e.getWhoClicked().sendMessage("§c[Toffy Dungeons]: Please select 2 points for the region!");
                     }
                 }
+            }
             if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.WOOD_DOOR)) {
                 String[] possibilities = new String[]{"North", "East", "West", "South"};
                 for (int i = 0; i <possibilities.length; i++) {
@@ -137,9 +180,20 @@ public class DungeonDesignEvents implements Listener {
                 }
             }
             if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.TRIPWIRE_HOOK)) {
-
+                TrapRoomChooser chooser = new TrapRoomChooser(customiser.designer);
+                chooser.initialiseItems();
+                e.getWhoClicked().openInventory(chooser.getInventory());
             }
 
+        } else if (e.getInventory().getHolder() instanceof TrapRoomChooser) {
+            e.setCancelled(true);
+            DungeonRoomDesign design = ((TrapRoomChooser) e.getInventory().getHolder()).getDesign();
+            if (e.getCurrentItem().getType().equals(Material.SMOOTH_BRICK) && e.getCurrentItem().getItemMeta() != null) {
+                design.setCurrentOperation(5);
+                PlaceTrapConstant constant = new PlaceTrapConstant(e.getCurrentItem().getItemMeta().getDisplayName());
+                design.setConstant(constant);
+                e.getWhoClicked().closeInventory();
+            }
         }
     }
 }

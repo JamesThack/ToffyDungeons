@@ -74,7 +74,6 @@ public class TrapEvents implements Listener {
                 }
             }
             if (e.getClick().isShiftClick() && e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.SMOOTH_BRICK)) {
-                System.out.println("Yeet");
                 FileSaving.deleteFile("traps" + File.separator +  e.getCurrentItem().getItemMeta().getDisplayName());
                 AbstractFileMenu menu = new AbstractFileMenu("Current Traps", "traps", holder.getPage());
                 menu.initialiseItems();
