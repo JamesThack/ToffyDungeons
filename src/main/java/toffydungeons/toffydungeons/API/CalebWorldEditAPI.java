@@ -38,7 +38,7 @@ public class CalebWorldEditAPI {
     public static void setBlock(Location loc1, Location loc2, Material block) {
         try {
             WorldEditPlugin worldEditPlugin = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-            EditSession session = worldEditPlugin.getWorldEdit().getEditSessionFactory().getEditSession(new BukkitWorld(loc1.getWorld()), 10000);
+            EditSession session = worldEditPlugin.getWorldEdit().getEditSessionFactory().getEditSession(new BukkitWorld(loc1.getWorld()), 10000000);
             World weWorld = new BukkitWorld(loc1.getWorld());
             Vector pos1 = new Vector(loc1.getX(), loc1.getY(), loc1.getZ()); //First corner of your cuboid
             Vector pos2 = new Vector(loc2.getX(), loc2.getY(), loc2.getZ()); //Second corner fo your cuboid
@@ -53,7 +53,7 @@ public class CalebWorldEditAPI {
         try {
             WorldEditPlugin worldEditPlugin = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
             File schematic = new File(Bukkit.getPluginManager().getPlugin("ToffyDungeons").getDataFolder() + File.separator + "rooms" + File.separator + fileName + ".schematic");
-            EditSession session = worldEditPlugin.getWorldEdit().getEditSessionFactory().getEditSession(new BukkitWorld(location.getWorld()), 10000);
+            EditSession session = worldEditPlugin.getWorldEdit().getEditSessionFactory().getEditSession(new BukkitWorld(location.getWorld()), 10000000);
             session.enableQueue();
             CuboidClipboard clipboard = MCEditSchematicFormat.getFormat(schematic).load(schematic);
             clipboard.rotate2D(rotation);
