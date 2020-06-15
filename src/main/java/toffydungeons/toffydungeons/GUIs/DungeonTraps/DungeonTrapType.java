@@ -1,9 +1,11 @@
 package toffydungeons.toffydungeons.GUIs.DungeonTraps;
 
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 import toffydungeons.toffydungeons.GUIs.extendable.AbstractVanityMenu;
 
 public class DungeonTrapType extends AbstractVanityMenu  implements Listener {
@@ -27,5 +29,9 @@ public class DungeonTrapType extends AbstractVanityMenu  implements Listener {
                 e.getWhoClicked().openInventory(mobTrap.getInventory());
             }
         }
+    }
+
+    public static String getTrapType(Player player, ItemStack disc) {
+        return "YEs";
     }
 }

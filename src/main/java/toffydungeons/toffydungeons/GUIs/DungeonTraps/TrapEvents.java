@@ -102,7 +102,7 @@ public class TrapEvents implements Listener {
     @EventHandler
     public void onMessage(AsyncPlayerChatEvent e) {
         ItemStack held = e.getPlayer().getInventory().getItemInMainHand();
-        if (held != null && held.getItemMeta()!= null && held.getItemMeta().getLore() != null && held.getType().equals(Material.RECORD_9) && held.getItemMeta().getLore().contains("Trap Editor")) {
+        if (held != null && held.getItemMeta()!= null && held.getItemMeta().getLore() != null && held.getType().equals(Material.RECORD_9) && held.getItemMeta().getLore().contains("Mob Trap Editor")) {
             if (held.getItemMeta().getDisplayName().contains("§dHealth Selector")) {
                 e.setCancelled(true);
                 try {

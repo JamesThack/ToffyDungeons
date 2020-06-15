@@ -2,8 +2,7 @@ package toffydungeons.toffydungeons.CurrentEvents;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,7 +11,6 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import toffydungeons.toffydungeons.API.BoundingBox;
 import toffydungeons.toffydungeons.API.FileSaving;
-import toffydungeons.toffydungeons.GUIs.DungeonTraps.MobTrap;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -44,7 +42,7 @@ public class ConstantEvents implements Listener {
     public void onMove(PlayerMoveEvent e) {
         if (playerInDungeon(e.getPlayer())) {
             int[] directions = getRoomLocation(e.getPlayer());
-            System.out.println(directions[0] + "," + directions[1] + "," + directions[2]);
+//            System.out.println(directions[0] + "," + directions[1] + "," + directions[2]);
             if (!FileSaving.folderContainsFile("active_dungeons", "noread.check")) {
                 String currentDun = getCurrentRoom(e.getPlayer());
                 ArrayList<String> lines = FileSaving.readLines("rooms" + File.separator + currentDun + ".placement");
@@ -52,25 +50,25 @@ public class ConstantEvents implements Listener {
                     if (lines.get(x).contains(".trap")) {
                         String pos1 = (lines.get(x + 1).replace("REG1:", ""));
                         int[] trapCorner1 = new int[]{Integer.valueOf(pos1.split(",")[0]), Integer.valueOf(pos1.split(",")[1]), Integer.valueOf(pos1.split(",")[2])};
-                        System.out.println(trapCorner1[0] + "," + trapCorner1[1] + "," + trapCorner1[2]);
+//                        System.out.println(trapCorner1[0] + "," + trapCorner1[1] + "," + trapCorner1[2]);
                         String pos2 = (lines.get(x + 2).replace("REG2:", ""));
                         int[] trapCorner2 = new int[]{Integer.valueOf(pos2.split(",")[0]), Integer.valueOf(pos2.split(",")[1]), Integer.valueOf(pos2.split(",")[2])};
-                        System.out.println(trapCorner2[0] + "," + trapCorner2[1] + "," + trapCorner2[2]);
+//                        System.out.println(trapCorner2[0] + "," + trapCorner2[1] + "," + trapCorner2[2]);
                         if ((directions[0] >= Math.min(trapCorner1[0], trapCorner2[0]) && directions[1] >= Math.min(trapCorner1[1], trapCorner2[1]) && directions[2] >= Math.min(trapCorner1[2], trapCorner2[2]))
                         && (directions[0] <= Math.max(trapCorner1[0], trapCorner2[0]) && directions[1] <= Math.max(trapCorner1[1], trapCorner2[1]) && directions[2] <= Math.max(trapCorner1[2], trapCorner2[2]) )  ) {
                             String pos3 = (lines.get(x + 3).replace("HAPPEN:", ""));
                             int[] spawnCorner = new int[]{Integer.valueOf(pos3.split(",")[0]), Integer.valueOf(pos3.split(",")[1]), Integer.valueOf(pos3.split(",")[2])};
-//                            e.getPlayer().getWorld().getBlockAt(locFromCoords(e.getPlayer(), spawnCorner)).setType(Material.STONE);
-                            MobTrap trap = new MobTrap(lines.get(x).replace(".trap", ""));
-                            EntityType type = EntityType.valueOf(trap.getMobType());
-                            if (e.getPlayer().getWorld().getNearbyEntities(locFromCoords(e.getPlayer(), spawnCorner), 1,1,1).size() < 1) {
-                                LivingEntity mob = (LivingEntity) e.getPlayer().getWorld().spawnEntity(locFromCoords(e.getPlayer(), spawnCorner), type);
-                                mob.setMaxHealth(trap.getHealth());
-                                mob.setHealth(trap.getHealth());
-                                if (trap.getMobName() != null) {
-                                    mob.setCustomName(trap.getMobName());
-                                    mob.setCustomNameVisible(true);
-                                }
+                            e.getPlayer().getWorld().getBlockAt(locFromCoords(e.getPlayer(), spawnCorner)).setType(Material.STONE);
+//                            MobTrap trap = new MobTrap(lines.get(x).replace(".trap", ""));
+//                            EntityType type = EntityType.valueOf(trap.getMobType());
+//                            if (e.getPlayer().getWorld().getNearbyEntities(locFromCoords(e.getPlayer(), spawnCorner), 1,1,1).size() < 1) {
+//                                LivingEntity mob = (LivingEntity) e.getPlayer().getWorld().spawnEntity(locFromCoords(e.getPlayer(), spawnCorner), type);
+//                                mob.setMaxHealth(trap.getHealth());
+//                                mob.setHealth(trap.getHealth());
+//                                if (trap.getMobName() != null) {
+//                                    mob.setCustomName(trap.getMobName());
+//                                    mob.setCustomNameVisible(true);
+//                                }
                             }
                         }
                     }
@@ -78,7 +76,6 @@ public class ConstantEvents implements Listener {
             }
 
         }
-    }
 
     private boolean playerInDungeon(Player player) {
         if (!FileSaving.folderContainsFile("active_dungeons", "noread.check")) {
@@ -155,10 +152,10 @@ public class ConstantEvents implements Listener {
                         } else if (getDirection(loc1, loc2).equals("negx")) {
                             return spawnLoc.add(-coords[2], coords[1], coords[0]);
                         } else if (getDirection(loc1, loc2).equals("posz")) {
-                            return spawnLoc.add(-coords[0], coords[1], coords[2]);
+                            return spawnLoc.add(coords[0], coords[1], coords[2]);
                             //return new int[]{player.getLocation().getBlockX() - Integer.valueOf(splitLine[2]), player.getLocation().getBlockY() - Integer.valueOf(splitLine[3]), player.getLocation().getBlockZ() - Integer.valueOf(splitLine[4])};
                         } else if (getDirection(loc1, loc2).equals("negz")) {
-                            return spawnLoc.add(coords[0], coords[1], -coords[2]);
+                            return spawnLoc.add(-coords[0], coords[1], -coords[2]);
                            // return new int[]{Integer.valueOf(splitLine[2]) - player.getLocation().getBlockX(), player.getLocation().getBlockY() - Integer.valueOf(splitLine[3]), Integer.valueOf(splitLine[4]) -  player.getLocation().getBlockZ()};
                         }
 

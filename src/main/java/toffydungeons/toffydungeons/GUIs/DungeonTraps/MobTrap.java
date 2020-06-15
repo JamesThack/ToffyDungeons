@@ -84,12 +84,9 @@ public class MobTrap extends AbstractVanityMenu {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public void saveData() {
         ArrayList<String> dataToWrite = new ArrayList<>();
+        dataToWrite.add("TRAP_TYPE:MOB");
         dataToWrite.add("MOB_TYPE:" + mobType);
         dataToWrite.add("HEALTH:" + health);
         if (mobName != null) {
