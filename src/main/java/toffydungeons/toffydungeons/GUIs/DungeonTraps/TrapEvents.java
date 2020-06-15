@@ -12,8 +12,11 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import toffydungeons.toffydungeons.API.FileSaving;
 import toffydungeons.toffydungeons.API.InventoryAPI;
+import toffydungeons.toffydungeons.DungeonDesign.TrapRoomChooser;
+import toffydungeons.toffydungeons.DungeonDesign.TrapSelection;
 import toffydungeons.toffydungeons.GUIs.DungeonMainMenu;
 import toffydungeons.toffydungeons.GUIs.extendable.AbstractFileMenu;
+import toffydungeons.toffydungeons.GUIs.extendable.AbstractVanityMenu;
 
 import java.io.File;
 
@@ -25,15 +28,15 @@ public class TrapEvents implements Listener {
             e.setCancelled(true);
             MobTrap trap = (MobTrap) e.getInventory().getHolder();
             if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.MONSTER_EGG)) {
-                InventoryAPI.givePlayerItem( (Player) e.getWhoClicked(), DungeonMainMenu.createGuiItem(Material.RECORD_9, "§dMob Selector " + trap.getName(), "Trap Editor", "Hold wand and punch mob type"));
+                InventoryAPI.givePlayerItem( (Player) e.getWhoClicked(), DungeonMainMenu.createGuiItem(Material.RECORD_9, "§dMob Selector " + trap.getName(), "Mob Trap Editor", "Hold wand and punch mob type"));
                 trap.saveData();
                 e.getWhoClicked().closeInventory();
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.WHEAT)) {
-                InventoryAPI.givePlayerItem( (Player) e.getWhoClicked(), DungeonMainMenu.createGuiItem(Material.RECORD_9, "§dHealth Selector " + trap.getName(), "Trap Editor", "Hold wand and say health in chat"));
+                InventoryAPI.givePlayerItem( (Player) e.getWhoClicked(), DungeonMainMenu.createGuiItem(Material.RECORD_9, "§dHealth Selector " + trap.getName(), "Mob Trap Editor", "Hold wand and say health in chat"));
                 trap.saveData();
                 e.getWhoClicked().closeInventory();
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.NAME_TAG)) {
-                InventoryAPI.givePlayerItem( (Player) e.getWhoClicked(), DungeonMainMenu.createGuiItem(Material.RECORD_9, "§dName Selector " + trap.getName(), "Trap Editor"));
+                InventoryAPI.givePlayerItem( (Player) e.getWhoClicked(), DungeonMainMenu.createGuiItem(Material.RECORD_9, "§dName Selector " + trap.getName(), "Mob Trap Editor", "Hold wand and say Mob anme in chat"));
                 trap.saveData();
                 e.getWhoClicked().closeInventory();
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
@@ -79,6 +82,14 @@ public class TrapEvents implements Listener {
                 menu.initialiseItems();
                 e.getWhoClicked().openInventory(menu.getInventory());
             }
+        } else if (e.getInventory().getHolder() instanceof AbstractVanityMenu && e.getInventory().getTitle().contains("Room Traps")) {
+            e.setCancelled(true);
+            TrapSelection selector = (TrapSelection) e.getInventory().getHolder();
+            if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
+                TrapRoomChooser chooser = new TrapRoomChooser(selector.getDesign());
+                chooser.initialiseItems();
+                e.getWhoClicked().openInventory(chooser.getInventory());
+            }
         }
     }
 
@@ -87,7 +98,7 @@ public class TrapEvents implements Listener {
         if (e.getDamager() instanceof Player) {
             Player attacker = (Player) e.getDamager();
             ItemStack held = attacker.getInventory().getItemInMainHand();
-            if (held != null && held.getItemMeta() != null && held.getItemMeta().getLore() != null && held.getType().equals(Material.RECORD_9) && held.getItemMeta().getDisplayName().contains("§dMob Selector") && held.getItemMeta().getLore().contains("Trap Editor")) {
+            if (held != null && held.getItemMeta() != null && held.getItemMeta().getLore() != null && held.getType().equals(Material.RECORD_9) && held.getItemMeta().getDisplayName().contains("§dMob Selector") && held.getItemMeta().getLore().contains("Mob Trap Editor")) {
                 e.setCancelled(true);
                 String name = held.getItemMeta().getDisplayName().replace("§dMob Selector ", "");
                 MobTrap trap = new MobTrap(name);

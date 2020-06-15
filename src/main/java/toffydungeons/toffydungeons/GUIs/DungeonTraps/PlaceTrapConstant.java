@@ -16,6 +16,7 @@ public class PlaceTrapConstant {
         this.trapName  = trapName;
     }
 
+
     public void setLoc1(int[] loc1) {
         this.loc1 = loc1;
     }

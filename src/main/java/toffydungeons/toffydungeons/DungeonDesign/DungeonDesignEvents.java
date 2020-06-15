@@ -123,9 +123,6 @@ public class DungeonDesignEvents implements Listener {
             if (designer.getConstant() != null) {
                 designer.setAdditionalData(designer.getConstant().saveTrapInfo(designer.getAdditionalData()));
                 e.getPlayer().sendMessage("§a[Toffy Dungeons]: Finished adding the trap");
-                for(String current : designer.getAdditionalData()) {
-                    System.out.println(current);
-                }
                 e.setCancelled(true);
                 designer.setCurrentOperation(0);
                 designer.setConstant(null);
@@ -180,8 +177,8 @@ public class DungeonDesignEvents implements Listener {
                 }
             }
             if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.TRIPWIRE_HOOK)) {
-                TrapRoomChooser chooser = new TrapRoomChooser(customiser.designer);
-                chooser.initialiseItems();
+                TrapSelection chooser = new TrapSelection(customiser.designer);
+                chooser.initaliseItems();
                 e.getWhoClicked().openInventory(chooser.getInventory());
             }
 
@@ -193,6 +190,7 @@ public class DungeonDesignEvents implements Listener {
                 PlaceTrapConstant constant = new PlaceTrapConstant(e.getCurrentItem().getItemMeta().getDisplayName());
                 design.setConstant(constant);
                 e.getWhoClicked().closeInventory();
+                e.getWhoClicked().sendMessage("§a[Toffy Dungeons]: Started placing a trap, left/right click to set activation region and sneak click to set trigger location");
             }
         }
     }

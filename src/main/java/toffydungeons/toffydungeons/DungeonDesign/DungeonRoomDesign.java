@@ -41,7 +41,7 @@ public class DungeonRoomDesign {
     public DungeonRoomDesign(Player player, String editName) {
         this.playerUUID = player.getUniqueId().toString();
         this.name = editName;
-        this.additionalData = new ArrayList<String>();
+        this.additionalData = new ArrayList<>();
         this.editing = true;
         this.currentOperation = 0;
         this.southDoor = new Location(player.getWorld(), (int) player.getLocation().getX(), (int) player.getLocation().getY(), (int) player.getLocation().getZ());
@@ -62,6 +62,8 @@ public class DungeonRoomDesign {
                 } else if  (line.contains("BORDER:")) {
                     String linex = line.replace("BORDER:", "");
                     this.endPoint = new Location(this.southDoor.getWorld(), (int)this.southDoor.getX() + Integer.valueOf(linex.split(",")[0]), (int)this.southDoor.getY() + Integer.valueOf(linex.split(",")[1]), (int)this.southDoor.getZ() + Integer.valueOf(linex.split(",")[2]));
+                } else {
+                    this.additionalData.add(line);
                 }
             }
             CalebWorldEditAPI.tryLoadSchem(editName, player.getLocation(), new Vector(0, 0, 0));
