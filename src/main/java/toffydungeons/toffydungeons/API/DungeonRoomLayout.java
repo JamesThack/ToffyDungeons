@@ -149,7 +149,7 @@ public class DungeonRoomLayout {
             ArrayList<String> savedData = new ArrayList<>();
             savedData.add(dungeonName);
             savedData.addAll(this.roomDatas);
-            savedData.add(builtLoc.getWorld().getName() + "," +  (int) builtLoc.getX() + "," +  (int) builtLoc.getY() + "," + (int) builtLoc.getZ());
+            savedData.add(builtLoc.getWorld().getName() + "," +  builtLoc.getBlockX() + "," +  builtLoc.getBlockY() + "," +  builtLoc.getBlockZ());
             FileSaving.writeFile("active_dungeons" + File.separator + name + ".adungeon", savedData);
             FileSaving.deleteFile("active_dungeons" + File.separator + "noread.check");
         }
@@ -203,8 +203,8 @@ public class DungeonRoomLayout {
         private Location loc2;
 
         public UnloadBuild(Location loc1, Location loc2) {
-            this.loc1 = new Location (loc1.getWorld(), Math.min(loc1.getX(), loc2.getX()), Math.min(loc1.getY(), loc2.getY()), Math.min(loc1.getZ(), loc2.getZ()));
-            this.loc2 = new Location (loc1.getWorld(), Math.max(loc1.getX(), loc2.getX()), Math.max(loc1.getY(), loc2.getY()), Math.max(loc1.getZ(), loc2.getZ()));
+            this.loc1 = new Location (loc1.getWorld(), Math.min(loc1.getBlockX(), loc2.getBlockX()), Math.min(loc1.getBlockY(), loc2.getBlockY()), Math.min(loc1.getBlockZ(), loc2.getBlockZ()));
+            this.loc2 = new Location (loc1.getWorld(), Math.max(loc1.getBlockX(), loc2.getBlockX()), Math.max(loc1.getBlockY(), loc2.getBlockY()), Math.max(loc1.getBlockZ(), loc2.getBlockZ()));
         }
 
         @Override
@@ -272,78 +272,78 @@ public class DungeonRoomLayout {
                         offset = new Vector(-directions[6], directions[7], -directions[8]);
                         CalebWorldEditAPI.tryLoadSchem(room.getSchematicFile(), coordinates, offset);
                         if (room.getForward() != null) {
-                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
-                            newCoordinates.setX(newCoordinates.getX() + directions[0]);
-                            newCoordinates.setY(newCoordinates.getY() + directions[1]);
-                            newCoordinates.setZ(newCoordinates.getZ() + directions[2]);
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getBlockX(), coordinates.getBlockY(), coordinates.getBlockZ());
+                            newCoordinates.setX(newCoordinates.getBlockX() + directions[0]);
+                            newCoordinates.setY(newCoordinates.getBlockY() + directions[1]);
+                            newCoordinates.setZ(newCoordinates.getBlockZ() + directions[2]);
                             forward = new GenerateBuild("forward", room.getForward(), newCoordinates, posData);
                         }
                         if (room.getBehind() != null && !direction.equals("forward")) {
-                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
-                            newCoordinates.setX(newCoordinates.getX() + 1 );
-                            newCoordinates.setZ(newCoordinates.getZ() + directions[6]);
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getBlockX(), coordinates.getBlockY(), coordinates.getBlockZ());
+                            newCoordinates.setX(newCoordinates.getBlockX() + 1 );
+                            newCoordinates.setZ(newCoordinates.getBlockZ() + directions[6]);
                             back = new GenerateBuild("behind", room.getBehind(), newCoordinates, posData);
                         }
                         if (room.getRight() != null) {
-                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
-                            newCoordinates.setX(newCoordinates.getX() + directions[3]);
-                            newCoordinates.setY(newCoordinates.getY() + directions[4]);
-                            newCoordinates.setZ(newCoordinates.getZ() + directions[5]);
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getBlockX(), coordinates.getBlockY(), coordinates.getBlockZ());
+                            newCoordinates.setX(newCoordinates.getBlockX() + directions[3]);
+                            newCoordinates.setY(newCoordinates.getBlockY() + directions[4]);
+                            newCoordinates.setZ(newCoordinates.getBlockZ() + directions[5]);
                             right = new GenerateBuild("right", room.getRight(), newCoordinates, posData);
                         }
                         if (room.getLeft() != null) {
-                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
-                            newCoordinates.setX(newCoordinates.getX() + directions[9]);
-                            newCoordinates.setY(newCoordinates.getY() + directions[10]);
-                            newCoordinates.setZ(newCoordinates.getZ() + directions[11]);
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getBlockX(), coordinates.getBlockY(), coordinates.getBlockZ());
+                            newCoordinates.setX(newCoordinates.getBlockX() + directions[9]);
+                            newCoordinates.setY(newCoordinates.getBlockY() + directions[10]);
+                            newCoordinates.setZ(newCoordinates.getBlockZ() + directions[11]);
                             left = new GenerateBuild("left", room.getLeft(), newCoordinates, posData);
                         }
                     }
                     if (direction.equals("behind")) {
                         CalebWorldEditAPI.tryLoadSchem(room.getSchematicFile(), coordinates, 180, offset);
                         if (room.getBehind() != null) {
-                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
-                            newCoordinates.setX(newCoordinates.getX() - directions[0]);
-                            newCoordinates.setY(newCoordinates.getY() + directions[1]);
-                            newCoordinates.setZ(newCoordinates.getZ() - directions[2]);
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getBlockX(), coordinates.getBlockY(), coordinates.getBlockZ());
+                            newCoordinates.setX(newCoordinates.getBlockX() - directions[0]);
+                            newCoordinates.setY(newCoordinates.getBlockY() + directions[1]);
+                            newCoordinates.setZ(newCoordinates.getBlockZ() - directions[2]);
                             back = new GenerateBuild("behind", room.getBehind(), newCoordinates, posData);
                         }
                         if (room.getRight() != null) {
-                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
-                            newCoordinates.setX(newCoordinates.getX() - directions[9]);
-                            newCoordinates.setY(newCoordinates.getY() + directions[10]);
-                            newCoordinates.setZ(newCoordinates.getZ() - directions[11]);
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getBlockX(), coordinates.getBlockY(), coordinates.getBlockZ());
+                            newCoordinates.setX(newCoordinates.getBlockX() - directions[9]);
+                            newCoordinates.setY(newCoordinates.getBlockY() + directions[10]);
+                            newCoordinates.setZ(newCoordinates.getBlockZ() - directions[11]);
                             right = new GenerateBuild("right", room.getRight(), newCoordinates, posData);
                         }
                         if (room.getLeft() != null) {
-                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
-                            newCoordinates.setX(newCoordinates.getX() - directions[3]);
-                            newCoordinates.setY(newCoordinates.getY() + directions[4]);
-                            newCoordinates.setZ(newCoordinates.getZ() - directions[5]);
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getBlockX(), coordinates.getBlockY(), coordinates.getBlockZ());
+                            newCoordinates.setX(newCoordinates.getBlockX() - directions[3]);
+                            newCoordinates.setY(newCoordinates.getBlockY() + directions[4]);
+                            newCoordinates.setZ(newCoordinates.getBlockZ() - directions[5]);
                             left = new GenerateBuild("left", room.getLeft(), newCoordinates, posData);
                         }
                     }
                     if (direction.equals("left")) {
                         CalebWorldEditAPI.tryLoadSchem(room.getSchematicFile(), coordinates, 270, offset);
                         if (room.getForward() != null) {
-                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
-                            newCoordinates.setX(newCoordinates.getX() + directions[5]);
-                            newCoordinates.setY(newCoordinates.getY() + directions[4]);
-                            newCoordinates.setZ(newCoordinates.getZ() - directions[3]);
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getBlockX(), coordinates.getBlockY(), coordinates.getBlockZ());
+                            newCoordinates.setX(newCoordinates.getBlockX() + directions[5]);
+                            newCoordinates.setY(newCoordinates.getBlockY() + directions[4]);
+                            newCoordinates.setZ(newCoordinates.getBlockZ() - directions[3]);
                             forward = new GenerateBuild("forward", room.getForward(), newCoordinates, posData);
                         }
                         if (room.getBehind() != null) {
-                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
-                            newCoordinates.setX(newCoordinates.getX() + directions[11] );
-                            newCoordinates.setY(newCoordinates.getY() + directions[10]);
-                            newCoordinates.setZ(newCoordinates.getZ() - directions[9]);
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getBlockX(), coordinates.getBlockY(), coordinates.getBlockZ());
+                            newCoordinates.setX(newCoordinates.getBlockX() + directions[11] );
+                            newCoordinates.setY(newCoordinates.getBlockY() + directions[10]);
+                            newCoordinates.setZ(newCoordinates.getBlockZ() - directions[9]);
                             back = new GenerateBuild("behind", room.getBehind(), newCoordinates, posData);
                         }
                         if (room.getLeft() != null) {
-                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
-                            newCoordinates.setX(newCoordinates.getX() + directions[2]);
-                            newCoordinates.setY(newCoordinates.getY() + directions[1]);
-                            newCoordinates.setZ(newCoordinates.getZ() - directions[0]);
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getBlockX(), coordinates.getBlockY(), coordinates.getBlockZ());
+                            newCoordinates.setX(newCoordinates.getBlockX() + directions[2]);
+                            newCoordinates.setY(newCoordinates.getBlockY() + directions[1]);
+                            newCoordinates.setZ(newCoordinates.getBlockZ() - directions[0]);
                             left = new GenerateBuild("left", room.getLeft(), newCoordinates, posData);
                         }
                     }
@@ -351,26 +351,26 @@ public class DungeonRoomLayout {
                         CalebWorldEditAPI.tryLoadSchem(room.getSchematicFile(), coordinates, 90, offset);
 
                         if (room.getForward() != null) {
-                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
-                            newCoordinates.setX(newCoordinates.getX() - directions[11]);
-                            newCoordinates.setY(newCoordinates.getY() + directions[10]);
-                            newCoordinates.setZ(newCoordinates.getZ() + directions[9]);
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getBlockX(), coordinates.getBlockY(), coordinates.getBlockZ());
+                            newCoordinates.setX(newCoordinates.getBlockX() - directions[11]);
+                            newCoordinates.setY(newCoordinates.getBlockY() + directions[10]);
+                            newCoordinates.setZ(newCoordinates.getBlockZ() + directions[9]);
                             forward = new GenerateBuild("forward", room.getForward(), newCoordinates, posData);
                         }
 
                         if (room.getBehind() != null) {
-                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
-                            newCoordinates.setX(newCoordinates.getX() - directions[5] );
-                            newCoordinates.setY(newCoordinates.getY() + directions[4]);
-                            newCoordinates.setZ(newCoordinates.getZ() + directions[3]);
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getBlockX(), coordinates.getBlockY(), coordinates.getBlockZ());
+                            newCoordinates.setX(newCoordinates.getBlockX() - directions[5] );
+                            newCoordinates.setY(newCoordinates.getBlockY() + directions[4]);
+                            newCoordinates.setZ(newCoordinates.getBlockZ() + directions[3]);
                             back = new GenerateBuild("behind", room.getBehind(), newCoordinates, posData);
                         }
 
                         if (room.getRight() != null) {
-                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getX(), coordinates.getY(), coordinates.getZ());
-                            newCoordinates.setX(newCoordinates.getX() - directions[2]);
-                            newCoordinates.setY(newCoordinates.getY() + directions[1]);
-                            newCoordinates.setZ(newCoordinates.getZ() + directions[0]);
+                            Location newCoordinates = new Location(coordinates.getWorld(), coordinates.getBlockX(), coordinates.getBlockY(), coordinates.getBlockZ());
+                            newCoordinates.setX(newCoordinates.getBlockX() - directions[2]);
+                            newCoordinates.setY(newCoordinates.getBlockY() + directions[1]);
+                            newCoordinates.setZ(newCoordinates.getBlockZ() + directions[0]);
                             right = new GenerateBuild("right", room.getRight(), newCoordinates, posData);
                         }
                     }

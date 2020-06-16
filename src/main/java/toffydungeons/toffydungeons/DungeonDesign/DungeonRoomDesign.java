@@ -44,24 +44,27 @@ public class DungeonRoomDesign {
         this.additionalData = new ArrayList<>();
         this.editing = true;
         this.currentOperation = 0;
-        this.southDoor = new Location(player.getWorld(), (int) player.getLocation().getX(), (int) player.getLocation().getY(), (int) player.getLocation().getZ());
+        this.southDoor = new Location(player.getWorld(),  player.getLocation().getBlockX(), player.getLocation().getBlockY(),  player.getLocation().getBlockZ());
         try {
             for (String line : FileSaving.readLines("rooms" + File.separator + editName + ".placement")) {
                 if (line.contains("NORTH:")) {
                     String linex = line.replace("NORTH:", "");
-                    this.northDoor = new Location(this.southDoor.getWorld(), (int) this.southDoor.getX() + Integer.valueOf(linex.split(",")[0]), (int)this.southDoor.getY() + Integer.valueOf(linex.split(",")[1]), (int)this.southDoor.getZ() + Integer.valueOf(linex.split(",")[2]));
+                    this.northDoor = new Location(this.southDoor.getWorld(), (int) this.southDoor.getBlockX() + Integer.valueOf(linex.split(",")[0]), (int)this.southDoor.getBlockY() + Integer.valueOf(linex.split(",")[1]), (int)this.southDoor.getBlockZ() + Integer.valueOf(linex.split(",")[2]));
                 } else if (line.contains("EAST:")) {
                     String linex = line.replace("EAST:", "");
-                    this.eastDoor = new Location(this.southDoor.getWorld(), (int)this.southDoor.getX() + Integer.valueOf(linex.split(",")[0]), (int)this.southDoor.getY() + Integer.valueOf(linex.split(",")[1]), (int)this.southDoor.getZ() + Integer.valueOf(linex.split(",")[2]));
+                    this.eastDoor = new Location(this.southDoor.getWorld(), (int)this.southDoor.getBlockX() + Integer.valueOf(linex.split(",")[0]), (int)this.southDoor.getBlockY() + Integer.valueOf(linex.split(",")[1]), (int)this.southDoor.getBlockZ() + Integer.valueOf(linex.split(",")[2]));
                 } else if  (line.contains("SOUTH")) {
                     String linex = line.replace("SOUTH:", "");
-                    this.origin = new Location(this.southDoor.getWorld(), (int)this.southDoor.getX() - Integer.valueOf(linex.split(",")[0]), (int)this.southDoor.getY() - Integer.valueOf(linex.split(",")[1]), (int)this.southDoor.getZ() - Integer.valueOf(linex.split(",")[2]));
+                    this.origin = new Location(this.southDoor.getWorld(), (int)this.southDoor.getBlockX() - Integer.valueOf(linex.split(",")[0]), (int)this.southDoor.getBlockY() - Integer.valueOf(linex.split(",")[1]), (int)this.southDoor.getBlockZ() - Integer.valueOf(linex.split(",")[2]));
+                    System.out.println(this.origin.getBlockX() + "," + this.origin.getBlockY() + "," + this.origin.getBlockZ());
+                    System.out.println(this.southDoor.getBlockX() + "," + this.southDoor.getBlockY() + "," +  this.southDoor.getBlockZ());
                 } else if  (line.contains("WEST:")) {
                     String linex = line.replace("WEST:", "");
-                    this.westDoor = new Location(this.southDoor.getWorld(), (int)this.southDoor.getX() + Integer.valueOf(linex.split(",")[0]), (int)this.southDoor.getY() + Integer.valueOf(linex.split(",")[1]), (int)this.southDoor.getZ() + Integer.valueOf(linex.split(",")[2]));
+                    this.westDoor = new Location(this.southDoor.getWorld(), (int)this.southDoor.getBlockX() + Integer.valueOf(linex.split(",")[0]), (int)this.southDoor.getBlockY() + Integer.valueOf(linex.split(",")[1]), (int)this.southDoor.getBlockZ() + Integer.valueOf(linex.split(",")[2]));
                 } else if  (line.contains("BORDER:")) {
                     String linex = line.replace("BORDER:", "");
-                    this.endPoint = new Location(this.southDoor.getWorld(), (int)this.southDoor.getX() + Integer.valueOf(linex.split(",")[0]), (int)this.southDoor.getY() + Integer.valueOf(linex.split(",")[1]), (int)this.southDoor.getZ() + Integer.valueOf(linex.split(",")[2]));
+                    this.endPoint = new Location(this.southDoor.getWorld(), (int)this.southDoor.getBlockX() + Integer.valueOf(linex.split(",")[0]), (int)this.southDoor.getBlockY() + Integer.valueOf(linex.split(",")[1]), (int)this.southDoor.getBlockZ() + Integer.valueOf(linex.split(",")[2]));
+                    System.out.println(endPoint.getBlockX() + "," + endPoint.getBlockY() + "," + endPoint.getBlockZ());
                 } else {
                     this.additionalData.add(line);
                 }
@@ -81,13 +84,13 @@ public class DungeonRoomDesign {
                 Location getLoc = southDoor;
                 if (direction.equals("null") || direction.equals("forward")) {
                     System.out.println("Here");
-                    getLoc = new Location(southDoor.getWorld(), (int) southDoor.getX() - Integer.valueOf(linex.split(",")[0]), (int) southDoor.getY() - Integer.valueOf(linex.split(",")[1]), (int) southDoor.getZ() - Integer.valueOf(linex.split(",")[2]));
+                    getLoc = new Location(southDoor.getWorld(), (int) southDoor.getBlockX() - Integer.valueOf(linex.split(",")[0]), (int) southDoor.getBlockY() - Integer.valueOf(linex.split(",")[1]), (int) southDoor.getBlockZ() - Integer.valueOf(linex.split(",")[2]));
                 } else if (direction.equals("left")) {
-                    getLoc = new Location(southDoor.getWorld(), (int) southDoor.getX() - Integer.valueOf(linex.split(",")[2]), (int) southDoor.getY() - Integer.valueOf(linex.split(",")[1]), (int) southDoor.getZ() + Integer.valueOf(linex.split(",")[0]));
+                    getLoc = new Location(southDoor.getWorld(), (int) southDoor.getBlockX() - Integer.valueOf(linex.split(",")[2]), (int) southDoor.getBlockY() - Integer.valueOf(linex.split(",")[1]), (int) southDoor.getBlockZ() + Integer.valueOf(linex.split(",")[0]));
                 } else if (direction.equals("right")) {
-                    getLoc = new Location(southDoor.getWorld(), (int) southDoor.getX() + Integer.valueOf(linex.split(",")[2]), (int) southDoor.getY() - Integer.valueOf(linex.split(",")[1]), (int) southDoor.getZ() - Integer.valueOf(linex.split(",")[0]));
+                    getLoc = new Location(southDoor.getWorld(), (int) southDoor.getBlockX() + Integer.valueOf(linex.split(",")[2]), (int) southDoor.getBlockY() - Integer.valueOf(linex.split(",")[1]), (int) southDoor.getBlockZ() - Integer.valueOf(linex.split(",")[0]));
                 } else if (direction.equals("behind")) {
-                    getLoc = new Location(southDoor.getWorld(), (int) southDoor.getX() + Integer.valueOf(linex.split(",")[0]), (int) southDoor.getY() - Integer.valueOf(linex.split(",")[1]), (int) southDoor.getZ() + Integer.valueOf(linex.split(",")[2]));
+                    getLoc = new Location(southDoor.getWorld(), (int) southDoor.getBlockX() + Integer.valueOf(linex.split(",")[0]), (int) southDoor.getBlockY() - Integer.valueOf(linex.split(",")[1]), (int) southDoor.getBlockZ() + Integer.valueOf(linex.split(",")[2]));
                 }
                 reurnLine += ("," + getLoc.getBlockX() + "," + getLoc.getBlockY() + "," + getLoc.getBlockZ());
              } else if  (line.contains("BORDER:")) {
@@ -95,13 +98,13 @@ public class DungeonRoomDesign {
                  Location getLoc = southDoor;
                  if (direction.equals("null") || direction.equals("forward")) {
                      System.out.println("Here");
-                     getLoc = new Location(southDoor.getWorld(), (int) southDoor.getX() + Integer.valueOf(linex.split(",")[0]), (int) southDoor.getY() + Integer.valueOf(linex.split(",")[1]), (int) southDoor.getZ() + Integer.valueOf(linex.split(",")[2]));
+                     getLoc = new Location(southDoor.getWorld(), (int) southDoor.getBlockX() + Integer.valueOf(linex.split(",")[0]), (int) southDoor.getBlockY() + Integer.valueOf(linex.split(",")[1]), (int) southDoor.getBlockZ() + Integer.valueOf(linex.split(",")[2]));
                  } else if (direction.equals("left")) {
-                     getLoc = new Location(southDoor.getWorld(), (int) southDoor.getX() + Integer.valueOf(linex.split(",")[2]), (int) southDoor.getY() + Integer.valueOf(linex.split(",")[1]), (int) southDoor.getZ() - Integer.valueOf(linex.split(",")[0]));
+                     getLoc = new Location(southDoor.getWorld(), (int) southDoor.getBlockX() + Integer.valueOf(linex.split(",")[2]), (int) southDoor.getBlockY() + Integer.valueOf(linex.split(",")[1]), (int) southDoor.getBlockZ() - Integer.valueOf(linex.split(",")[0]));
                  } else if (direction.equals("right")) {
-                     getLoc = new Location(southDoor.getWorld(), (int) southDoor.getX() - Integer.valueOf(linex.split(",")[2]), (int) southDoor.getY() + Integer.valueOf(linex.split(",")[1]), (int) southDoor.getZ() + Integer.valueOf(linex.split(",")[0]));
+                     getLoc = new Location(southDoor.getWorld(), (int) southDoor.getBlockX() - Integer.valueOf(linex.split(",")[2]), (int) southDoor.getBlockY() + Integer.valueOf(linex.split(",")[1]), (int) southDoor.getBlockZ() + Integer.valueOf(linex.split(",")[0]));
                  } else if (direction.equals("behind")) {
-                     getLoc = new Location(southDoor.getWorld(), (int) southDoor.getX() - Integer.valueOf(linex.split(",")[0]), (int) southDoor.getY() + Integer.valueOf(linex.split(",")[1]), (int) southDoor.getZ() - Integer.valueOf(linex.split(",")[2]));
+                     getLoc = new Location(southDoor.getWorld(), (int) southDoor.getBlockX() - Integer.valueOf(linex.split(",")[0]), (int) southDoor.getBlockY() + Integer.valueOf(linex.split(",")[1]), (int) southDoor.getBlockZ() - Integer.valueOf(linex.split(",")[2]));
                  }
                  reurnLine += ("," + getLoc.getBlockX() + "," + getLoc.getBlockY() + "," + getLoc.getBlockZ());
             }
@@ -136,17 +139,17 @@ public class DungeonRoomDesign {
     public boolean save() {
         FileSaving.saveFile("rooms", "rooms" + File.separator + this.name + ".placement");
         ArrayList<String> saveData = new ArrayList<>();
-        Location loc1 = new Location(origin.getWorld(), Math.min(origin.getX(), endPoint.getX()), Math.min(origin.getY(), endPoint.getY()), Math.min(origin.getZ(), endPoint.getZ()));
-        Location loc2 = new Location(origin.getWorld(), Math.max(origin.getX(), endPoint.getX()), Math.max(origin.getY(), endPoint.getY()), Math.max(origin.getZ(), endPoint.getZ()));
+        Location loc1 = new Location(origin.getWorld(), Math.min(origin.getBlockX(), endPoint.getBlockX()), Math.min(origin.getBlockY(), endPoint.getBlockY()), Math.min(origin.getBlockZ(), endPoint.getBlockZ()));
+        Location loc2 = new Location(origin.getWorld(), Math.max(origin.getBlockX(), endPoint.getBlockX()), Math.max(origin.getBlockY(), endPoint.getBlockY()), Math.max(origin.getBlockZ(), endPoint.getBlockZ()));
         this.safeDoors();
-        saveData.add("NORTH:" + (int)(northDoor.getX() - southDoor.getX()) + "," +  (int)(northDoor.getY() - southDoor.getY()) + "," +  (int)(northDoor.getZ() - southDoor.getZ()));
-        saveData.add("EAST:" + (int)(eastDoor.getX() - southDoor.getX()) + "," + (int)(eastDoor.getY() - southDoor.getY()) + "," + (int)(eastDoor.getZ() - southDoor.getZ()));
-        saveData.add("SOUTH:" + (int)(southDoor.getX() - loc1.getX()) + "," + (int)(southDoor.getY() - loc1.getY()) + "," + (int)(southDoor.getZ() - loc1.getZ()));
-        saveData.add("WEST:" + (int)(westDoor.getX() - southDoor.getX()) + "," + (int)(westDoor.getY() -  southDoor.getY()) + "," + (int)(westDoor.getZ() - southDoor.getZ()));
-        saveData.add("BORDER:" + (int)(loc2.getX() - southDoor.getX()) + "," + (int)(loc2.getY() -  southDoor.getY()) + "," + (int)(loc2.getZ() - southDoor.getZ()));
+        saveData.add("NORTH:" + (int)(northDoor.getBlockX() - southDoor.getBlockX()) + "," +  (int)(northDoor.getBlockY() - southDoor.getBlockY()) + "," +  (int)(northDoor.getBlockZ() - southDoor.getBlockZ()));
+        saveData.add("EAST:" + (int)(eastDoor.getBlockX() - southDoor.getBlockX()) + "," + (int)(eastDoor.getBlockY() - southDoor.getBlockY()) + "," + (int)(eastDoor.getBlockZ() - southDoor.getBlockZ()));
+        saveData.add("SOUTH:" + (int)(southDoor.getBlockX() - loc1.getBlockX()) + "," + (int)(southDoor.getBlockY() - loc1.getBlockY()) + "," + (int)(southDoor.getBlockZ() - loc1.getBlockZ()));
+        saveData.add("WEST:" + (int)(westDoor.getBlockX() - southDoor.getBlockX()) + "," + (int)(westDoor.getBlockY() -  southDoor.getBlockY()) + "," + (int)(westDoor.getBlockZ() - southDoor.getBlockZ()));
+        saveData.add("BORDER:" + (int)(loc2.getBlockX() - southDoor.getBlockX()) + "," + (int)(loc2.getBlockY() -  southDoor.getBlockY()) + "," + (int)(loc2.getBlockZ() - southDoor.getBlockZ()));
         saveData.addAll(additionalData);
         FileSaving.writeFile("rooms" + File.separator + this.name + ".placement", saveData);
-        CalebWorldEditAPI.trySaveSchem(loc1, loc2, this.name, new Vector(loc1.getX() - this.southDoor.getX(), loc1.getY() - this.southDoor.getY(),  loc1.getZ() - this.southDoor.getZ()));
+        CalebWorldEditAPI.trySaveSchem(loc1, loc2, this.name, new Vector(loc1.getBlockX() - this.southDoor.getBlockX(), loc1.getBlockY() - this.southDoor.getBlockY(),  loc1.getBlockZ() - this.southDoor.getBlockZ()));
         CalebWorldEditAPI.setBlock(loc1, loc2, Material.AIR);
         return true;
     }
