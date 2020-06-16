@@ -19,8 +19,8 @@ public class TrapSelection extends AbstractVanityMenu {
         int count = 0;
         if (design.getAdditionalData() != null) {
             ArrayList<String> existingTraps = design.getAdditionalData();
-            for (int x = 0; x < existingTraps.size(); x += 4) {
-                this.getInventory().setItem(count, createGuiItem(Material.PAPER, "Room Trap " + count, "Trap: " + existingTraps.get(x).replace(".trap", "")));
+            for (int x = 0; x < existingTraps.size(); x += 5) {
+                this.getInventory().setItem(count, createGuiItem(Material.PAPER, "Room Trap: " + existingTraps.get(x + 4).replace("SAVE_NAME:", ""), "Trap: " + existingTraps.get(x).replace(".trap", "")));
                 count += 1;
             }
         }

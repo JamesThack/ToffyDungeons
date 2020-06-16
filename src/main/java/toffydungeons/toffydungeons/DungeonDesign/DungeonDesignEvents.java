@@ -7,8 +7,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import toffydungeons.toffydungeons.CurrentEvents.ConstantEvents;
 import toffydungeons.toffydungeons.GUIs.DungeonRoomDesign.DungeonRoomWandCustomiser;
 import toffydungeons.toffydungeons.GUIs.DungeonTraps.PlaceTrapConstant;
@@ -87,6 +89,25 @@ public class DungeonDesignEvents implements Listener {
     }
 
     @EventHandler
+    public void onSpeak(AsyncPlayerChatEvent e) {
+        ItemStack itemInMainHand = e.getPlayer().getInventory().getItemInMainHand();
+        if (itemInMainHand != null && itemInMainHand.getType().equals(Material.RECORD_9) && getPlayerEditor(e.getPlayer()) != null) {
+            DungeonRoomDesign editor = getPlayerEditor(e.getPlayer());
+            if (editor.getCurrentOperation() == 5 && editor.getConstant() != null) {
+                e.setCancelled(true);
+                for (String current : editor.getAdditionalData()) {
+                    if(current.contains("SAVE_NAME:") && current.replace("SAVE_NAME", "").contains(e.getMessage().split(" ")[0].replace(".", "  "))) {
+                        e.getPlayer().sendMessage("§c[Toffy Dungeons]: That trap name is taken for this room");
+                        return;
+                    }
+                }
+                editor.getConstant().setSaveName(e.getMessage().split(" ")[0].replace(".", "  "));
+                e.getPlayer().sendMessage("§a[Toffy Dungeons]: Changed trap name");
+            }
+        }
+    }
+
+    @EventHandler
     public void onClick(PlayerInteractEvent e) {
         DungeonRoomDesign designer = this.getPlayerEditor(e.getPlayer());
         if (e.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.RECORD_9) && designer != null) {
@@ -120,12 +141,20 @@ public class DungeonDesignEvents implements Listener {
     public void onDrop(PlayerDropItemEvent e) {
         DungeonRoomDesign designer = this.getPlayerEditor(e.getPlayer());
         if (e.getItemDrop().getItemStack().getType().equals(Material.RECORD_9) && designer != null) {
-            if (designer.getConstant() != null) {
-                designer.setAdditionalData(designer.getConstant().saveTrapInfo(designer.getAdditionalData()));
-                e.getPlayer().sendMessage("§a[Toffy Dungeons]: Finished adding the trap");
+            if (designer.getConstant() != null && designer.getConstant().isValid()) {
+                if (designer.getConstant().getSaveName() !=  null) {
+                    designer.setAdditionalData(designer.getConstant().saveTrapInfo(designer.getAdditionalData()));
+                    e.getPlayer().sendMessage("§a[Toffy Dungeons]: Finished adding the trap");
+                    e.setCancelled(true);
+                    designer.setCurrentOperation(0);
+                    designer.setConstant(null);
+                } else {
+                    e.setCancelled(true);
+                    e.getPlayer().sendMessage("§c[Toffy Dungeons]: Please type a valid name for the trap");
+                }
+            } else if (designer.getConstant() != null && designer.getConstant().isValid()) {
                 e.setCancelled(true);
-                designer.setCurrentOperation(0);
-                designer.setConstant(null);
+                e.getPlayer().sendMessage("§c[Toffy Dungeons]: Please select a valid activation area and spawn location");
             } else {
                 e.setCancelled(true);
                 DungeonRoomWandCustomiser customiser = new DungeonRoomWandCustomiser(designer);

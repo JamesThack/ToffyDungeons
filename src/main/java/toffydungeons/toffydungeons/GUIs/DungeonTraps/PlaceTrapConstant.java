@@ -1,7 +1,5 @@
 package toffydungeons.toffydungeons.GUIs.DungeonTraps;
 
-import org.bukkit.Location;
-
 import java.util.ArrayList;
 
 public class PlaceTrapConstant {
@@ -9,7 +7,7 @@ public class PlaceTrapConstant {
     private int[] loc1;
     private int[] loc2;
     private int[] spawnLoc;
-    private Location southDoor;
+    private String saveName;
     private String trapName;
 
     public PlaceTrapConstant(String trapName) {
@@ -25,16 +23,16 @@ public class PlaceTrapConstant {
         this.loc2 = loc2;
     }
 
-    public int[] getLoc1() {
-        return loc1;
+    public boolean isValid() {
+        return(loc1 != null && loc2!= null && spawnLoc != null);
     }
 
-    public int[]tLoc2() {
-        return loc2;
+    public String getSaveName() {
+        return saveName;
     }
 
-    public int[] getSpawnLoc() {
-        return spawnLoc;
+    public void setSaveName(String saveName) {
+        this.saveName = saveName;
     }
 
     public void setSpawnLoc(int[] spawnLoc) {
@@ -46,6 +44,7 @@ public class PlaceTrapConstant {
         oldInf.add("REG1:" + loc1[0] + "," + loc1[1] + "," + loc1[2]);
         oldInf.add("REG2:" + loc2[0] + "," + loc2[1] + "," + loc2[2]);
         oldInf.add("HAPPEN:" + spawnLoc[0] + "," + spawnLoc[1] + "," + spawnLoc[2]);
+        oldInf.add("SAVE_NAME:" + saveName);
         return oldInf;
     }
 }
