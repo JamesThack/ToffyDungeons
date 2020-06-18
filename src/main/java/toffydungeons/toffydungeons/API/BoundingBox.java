@@ -1,5 +1,6 @@
 package toffydungeons.toffydungeons.API;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 
@@ -18,5 +19,14 @@ public class BoundingBox {
 
     public boolean entityInBox(Entity entity) {
         return (this.loc1.getWorld().equals(entity.getWorld()) && entity.getLocation().getBlockX() >= this.loc1.getBlockX() && entity.getLocation().getBlockY() >= this.loc1.getBlockY() && entity.getLocation().getBlockZ() >= this.loc1.getBlockZ() && entity.getLocation().getBlockX() <= this.loc2.getBlockX() && entity.getLocation().getBlockY() <= this.loc2.getBlockY() && entity.getLocation().getBlockZ() <= this.loc2.getBlockZ());
+    }
+
+    public static String serialiseLocation(Location loc) {
+        return (loc.getWorld().toString() + ":" + loc.getBlockX() + ":" + loc.getBlockY() + ":" + loc.getBlockZ());
+    }
+
+    public static Location deseraliseLocation(String s) {
+        String[] split = s.split(":");
+        return new Location (Bukkit.getWorld(split[0]), Integer.valueOf(split[1]), Integer.valueOf(split[2]), Integer.valueOf(split[3]));
     }
 }

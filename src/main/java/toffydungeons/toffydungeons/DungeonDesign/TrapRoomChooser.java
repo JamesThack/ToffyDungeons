@@ -11,6 +11,11 @@ public class TrapRoomChooser extends AbstractFileMenu {
         this.design = design;
     }
 
+    public TrapRoomChooser(int page, DungeonRoomDesign design) {
+        super("Trap Selector", "Traps", page);
+        this.design = design;
+    }
+
     public DungeonRoomDesign getDesign() {
         return design;
     }

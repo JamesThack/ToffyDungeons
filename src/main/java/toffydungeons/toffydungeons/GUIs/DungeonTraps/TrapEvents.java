@@ -12,11 +12,8 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import toffydungeons.toffydungeons.API.FileSaving;
 import toffydungeons.toffydungeons.API.InventoryAPI;
-import toffydungeons.toffydungeons.DungeonDesign.TrapRoomChooser;
-import toffydungeons.toffydungeons.DungeonDesign.TrapSelection;
 import toffydungeons.toffydungeons.GUIs.DungeonMainMenu;
 import toffydungeons.toffydungeons.GUIs.extendable.AbstractFileMenu;
-import toffydungeons.toffydungeons.GUIs.extendable.AbstractVanityMenu;
 
 import java.io.File;
 
@@ -81,14 +78,6 @@ public class TrapEvents implements Listener {
                 AbstractFileMenu menu = new AbstractFileMenu("Current Traps", "traps", holder.getPage());
                 menu.initialiseItems();
                 e.getWhoClicked().openInventory(menu.getInventory());
-            }
-        } else if (e.getInventory().getHolder() instanceof AbstractVanityMenu && e.getInventory().getTitle().contains("Room Traps")) {
-            e.setCancelled(true);
-            TrapSelection selector = (TrapSelection) e.getInventory().getHolder();
-            if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
-                TrapRoomChooser chooser = new TrapRoomChooser(selector.getDesign());
-                chooser.initialiseItems();
-                e.getWhoClicked().openInventory(chooser.getInventory());
             }
         }
     }

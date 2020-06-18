@@ -4,6 +4,7 @@ import com.sk89q.worldedit.Vector;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import toffydungeons.toffydungeons.API.BoundingBox;
 import toffydungeons.toffydungeons.API.CalebWorldEditAPI;
 import toffydungeons.toffydungeons.API.FileSaving;
 import toffydungeons.toffydungeons.GUIs.DungeonTraps.PlaceTrapConstant;
@@ -147,7 +148,16 @@ public class DungeonRoomDesign {
         saveData.add("SOUTH:" + (southDoor.getBlockX() - loc1.getBlockX()) + "," + (southDoor.getBlockY() - loc1.getBlockY()) + "," + (southDoor.getBlockZ() - loc1.getBlockZ()));
         saveData.add("WEST:" + (westDoor.getBlockX() - southDoor.getBlockX()) + "," + (westDoor.getBlockY() -  southDoor.getBlockY()) + "," + (westDoor.getBlockZ() - southDoor.getBlockZ()));
         saveData.add("BORDER:" + (loc2.getBlockX() - southDoor.getBlockX()) + "," + (loc2.getBlockY() -  southDoor.getBlockY()) + "," + (loc2.getBlockZ() - southDoor.getBlockZ()));
-        saveData.addAll(additionalData);
+        ArrayList<String> betterData = new ArrayList<>();
+        for (String cur : additionalData) {
+            if (cur.contains("REG1:") || cur.contains("REG2:") || cur.contains("HAPPEN:")) {
+                int[] relCoords = DungeonDesignEvents.getRelativeLocation(this,BoundingBox.deseraliseLocation(cur.replace("REG1:", "").replace("REG2:", "").replace("HAPPEN:", "")) );
+                betterData.add(cur.split(":")[0] + ":" + relCoords[0]  +"," + relCoords[1] + "," + relCoords[2]);
+            } else {
+                betterData.add(cur);
+            }
+        }
+        saveData.addAll(betterData);
         FileSaving.writeFile("rooms" + File.separator + this.name + ".placement", saveData);
         CalebWorldEditAPI.trySaveSchem(loc1, loc2, this.name, new Vector(loc1.getBlockX() - this.southDoor.getBlockX(), loc1.getBlockY() - this.southDoor.getBlockY(),  loc1.getBlockZ() - this.southDoor.getBlockZ()));
         CalebWorldEditAPI.setBlock(loc1, loc2, Material.AIR);

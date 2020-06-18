@@ -20,13 +20,12 @@ public class TrapSelection extends AbstractVanityMenu {
         if (design.getAdditionalData() != null) {
             ArrayList<String> existingTraps = design.getAdditionalData();
             for (int x = 0; x < existingTraps.size(); x += 5) {
-                this.getInventory().setItem(count, createGuiItem(Material.PAPER, "Room Trap: " + existingTraps.get(x + 4).replace("SAVE_NAME:", ""), "Trap: " + existingTraps.get(x).replace(".trap", "")));
+                this.getInventory().setItem(count, createGuiItem(Material.PAPER, "Room Trap: " + existingTraps.get(x).replace("SAVE_NAME:", ""), "Trap Type: " + existingTraps.get(x + 1).replace(".trap", "")));
                 count += 1;
             }
         }
         this.getInventory().setItem(53, createGuiItem(Material.EMERALD_BLOCK, "§aCreate New Trap"));
     }
-
     public DungeonRoomDesign getDesign() {
         return design;
     }

@@ -10,12 +10,15 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import toffydungeons.toffydungeons.CurrentEvents.ConstantEvents;
 import toffydungeons.toffydungeons.GUIs.DungeonRoomDesign.DungeonRoomWandCustomiser;
 import toffydungeons.toffydungeons.GUIs.DungeonTraps.PlaceTrapConstant;
+import toffydungeons.toffydungeons.GUIs.extendable.AbstractVanityMenu;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DungeonDesignEvents implements Listener {
 
@@ -26,6 +29,12 @@ public class DungeonDesignEvents implements Listener {
 
     public DungeonDesignEvents() {
         this.currentEdits = new ArrayList<>();
+    }
+
+    public static boolean compareLocations(Location loc1, Location loc2) {
+        if (loc1 !=null && loc2 != null)
+            return (loc1.getX() == loc2.getX() && loc1.getY() == loc2.getY() && loc1.getZ() == loc2.getZ());
+        return false;
     }
 
     public void startNewDungeonEditor(Player player) {
@@ -65,13 +74,7 @@ public class DungeonDesignEvents implements Listener {
         } return null;
     }
 
-    public static boolean compareLocations(Location loc1, Location loc2) {
-        if (loc1 !=null && loc2 != null)
-            return (loc1.getX() == loc2.getX() && loc1.getY() == loc2.getY() && loc1.getZ() == loc2.getZ());
-        return false;
-    }
-
-    private int[] getRelativeLocation(DungeonRoomDesign design, Location validLoc) {
+    public static  int[] getRelativeLocation(DungeonRoomDesign design, Location validLoc) {
         Location origin = design.getOrigin();
         Location endPoint = design.getEndPoint();
         Location loc1 = new Location(origin.getWorld(), Math.min(origin.getX(), endPoint.getX()), Math.min(origin.getY(), endPoint.getY()), Math.min(origin.getZ(), endPoint.getZ()));
@@ -86,6 +89,26 @@ public class DungeonDesignEvents implements Listener {
             return new int[]{design.getSouthDoor().getBlockX() - validLoc.getBlockX(), validLoc.getBlockY() - design.getSouthDoor().getBlockY(), design.getSouthDoor().getBlockZ() -  validLoc.getBlockZ()};
         }
         return new int[]{0,0,0};
+    }
+
+    private Location locFromCoords(int[] coords, Location loc1s, Location loc2s, Location spawnLocs) {
+//                    Location loc1 = new Location(Bukkit.getWorld(splitLine[1]), Integer.valueOf(splitLine[5]), Integer.valueOf(splitLine[6]), Integer.valueOf(splitLine[7]));
+//                    Location loc2 = new Location(Bukkit.getWorld(splitLine[1]), Integer.valueOf(splitLine[8]), Integer.valueOf(splitLine[9]), Integer.valueOf(splitLine[10]));
+//                    Location spawnLoc = new Location(Bukkit.getWorld(splitLine[1]), Integer.valueOf(splitLine[2]), Integer.valueOf(splitLine[3]), Integer.valueOf(splitLine[4]));
+       Location loc1 = loc1s.clone();
+       Location loc2 = loc2s.clone();
+       Location spawnLoc = spawnLocs.clone();
+        if (ConstantEvents.getDirection(loc1, loc2).equals("posx")) {
+            return spawnLoc.add(coords[2], coords[1], -coords[0]);
+        } else if (ConstantEvents.getDirection(loc1, loc2).equals("negx")) {
+            return spawnLoc.add(-coords[2], coords[1], coords[0]);
+        } else if (ConstantEvents.getDirection(loc1, loc2).equals("posz")) {
+            return spawnLoc.add(coords[0], coords[1], coords[2]);
+            //return new int[]{player.getLocation().getBlockX() - Integer.valueOf(splitLine[2]), player.getLocation().getBlockY() - Integer.valueOf(splitLine[3]), player.getLocation().getBlockZ() - Integer.valueOf(splitLine[4])};
+        } else if (ConstantEvents.getDirection(loc1, loc2).equals("negz")) {
+            return spawnLoc.add(-coords[0], coords[1], -coords[2]);
+            // return new int[]{Integer.valueOf(splitLine[2]) - player.getLocation().getBlockX(), player.getLocation().getBlockY() - Integer.valueOf(splitLine[3]), Integer.valueOf(splitLine[4]) -  player.getLocation().getBlockZ()};
+        } return null;
     }
 
     @EventHandler
@@ -123,13 +146,13 @@ public class DungeonDesignEvents implements Listener {
                 e.getPlayer().sendMessage("§a[Toffy Dungeons]: Updated door position!");
             } else if (designer.getCurrentOperation() == 5) {
                 if (e.getPlayer().isSneaking()) {
-                    designer.getConstant().setSpawnLoc(getRelativeLocation(designer, e.getClickedBlock().getLocation()));
+                    designer.getConstant().setSpawnLoc(e.getClickedBlock().getLocation());
                     e.getPlayer().sendMessage("§a[Toffy Dungeons]: Updated trap spawn");
                 } else if (e.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
-                    designer.getConstant().setLoc1(getRelativeLocation(designer, e.getClickedBlock().getLocation()));
+                    designer.getConstant().setLoc1(e.getClickedBlock().getLocation());
                     e.getPlayer().sendMessage("§a[Toffy Dungeons]: Updated trap region point 1");
-                }else if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-                    designer.getConstant().setLoc2(getRelativeLocation(designer, e.getClickedBlock().getLocation()));
+                }else if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && e.getHand().equals(EquipmentSlot.HAND)) {
+                    designer.getConstant().setLoc2(e.getClickedBlock().getLocation());
                     e.getPlayer().sendMessage("§a[Toffy Dungeons]: Updated trap region point 2");
                 }
             }
@@ -214,12 +237,55 @@ public class DungeonDesignEvents implements Listener {
         } else if (e.getInventory().getHolder() instanceof TrapRoomChooser) {
             e.setCancelled(true);
             DungeonRoomDesign design = ((TrapRoomChooser) e.getInventory().getHolder()).getDesign();
-            if (e.getCurrentItem().getType().equals(Material.SMOOTH_BRICK) && e.getCurrentItem().getItemMeta() != null) {
+            TrapRoomChooser chooser = (TrapRoomChooser) e.getInventory().getHolder();
+            if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.SMOOTH_BRICK) && e.getCurrentItem().getItemMeta() != null) {
                 design.setCurrentOperation(5);
                 PlaceTrapConstant constant = new PlaceTrapConstant(e.getCurrentItem().getItemMeta().getDisplayName());
                 design.setConstant(constant);
                 e.getWhoClicked().closeInventory();
                 e.getWhoClicked().sendMessage("§a[Toffy Dungeons]: Started placing a trap, left/right click to set activation region and sneak click to set trigger location");
+            } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.REDSTONE_BLOCK) && e.getCurrentItem().getItemMeta() != null) {
+                e.getWhoClicked().closeInventory();
+            } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.PAPER)) {
+                if (e.getCurrentItem().getItemMeta().getDisplayName().equals("Previous Page") && chooser.getPage() > 1) {
+                    TrapRoomChooser menu = new TrapRoomChooser(chooser.getPage() - 1, chooser.getDesign());
+                    menu.initialiseItems();
+                    e.getWhoClicked().openInventory(menu.getInventory());
+                } else if (e.getCurrentItem().getItemMeta().getDisplayName().equals("Next Page")) {
+                    TrapRoomChooser menu = new TrapRoomChooser(chooser.getPage() + 1, chooser.getDesign());
+                    menu.initialiseItems();
+                    e.getWhoClicked().openInventory(menu.getInventory());
+                }
+            }
+        } else if (e.getInventory().getHolder() instanceof AbstractVanityMenu && e.getInventory().getTitle().contains("Room Traps")) {
+            e.setCancelled(true);
+            TrapSelection selector = (TrapSelection) e.getInventory().getHolder();
+            if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
+                TrapRoomChooser chooser = new TrapRoomChooser(selector.getDesign());
+                chooser.initialiseItems();
+                e.getWhoClicked().openInventory(chooser.getInventory());
+            } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.PAPER) && e.getClick().isShiftClick()) {
+                ArrayList<String> additionalData = selector.getDesign().getAdditionalData();
+                for (int x = 0; x < additionalData.size(); x++) {
+                    if (additionalData.get(x).replace("SAVE_NAME:", "").equals(e.getCurrentItem().getItemMeta().getDisplayName().replace("Room Trap: ", ""))) {
+                        additionalData.subList(x, x+5).clear();
+                    }
+                } TrapSelection newMenu = new TrapSelection(selector.getDesign());
+                newMenu.initaliseItems();
+                e.getWhoClicked().openInventory(newMenu.getInventory());
+            } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.PAPER) && !e.getClick().isShiftClick()) {
+                ArrayList<String> additionalData = selector.getDesign().getAdditionalData();
+                for (int x = 0; x < additionalData.size(); x++) {
+                    if (additionalData.get(x).replace("SAVE_NAME:", "").equals(e.getCurrentItem().getItemMeta().getDisplayName().replace("Room Trap: ", ""))) {
+                        List<String> alpha = additionalData.subList(x, x+5);
+                        PlaceTrapConstant constant = new PlaceTrapConstant(alpha.get(1));
+                        Location pos1 = locFromCoords( new int[]{Integer.valueOf(alpha.get(2).replace("REG1:", "").split(",")[0]), Integer.valueOf(alpha.get(2).replace("REG1:", "").split(",")[1]), Integer.valueOf(alpha.get(2).replace("REG1:", "").split(",")[2])}, selector.getDesign().getOrigin(), selector.getDesign().getEndPoint(), selector.getDesign().getSouthDoor());
+                        Location pos2 = locFromCoords( new int[]{Integer.valueOf(alpha.get(3).replace("REG2:", "").split(",")[0]), Integer.valueOf(alpha.get(3).replace("REG2:", "").split(",")[1]), Integer.valueOf(alpha.get(3).replace("REG2:", "").split(",")[2])}, selector.getDesign().getOrigin(), selector.getDesign().getEndPoint(), selector.getDesign().getSouthDoor());
+                        System.out.println(pos2.getBlockX() + "," + pos2.getBlockY()  +"," + pos2.getBlockZ());
+                        Location pos3 = locFromCoords( new int[]{Integer.valueOf(alpha.get(4).replace("HAPPEN:", "").split(",")[0]), Integer.valueOf(alpha.get(4).replace("HAPPEN:", "").split(",")[1]), Integer.valueOf(alpha.get(4).replace("HAPPEN:", "").split(",")[2])}, selector.getDesign().getOrigin(), selector.getDesign().getEndPoint(), selector.getDesign().getSouthDoor());
+                        System.out.println(pos3.getBlockX() + "," + pos3.getBlockY()  +"," + pos3.getBlockZ());
+                    }
+                }
             }
         }
     }
