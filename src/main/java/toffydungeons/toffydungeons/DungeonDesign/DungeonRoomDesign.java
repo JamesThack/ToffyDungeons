@@ -57,17 +57,22 @@ public class DungeonRoomDesign {
                 } else if  (line.contains("SOUTH")) {
                     String linex = line.replace("SOUTH:", "");
                     this.origin = new Location(this.southDoor.getWorld(), this.southDoor.getBlockX() - Integer.valueOf(linex.split(",")[0]), this.southDoor.getBlockY() - Integer.valueOf(linex.split(",")[1]), this.southDoor.getBlockZ() - Integer.valueOf(linex.split(",")[2]));
-                    System.out.println(this.origin.getBlockX() + "," + this.origin.getBlockY() + "," + this.origin.getBlockZ());
-                    System.out.println(this.southDoor.getBlockX() + "," + this.southDoor.getBlockY() + "," +  this.southDoor.getBlockZ());
                 } else if  (line.contains("WEST:")) {
                     String linex = line.replace("WEST:", "");
                     this.westDoor = new Location(this.southDoor.getWorld(), this.southDoor.getBlockX() + Integer.valueOf(linex.split(",")[0]), this.southDoor.getBlockY() + Integer.valueOf(linex.split(",")[1]), this.southDoor.getBlockZ() + Integer.valueOf(linex.split(",")[2]));
                 } else if  (line.contains("BORDER:")) {
                     String linex = line.replace("BORDER:", "");
                     this.endPoint = new Location(this.southDoor.getWorld(), this.southDoor.getBlockX() + Integer.valueOf(linex.split(",")[0]), this.southDoor.getBlockY() + Integer.valueOf(linex.split(",")[1]), this.southDoor.getBlockZ() + Integer.valueOf(linex.split(",")[2]));
-                    System.out.println(endPoint.getBlockX() + "," + endPoint.getBlockY() + "," + endPoint.getBlockZ());
                 } else {
-                    this.additionalData.add(line);
+                    if (line.contains("REG1:") || line.contains("REG2:") || line.contains("HAPPEN:")) {
+                        String[] trueLine = line.replace("REG1:", "").replace("REG2:", "").replace("HAPPEN:", "").split(",");
+                        int[] relCoords = new int[]{Integer.valueOf(trueLine[0]), Integer.valueOf(trueLine[1]), Integer.valueOf(trueLine[2])};
+                        Location deser = DungeonDesignEvents.locFromCoords(relCoords, this);
+                        String newLine = (line.split(":")[0] + ":" + BoundingBox.serialiseLocation(deser));
+                        additionalData.add(newLine);
+                    } else {
+                        additionalData.add(line);
+                    }
                 }
             }
             CalebWorldEditAPI.tryLoadSchem(editName, player.getLocation(), new Vector(0, 0, 0));
@@ -84,7 +89,6 @@ public class DungeonRoomDesign {
                 String linex = line.replace("SOUTH:", "");
                 Location getLoc = southDoor;
                 if (direction.equals("null") || direction.equals("forward")) {
-                    System.out.println("Here");
                     getLoc = new Location(southDoor.getWorld(), southDoor.getBlockX() - Integer.valueOf(linex.split(",")[0]), southDoor.getBlockY() - Integer.valueOf(linex.split(",")[1]), southDoor.getBlockZ() - Integer.valueOf(linex.split(",")[2]));
                 } else if (direction.equals("left")) {
                     getLoc = new Location(southDoor.getWorld(), southDoor.getBlockX() - Integer.valueOf(linex.split(",")[2]), southDoor.getBlockY() - Integer.valueOf(linex.split(",")[1]), southDoor.getBlockZ() + Integer.valueOf(linex.split(",")[0]));
@@ -98,7 +102,6 @@ public class DungeonRoomDesign {
                 String linex = line.replace("BORDER:", "");
                  Location getLoc = southDoor;
                  if (direction.equals("null") || direction.equals("forward")) {
-                     System.out.println("Here");
                      getLoc = new Location(southDoor.getWorld(), southDoor.getBlockX() + Integer.valueOf(linex.split(",")[0]), southDoor.getBlockY() + Integer.valueOf(linex.split(",")[1]), southDoor.getBlockZ() + Integer.valueOf(linex.split(",")[2]));
                  } else if (direction.equals("left")) {
                      getLoc = new Location(southDoor.getWorld(), southDoor.getBlockX() + Integer.valueOf(linex.split(",")[2]), southDoor.getBlockY() + Integer.valueOf(linex.split(",")[1]), southDoor.getBlockZ() - Integer.valueOf(linex.split(",")[0]));

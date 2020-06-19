@@ -22,7 +22,7 @@ public class BoundingBox {
     }
 
     public static String serialiseLocation(Location loc) {
-        return (loc.getWorld().toString() + ":" + loc.getBlockX() + ":" + loc.getBlockY() + ":" + loc.getBlockZ());
+        return (loc.getWorld().getName() + ":" + loc.getBlockX() + ":" + loc.getBlockY() + ":" + loc.getBlockZ());
     }
 
     public static Location deseraliseLocation(String s) {

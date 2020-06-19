@@ -34,6 +34,18 @@ public class PlaceTrapConstant {
         return saveName;
     }
 
+    public Location getLoc1() {
+        return loc1;
+    }
+
+    public Location getLoc2() {
+        return loc2;
+    }
+
+    public Location getSpawnLoc() {
+        return spawnLoc;
+    }
+
     public void setSaveName(String saveName) {
         this.saveName = saveName;
     }
@@ -43,6 +55,11 @@ public class PlaceTrapConstant {
     }
 
     public ArrayList<String> saveTrapInfo(ArrayList<String> oldInf) {
+        for (int x =0; x < oldInf.size(); x++) {
+            if (oldInf.get(x).equals("SAVE_NAME:" + saveName)) {
+                oldInf.subList(x, x+5).clear();
+            }
+        }
         oldInf.add("SAVE_NAME:" + saveName);
         oldInf.add(trapName);
         oldInf.add("REG1:" + BoundingBox.serialiseLocation(loc1));

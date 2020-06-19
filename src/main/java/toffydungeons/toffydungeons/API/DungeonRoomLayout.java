@@ -166,7 +166,6 @@ public class DungeonRoomLayout {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(Bukkit.getPluginManager().getPlugin("ToffyDungeons"), unloader, 20 * buildTime);
                 buildTime += 1;
             } else {
-                System.out.println(line.split(",").length);;
             }
         }
     }

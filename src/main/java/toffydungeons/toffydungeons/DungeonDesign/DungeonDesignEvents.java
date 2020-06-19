@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import toffydungeons.toffydungeons.API.BoundingBox;
 import toffydungeons.toffydungeons.CurrentEvents.ConstantEvents;
 import toffydungeons.toffydungeons.GUIs.DungeonRoomDesign.DungeonRoomWandCustomiser;
 import toffydungeons.toffydungeons.GUIs.DungeonTraps.PlaceTrapConstant;
@@ -91,13 +92,10 @@ public class DungeonDesignEvents implements Listener {
         return new int[]{0,0,0};
     }
 
-    private Location locFromCoords(int[] coords, Location loc1s, Location loc2s, Location spawnLocs) {
-//                    Location loc1 = new Location(Bukkit.getWorld(splitLine[1]), Integer.valueOf(splitLine[5]), Integer.valueOf(splitLine[6]), Integer.valueOf(splitLine[7]));
-//                    Location loc2 = new Location(Bukkit.getWorld(splitLine[1]), Integer.valueOf(splitLine[8]), Integer.valueOf(splitLine[9]), Integer.valueOf(splitLine[10]));
-//                    Location spawnLoc = new Location(Bukkit.getWorld(splitLine[1]), Integer.valueOf(splitLine[2]), Integer.valueOf(splitLine[3]), Integer.valueOf(splitLine[4]));
-       Location loc1 = loc1s.clone();
-       Location loc2 = loc2s.clone();
-       Location spawnLoc = spawnLocs.clone();
+    public static Location locFromCoords(int[] coords, DungeonRoomDesign design) {
+       Location loc1 = design.getOrigin().clone();
+       Location loc2 = design.getEndPoint().clone();
+       Location spawnLoc = design.getSouthDoor().clone();
         if (ConstantEvents.getDirection(loc1, loc2).equals("posx")) {
             return spawnLoc.add(coords[2], coords[1], -coords[0]);
         } else if (ConstantEvents.getDirection(loc1, loc2).equals("negx")) {
@@ -141,11 +139,11 @@ public class DungeonDesignEvents implements Listener {
             } else if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && !compareLocations(e.getClickedBlock().getLocation(), designer.getEndPoint()) && designer.getCurrentOperation() == 0) {
                 designer.setEndPoint(e.getClickedBlock().getLocation());
                 e.getPlayer().sendMessage("§a[Toffy Dungeons]: Changed point 2");
-            } else if (designer.getCurrentOperation() > 0 &&designer.getCurrentOperation() < 5) {
+            } else if (designer.getCurrentOperation() > 0 &&designer.getCurrentOperation() < 5 && e.getHand().equals(EquipmentSlot.HAND)) {
                 designer.setDoor(e.getClickedBlock().getLocation());
                 e.getPlayer().sendMessage("§a[Toffy Dungeons]: Updated door position!");
             } else if (designer.getCurrentOperation() == 5) {
-                if (e.getPlayer().isSneaking()) {
+                if (e.getPlayer().isSneaking() && e.getHand().equals(EquipmentSlot.HAND)) {
                     designer.getConstant().setSpawnLoc(e.getClickedBlock().getLocation());
                     e.getPlayer().sendMessage("§a[Toffy Dungeons]: Updated trap spawn");
                 } else if (e.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
@@ -279,11 +277,14 @@ public class DungeonDesignEvents implements Listener {
                     if (additionalData.get(x).replace("SAVE_NAME:", "").equals(e.getCurrentItem().getItemMeta().getDisplayName().replace("Room Trap: ", ""))) {
                         List<String> alpha = additionalData.subList(x, x+5);
                         PlaceTrapConstant constant = new PlaceTrapConstant(alpha.get(1));
-                        Location pos1 = locFromCoords( new int[]{Integer.valueOf(alpha.get(2).replace("REG1:", "").split(",")[0]), Integer.valueOf(alpha.get(2).replace("REG1:", "").split(",")[1]), Integer.valueOf(alpha.get(2).replace("REG1:", "").split(",")[2])}, selector.getDesign().getOrigin(), selector.getDesign().getEndPoint(), selector.getDesign().getSouthDoor());
-                        Location pos2 = locFromCoords( new int[]{Integer.valueOf(alpha.get(3).replace("REG2:", "").split(",")[0]), Integer.valueOf(alpha.get(3).replace("REG2:", "").split(",")[1]), Integer.valueOf(alpha.get(3).replace("REG2:", "").split(",")[2])}, selector.getDesign().getOrigin(), selector.getDesign().getEndPoint(), selector.getDesign().getSouthDoor());
-                        System.out.println(pos2.getBlockX() + "," + pos2.getBlockY()  +"," + pos2.getBlockZ());
-                        Location pos3 = locFromCoords( new int[]{Integer.valueOf(alpha.get(4).replace("HAPPEN:", "").split(",")[0]), Integer.valueOf(alpha.get(4).replace("HAPPEN:", "").split(",")[1]), Integer.valueOf(alpha.get(4).replace("HAPPEN:", "").split(",")[2])}, selector.getDesign().getOrigin(), selector.getDesign().getEndPoint(), selector.getDesign().getSouthDoor());
-                        System.out.println(pos3.getBlockX() + "," + pos3.getBlockY()  +"," + pos3.getBlockZ());
+                        constant.setSaveName(e.getCurrentItem().getItemMeta().getDisplayName().replace("Room Trap: ", ""));
+                        constant.setLoc1(BoundingBox.deseraliseLocation(alpha.get(2).replace("REG1:", "")));
+                        constant.setLoc2(BoundingBox.deseraliseLocation(alpha.get(3).replace("REG2:", "")));
+                        constant.setSpawnLoc(BoundingBox.deseraliseLocation(alpha.get(4).replace("HAPPEN:", "")));
+                        selector.getDesign().setConstant(constant);
+                        selector.getDesign().setCurrentOperation(5);
+                        e.getWhoClicked().closeInventory();
+                        e.getWhoClicked().sendMessage("§a[Toffy Dungeons]: Started editing room trap");
                     }
                 }
             }
