@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import toffydungeons.toffydungeons.GUIs.DungeonLayout.DungeonCreationMenu;
 import toffydungeons.toffydungeons.GUIs.DungeonRoomDesign.DungeonRoomSelector;
-import toffydungeons.toffydungeons.GUIs.DungeonTraps.DungeonTrapType;
+import toffydungeons.toffydungeons.DungeonTraps.DungeonTrapType;
 import toffydungeons.toffydungeons.GUIs.extendable.AbstractFileMenu;
 
 import java.util.ArrayList;

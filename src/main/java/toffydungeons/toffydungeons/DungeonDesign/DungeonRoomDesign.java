@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import toffydungeons.toffydungeons.API.BoundingBox;
 import toffydungeons.toffydungeons.API.CalebWorldEditAPI;
 import toffydungeons.toffydungeons.API.FileSaving;
-import toffydungeons.toffydungeons.GUIs.DungeonTraps.PlaceTrapConstant;
+import toffydungeons.toffydungeons.DungeonTraps.PlaceTrapConstant;
 
 import java.io.File;
 import java.util.ArrayList;

@@ -6,8 +6,8 @@ import toffydungeons.toffydungeons.CurrentEvents.ConstantEvents;
 import toffydungeons.toffydungeons.DungeonDesign.DungeonDesignEvents;
 import toffydungeons.toffydungeons.GUIs.DungeonLayout.GenerationEvents;
 import toffydungeons.toffydungeons.GUIs.DungeonMainMenu;
-import toffydungeons.toffydungeons.GUIs.DungeonTraps.DungeonTrapType;
-import toffydungeons.toffydungeons.GUIs.DungeonTraps.TrapEvents;
+import toffydungeons.toffydungeons.DungeonTraps.DungeonTrapType;
+import toffydungeons.toffydungeons.DungeonTraps.TrapEvents;
 import toffydungeons.toffydungeons.GUIs.InventoryEvents;
 import toffydungeons.toffydungeons.commands.TDungeonCommand;
 

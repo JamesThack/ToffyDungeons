@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import toffydungeons.toffydungeons.API.BoundingBox;
 import toffydungeons.toffydungeons.CurrentEvents.ConstantEvents;
 import toffydungeons.toffydungeons.GUIs.DungeonRoomDesign.DungeonRoomWandCustomiser;
-import toffydungeons.toffydungeons.GUIs.DungeonTraps.PlaceTrapConstant;
+import toffydungeons.toffydungeons.DungeonTraps.PlaceTrapConstant;
 import toffydungeons.toffydungeons.GUIs.extendable.AbstractVanityMenu;
 
 import java.util.ArrayList;
@@ -164,6 +164,7 @@ public class DungeonDesignEvents implements Listener {
         if (e.getItemDrop().getItemStack().getType().equals(Material.RECORD_9) && designer != null) {
             if (designer.getConstant() != null && designer.getConstant().isValid()) {
                 if (designer.getConstant().getSaveName() !=  null) {
+
                     designer.setAdditionalData(designer.getConstant().saveTrapInfo(designer.getAdditionalData()));
                     e.getPlayer().sendMessage("§a[Toffy Dungeons]: Finished adding the trap");
                     e.setCancelled(true);

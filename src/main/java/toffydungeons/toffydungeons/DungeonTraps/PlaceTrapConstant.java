@@ -1,4 +1,4 @@
-package toffydungeons.toffydungeons.GUIs.DungeonTraps;
+package toffydungeons.toffydungeons.DungeonTraps;
 
 import org.bukkit.Location;
 import toffydungeons.toffydungeons.API.BoundingBox;

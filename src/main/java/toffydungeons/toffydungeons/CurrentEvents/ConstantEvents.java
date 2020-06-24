@@ -12,7 +12,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import toffydungeons.toffydungeons.API.BoundingBox;
 import toffydungeons.toffydungeons.API.FileSaving;
-import toffydungeons.toffydungeons.GUIs.DungeonTraps.MobTrap;
+import toffydungeons.toffydungeons.DungeonTraps.MobTrap;
 
 import java.io.File;
 import java.util.ArrayList;

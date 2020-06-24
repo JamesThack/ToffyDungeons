@@ -1,4 +1,4 @@
-package toffydungeons.toffydungeons.GUIs.DungeonTraps;
+package toffydungeons.toffydungeons.DungeonTraps;
 
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
