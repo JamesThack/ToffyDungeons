@@ -1,5 +1,9 @@
 package toffydungeons.toffydungeons.CurrentEvents;
 
+import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter;
+import io.lumine.xikage.mythicmobs.mobs.MobManager;
+import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
@@ -13,6 +17,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import toffydungeons.toffydungeons.API.BoundingBox;
 import toffydungeons.toffydungeons.API.FileSaving;
 import toffydungeons.toffydungeons.DungeonTraps.MobTrap;
+import toffydungeons.toffydungeons.DungeonTraps.MythicTrap;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -68,6 +73,13 @@ public class ConstantEvents implements Listener {
                                         mob.setCustomName(trap.getMobName());
                                         mob.setCustomNameVisible(true);
                                     }
+                                }
+                            } if (FileSaving.readLines("traps" + File.separator + lines.get(x)).get(0).replace("TRAP_TYPE:", "").equalsIgnoreCase("MYTHIC_TRAP")) {
+                                if (e.getPlayer().getWorld().getNearbyEntities(locFromCoords(e.getPlayer(), spawnCorner), 1, 1, 1).size() < 1) {
+                                    MythicTrap trap = new MythicTrap(lines.get(x).replace(".trap", ""));
+                                    MobManager mm = MythicMobs.inst().getMobManager();
+                                    MythicMob spawnMob = mm.getMythicMob(trap.getMobName());
+                                    spawnMob.spawn(BukkitAdapter.adapt(locFromCoords(e.getPlayer(), spawnCorner)), Double.valueOf(trap.getLevel()));
                                 }
                             }
                         }

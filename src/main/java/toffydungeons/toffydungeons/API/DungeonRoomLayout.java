@@ -235,6 +235,7 @@ public class DungeonRoomLayout {
          */
         @Override
         public void run() {
+            System.out.println(buildTime);
             if (!isRoomBuild(room)) {
                 if (buildTime >= 1) {
                     buildTime -= 1;

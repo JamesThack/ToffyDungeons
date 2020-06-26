@@ -1,8 +1,9 @@
 package toffydungeons.toffydungeons.DungeonTraps;
 
+import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.mobs.MobManager;
+import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,29 +27,42 @@ public class TrapEvents implements Listener {
             MobTrap trap = (MobTrap) e.getInventory().getHolder();
             if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.MONSTER_EGG)) {
                 InventoryAPI.givePlayerItem( (Player) e.getWhoClicked(), DungeonMainMenu.createGuiItem(Material.RECORD_9, "§dMob Selector " + trap.getName(), "Mob Trap Editor", "Hold wand and punch mob type"));
+                e.getWhoClicked().sendMessage("§a[Toffy Dungeons]: Hold the wand and punch the entity you would like the type of");
                 trap.saveData();
                 e.getWhoClicked().closeInventory();
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.WHEAT)) {
                 InventoryAPI.givePlayerItem( (Player) e.getWhoClicked(), DungeonMainMenu.createGuiItem(Material.RECORD_9, "§dHealth Selector " + trap.getName(), "Mob Trap Editor", "Hold wand and say health in chat"));
+                e.getWhoClicked().sendMessage("§a[Toffy Dungeons]: Hold the wand and say a valid health value in chat");
                 trap.saveData();
                 e.getWhoClicked().closeInventory();
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.NAME_TAG)) {
                 InventoryAPI.givePlayerItem( (Player) e.getWhoClicked(), DungeonMainMenu.createGuiItem(Material.RECORD_9, "§dName Selector " + trap.getName(), "Mob Trap Editor", "Hold wand and say Mob anme in chat"));
+                e.getWhoClicked().sendMessage("§a[Toffy Dungeons]: Hold the wand and say a valid name in chat (colour codes supported)");
                 trap.saveData();
                 e.getWhoClicked().closeInventory();
             } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
                 trap.saveData();
                 e.getWhoClicked().closeInventory();
-            } else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.LAPIS_BLOCK)) {
-                EntityType type = EntityType.valueOf(trap.getMobType());
-                LivingEntity mob = (LivingEntity) e.getWhoClicked().getWorld().spawnEntity(e.getWhoClicked().getLocation(), type);
-                mob.setMaxHealth(trap.getHealth());
-                mob.setHealth(trap.getHealth());
-                if (trap.getMobName() != null) {
-                    mob.setCustomName(trap.getMobName());
-                    mob.setCustomNameVisible(true);
-                }
             }
+        }  if (e.getInventory().getHolder() instanceof  MythicTrap) {
+            MythicTrap trap = (MythicTrap) e.getInventory().getHolder();
+            e.setCancelled(true);
+            if (e.getCurrentItem() != null &&  e.getCurrentItem().getType().equals(Material.LEASH)) {
+                InventoryAPI.givePlayerItem( (Player) e.getWhoClicked(), DungeonMainMenu.createGuiItem(Material.RECORD_9, "§dMob Selector " + trap.getFileName(), "Mythic Mob Trap Editor", "Hold wand and say Mythic Mob nanme in chat"));
+                e.getWhoClicked().sendMessage("§a[Toffy Dungeons]: Hold the wand and say a valid mythic mob in chat");
+                trap.save();
+                e.getWhoClicked().closeInventory();
+            }
+            else if (e.getCurrentItem() != null &&  e.getCurrentItem().getType().equals(Material.EXP_BOTTLE)) {
+                InventoryAPI.givePlayerItem( (Player) e.getWhoClicked(), DungeonMainMenu.createGuiItem(Material.RECORD_9, "§dLevel Selector " + trap.getFileName(), "Mythic Mob Trap Editor", "Hold wand and say level in chat"));
+                e.getWhoClicked().sendMessage("§a[Toffy Dungeons]: Hold the wand and say a valid level value in chat");
+                trap.save();
+                e.getWhoClicked().closeInventory();
+            }
+            else if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)) {
+            trap.save();
+            e.getWhoClicked().closeInventory();
+        }
         } else if (e.getInventory().getHolder() instanceof AbstractFileMenu && e.getInventory().getTitle().contains("Current Traps")) {
             e.setCancelled(true);
             AbstractFileMenu holder = (AbstractFileMenu) e.getInventory().getHolder();
@@ -58,9 +72,16 @@ public class TrapEvents implements Listener {
                 e.getWhoClicked().openInventory(main.getInventory());
             }
             if (!e.getClick().isShiftClick() && e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.SMOOTH_BRICK)) {
-                MobTrap oldTrap = new MobTrap(e.getCurrentItem().getItemMeta().getDisplayName().replace(".trap", ""));
-                oldTrap.initaliseItems();
-                e.getWhoClicked().openInventory(oldTrap.getInventory());
+                String trapType = FileSaving.readLines("traps" + File.separator + e.getCurrentItem().getItemMeta().getDisplayName()).get(0).replace("TRAP_TYPE:", "");
+                if (trapType.equals("MOB")) {
+                    MobTrap oldTrap = new MobTrap(e.getCurrentItem().getItemMeta().getDisplayName().replace(".trap", ""));
+                    oldTrap.initaliseItems();
+                    e.getWhoClicked().openInventory(oldTrap.getInventory());
+                } else if (trapType.equals("MYTHIC_TRAP")) {
+                    MythicTrap oldTrap = new MythicTrap(e.getCurrentItem().getItemMeta().getDisplayName().replace(".trap", ""));
+                    oldTrap.initaliseItems();
+                    e.getWhoClicked().openInventory(oldTrap.getInventory());
+                }
             }
             if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.PAPER)) {
                 if (e.getCurrentItem().getItemMeta().getDisplayName().equals("Previous Page") && holder.getPage() > 1) {
@@ -128,6 +149,37 @@ public class TrapEvents implements Listener {
                 trap.initaliseItems();
                 e.getPlayer().openInventory(trap.getInventory());
                 e.getPlayer().getInventory().setItem(e.getPlayer().getInventory().getHeldItemSlot(), null);
+            }
+        } else if (held != null && held.getItemMeta()!= null && held.getItemMeta().getLore() != null && held.getType().equals(Material.RECORD_9) && held.getItemMeta().getLore().contains("Mythic Mob Trap Editor")) {
+            if (held.getItemMeta().getDisplayName().contains("§dMob Selector")) {
+                e.setCancelled(true);
+                try {
+                    MobManager mm = MythicMobs.inst().getMobManager();
+                    MythicMob mob = mm.getMythicMob(e.getMessage());
+                    mob.getDisplayName();
+                    String name = held.getItemMeta().getDisplayName().replace("§dMob Selector ", "");
+                    MythicTrap trap = new MythicTrap(name);
+                    trap.setMobName(e.getMessage());
+                    trap.initaliseItems();
+                    e.getPlayer().openInventory(trap.getInventory());
+                    e.getPlayer().getInventory().setItem(e.getPlayer().getInventory().getHeldItemSlot(), null);
+                } catch (NullPointerException ex) {
+                    e.getPlayer().sendMessage("§c[Toffy Dungeons]: Please type a valid mythic mob name");
+                }
+            } else if (held.getItemMeta().getDisplayName().contains("§dLevel Selector")) {
+                e.setCancelled(true);
+                try {
+                    Integer.valueOf(e.getMessage());
+                    String name = held.getItemMeta().getDisplayName().replace("§dLevel Selector ", "");
+                    MythicTrap trap = new MythicTrap(name);
+                    trap.setLevel(e.getMessage());
+                    trap.initaliseItems();
+                    e.getPlayer().openInventory(trap.getInventory());
+                    e.getPlayer().getInventory().setItem(e.getPlayer().getInventory().getHeldItemSlot(), null);
+                } catch (NumberFormatException ex) {
+                    ex.printStackTrace();
+                    e.getPlayer().sendMessage("§c[Toffy Dungeons]: Please enter a valid number");
+                }
             }
         }
     }
