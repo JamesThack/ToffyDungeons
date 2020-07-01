@@ -29,4 +29,8 @@ public class BoundingBox {
         String[] split = s.split(":");
         return new Location (Bukkit.getWorld(split[0]), Integer.valueOf(split[1]), Integer.valueOf(split[2]), Integer.valueOf(split[3]));
     }
+
+    public static int getRandomNumber(int min, int max) {
+        return (int) ((Math.random() * (max - min)) + min);
+    }
 }

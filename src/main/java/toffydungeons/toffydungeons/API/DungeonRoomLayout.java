@@ -147,6 +147,9 @@ public class DungeonRoomLayout {
             }
             FileSaving.saveFile("active_dungeons", "Active_Dungeons" + File.separator + name + ".adungeon");
             ArrayList<String> savedData = new ArrayList<>();
+            if (this.dungeonName == null) {
+                dungeonName = "Dungeon";
+            }
             savedData.add(dungeonName);
             savedData.addAll(this.roomDatas);
             savedData.add(builtLoc.getWorld().getName() + "," +  builtLoc.getBlockX() + "," +  builtLoc.getBlockY() + "," +  builtLoc.getBlockZ());
@@ -235,7 +238,6 @@ public class DungeonRoomLayout {
          */
         @Override
         public void run() {
-            System.out.println(buildTime);
             if (!isRoomBuild(room)) {
                 if (buildTime >= 1) {
                     buildTime -= 1;

@@ -75,4 +75,12 @@ public class DungeonRoom {
     public void setBehind(DungeonRoom behind) {
         this.behind = behind;
     }
+
+    public boolean checkSides() {
+        if (this.getForward() != null && this.getForward().getBlockedSides()[2] == 1) return false;
+        if (this.getBehind() != null && this.getBehind().getBlockedSides()[0] == 1) return false;
+        if (this.getLeft() != null && this.getLeft().getBlockedSides()[3] == 1) return false;
+        if (this.getRight() != null && this.getRight().getBlockedSides()[1] == 1) return false;
+        return true;
+    }
 }

@@ -16,6 +16,8 @@ public class DungeonTrapType extends AbstractVanityMenu  implements Listener {
     @Override
     public void initaliseItems() {
         this.getInventory().setItem(10, createGuiItem(Material.MONSTER_EGG, "§cMob Trap"));
+        if (Bukkit.getServer().getPluginManager().getPlugin("WorldEdit") != null)
+            this.getInventory().setItem(12, createGuiItem(Material.WOOD_AXE, "§eSchematic Trap"));
         if (Bukkit.getServer().getPluginManager().getPlugin("MythicMobs") != null)
             this.getInventory().setItem(28, createGuiItem(Material.SLIME_BALL, "§aMythic Mob Trap"));
     }
@@ -32,6 +34,10 @@ public class DungeonTrapType extends AbstractVanityMenu  implements Listener {
                 MythicTrap trap = new MythicTrap();
                 trap.initaliseItems();
                 e.getWhoClicked().openInventory(trap.getInventory());
+            } if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.WOOD_AXE)) {
+                SchematicTrap schemTrap = new SchematicTrap();
+                schemTrap.initaliseItems();
+                e.getWhoClicked().openInventory(schemTrap.getInventory());
             }
         }
     }

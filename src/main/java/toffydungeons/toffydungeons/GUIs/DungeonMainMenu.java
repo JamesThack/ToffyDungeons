@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import toffydungeons.toffydungeons.GUIs.DungeonLayout.DungeonCreationMenu;
 import toffydungeons.toffydungeons.GUIs.DungeonRoomDesign.DungeonRoomSelector;
 import toffydungeons.toffydungeons.DungeonTraps.DungeonTrapType;
+import toffydungeons.toffydungeons.GUIs.ProceduralGeneration.ProceduralMainMenu;
 import toffydungeons.toffydungeons.GUIs.extendable.AbstractFileMenu;
 
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ public class DungeonMainMenu implements InventoryHolder, Listener {
         this.inventory.setItem(28, createGuiItem(Material.MOB_SPAWNER, "§cActive Dungeons"));
         this.inventory.setItem(30, createGuiItem(Material.TRIPWIRE_HOOK, "§aCreate Trap"));
         this.inventory.setItem(32, createGuiItem(Material.REDSTONE, "§fEdit Trap"));
+        this.inventory.setItem(34, createGuiItem(Material.FENCE, "§2Procedural Generation"));
         this.inventory.setItem(45, createGuiItem(Material.REDSTONE_BLOCK, "§cClose Menu"));
     }
 
@@ -104,6 +106,12 @@ public class DungeonMainMenu implements InventoryHolder, Listener {
                AbstractFileMenu traps = new AbstractFileMenu("Current Traps", "traps");
                traps.initialiseItems();
                e.getWhoClicked().openInventory(traps.getInventory());
+            }
+
+            if (e.getCurrentItem() != null &&  e.getCurrentItem().getType().equals(Material.FENCE)) {
+                ProceduralMainMenu main = new ProceduralMainMenu();
+                main.initaliseItems();
+                e.getWhoClicked().openInventory(main.getInventory());
             }
         }
     }
