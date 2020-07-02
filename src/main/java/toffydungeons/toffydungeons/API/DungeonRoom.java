@@ -1,5 +1,7 @@
 package toffydungeons.toffydungeons.API;
 
+import java.io.File;
+
 /**
  * This is the dungeon room class, used by the layout it organises how the dungeon should look. Within the dungeon rooms
  * the schematic is stored as well as the position (relative to the layout) and the neighbouring rooms.
@@ -18,6 +20,25 @@ public class DungeonRoom {
         this.position = position;
         this.schematicFile = schematicFile;
         blockedSides = new int[]{0,0,0,0};
+    }
+
+    public DungeonRoom(String schematicFile, int[] position, int rotation) {
+        this.position = position;
+        this.schematicFile = schematicFile;
+        blockedSides = new int[]{0,0,0,0};
+        for (String current : FileSaving.readLines("rooms" + File.separator + schematicFile + ".placement")) {
+            String[] split = current.split(",");
+            if (current.contains("NORTH") && split[0].replace("NORTH:", "").equals("0") && split[1].equals("0") && split[2].equals("0")) this.blockedSides[0] = 1;
+            if (current.contains("EAST") && split[0].replace("EAST:", "").equals("0") && split[1].equals("0") && split[2].equals("0")) this.blockedSides[1] = 1;
+            if (current.contains("WEST") && split[0].replace("WEST:", "").equals("0") && split[1].equals("0") && split[2].equals("0")) {
+                this.blockedSides[3] = 1;
+                break;
+            }
+        }
+        int[] oldBlock = blockedSides.clone();
+        if (rotation == 1) blockedSides = new int[]{oldBlock[1], oldBlock[2], oldBlock[3], oldBlock[0]};
+        if (rotation == 2) blockedSides = new int[]{oldBlock[2], oldBlock[3], oldBlock[0], oldBlock[1]};
+        if (rotation == 3) blockedSides = new int[]{oldBlock[3], oldBlock[0], oldBlock[1], oldBlock[2]};
     }
 
     public void setSchematicFile(String schematicFile) {

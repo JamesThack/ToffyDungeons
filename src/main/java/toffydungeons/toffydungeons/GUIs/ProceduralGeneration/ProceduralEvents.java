@@ -17,7 +17,7 @@ public class ProceduralEvents implements Listener {
         if (e.getInventory().getHolder() instanceof ProceduralMainMenu) {
             e.setCancelled(true);
             if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.EMERALD)) {
-                DungeonRoomLayout layout = genNewRandomLayout(12);
+                DungeonRoomLayout layout = genNewRandomLayout(14);
                 layout.updateBorders();
 //                layout.generateBuild(e.getWhoClicked().getLocation());
                 DungeonCreationMenu menu = new DungeonCreationMenu(layout, new int[]{0,0}, "Procedural");
@@ -29,18 +29,20 @@ public class ProceduralEvents implements Listener {
 
     private DungeonRoomLayout genNewRandomLayout(int maxRooms) {
         DungeonRoomLayout layout = new DungeonRoomLayout();
-        DungeonRoom start = new DungeonRoom(getRandomRoom(), new int[]{4,2});
+        DungeonRoom start = new DungeonRoom("ToffyIntersection", new int[]{4,2});
         layout.addRoom(start);
         layout.setStartingRoom(start);
         for (int i = 0; i < maxRooms; i++) {
             boolean found = false;
-            while (!found) {
+            int lagTime = 0;
+            while (!found && lagTime < 100) {
                 DungeonRoom buildOff = layout.getRooms().get(BoundingBox.getRandomNumber(0, layout.getRooms().size()));
                 int curTry = BoundingBox.getRandomNumber(0, 3);
                 for (int tries = 0; tries < 4; tries++) {
                     if (!checkSpace(layout, buildOff, curTry)) {
                         curTry += 1;
                         if (curTry == 4) curTry = 0;
+                        lagTime += 1;
                     } else {
                         found = true;
                         break;
@@ -79,7 +81,7 @@ public class ProceduralEvents implements Listener {
             int other = side + 2;
             if (other ==4) other = 0;
             if (other ==5) other = 1;
-            DungeonRoom addRoom = new DungeonRoom(getRandomRoom(), newPos);
+            DungeonRoom addRoom = new DungeonRoom(getRandomRoom(), newPos, side);
             addRoom.setForward(layout.getRoomFromPosition(new int[]{addRoom.getPosition()[0], addRoom.getPosition()[1] - 1}));
             addRoom.setRight(layout.getRoomFromPosition(new int[]{addRoom.getPosition()[0] - 1, addRoom.getPosition()[1]}));
             addRoom.setBehind(layout.getRoomFromPosition(new int[]{addRoom.getPosition()[0], addRoom.getPosition()[1] + 1}));
