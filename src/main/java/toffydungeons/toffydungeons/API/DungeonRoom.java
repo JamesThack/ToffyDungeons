@@ -26,6 +26,10 @@ public class DungeonRoom {
         this.position = position;
         this.schematicFile = schematicFile;
         blockedSides = new int[]{0,0,0,0};
+        updateBorders(rotation);
+    }
+
+    public void updateBorders(int rotation) {
         for (String current : FileSaving.readLines("rooms" + File.separator + schematicFile + ".placement")) {
             String[] split = current.split(",");
             if (current.contains("NORTH") && split[0].replace("NORTH:", "").equals("0") && split[1].equals("0") && split[2].equals("0")) this.blockedSides[0] = 1;
@@ -39,6 +43,10 @@ public class DungeonRoom {
         if (rotation == 1) blockedSides = new int[]{oldBlock[1], oldBlock[2], oldBlock[3], oldBlock[0]};
         if (rotation == 2) blockedSides = new int[]{oldBlock[2], oldBlock[3], oldBlock[0], oldBlock[1]};
         if (rotation == 3) blockedSides = new int[]{oldBlock[3], oldBlock[0], oldBlock[1], oldBlock[2]};
+    }
+
+    public int getOpenSideCount() {
+        return 4 - (blockedSides[0] + blockedSides[1] + blockedSides[2] + blockedSides [3]);
     }
 
     public void setSchematicFile(String schematicFile) {

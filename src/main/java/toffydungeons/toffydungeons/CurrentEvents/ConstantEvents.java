@@ -47,50 +47,55 @@ public class ConstantEvents implements Listener {
 
     @EventHandler
     public void onMove(PlayerMoveEvent e) {
-        if (playerInDungeon(e.getPlayer())) {
-            int[] directions = getRoomLocation(e.getPlayer());
-            if (!FileSaving.folderContainsFile("active_dungeons", "noread.check")) {
-                String currentDun = getCurrentRoom(e.getPlayer());
-                ArrayList<String> lines = FileSaving.readLines("rooms" + File.separator + currentDun + ".placement");
-                for (int x = 0; x < lines.size(); x++) {
-                    if (lines.get(x).contains(".trap")) {
-                        String pos1 = (lines.get(x + 1).replace("REG1:", ""));
-                        int[] trapCorner1 = new int[]{Integer.valueOf(pos1.split(",")[0]), Integer.valueOf(pos1.split(",")[1]), Integer.valueOf(pos1.split(",")[2])};
-                        String pos2 = (lines.get(x + 2).replace("REG2:", ""));
-                        int[] trapCorner2 = new int[]{Integer.valueOf(pos2.split(",")[0]), Integer.valueOf(pos2.split(",")[1]), Integer.valueOf(pos2.split(",")[2])};
-                        if ((directions[0] >= Math.min(trapCorner1[0], trapCorner2[0]) && directions[1] >= Math.min(trapCorner1[1], trapCorner2[1]) && directions[2] >= Math.min(trapCorner1[2], trapCorner2[2]))
-                                && (directions[0] <= Math.max(trapCorner1[0], trapCorner2[0]) && directions[1] <= Math.max(trapCorner1[1], trapCorner2[1]) && directions[2] <= Math.max(trapCorner1[2], trapCorner2[2]))) {
-                            String pos3 = (lines.get(x + 3).replace("HAPPEN:", ""));
-                            int[] spawnCorner = new int[]{Integer.valueOf(pos3.split(",")[0]), Integer.valueOf(pos3.split(",")[1]), Integer.valueOf(pos3.split(",")[2])};
-                            if (FileSaving.readLines("traps" + File.separator + lines.get(x)).get(0).replace("TRAP_TYPE:", "").equalsIgnoreCase("MOB")) {
-                                MobTrap trap = new MobTrap(lines.get(x).replace(".trap", ""));
-                                EntityType type = EntityType.valueOf(trap.getMobType());
-                                if (e.getPlayer().getWorld().getNearbyEntities(locFromCoords(e.getPlayer(), spawnCorner), 1, 1, 1).size() < 1) {
-                                    LivingEntity mob = (LivingEntity) e.getPlayer().getWorld().spawnEntity(locFromCoords(e.getPlayer(), spawnCorner), type);
-                                    mob.setMaxHealth(trap.getHealth());
-                                    mob.setHealth(trap.getHealth());
-                                    if (trap.getMobName() != null) {
-                                        mob.setCustomName(trap.getMobName());
-                                        mob.setCustomNameVisible(true);
-                                    }
-                                }
-                            } if (FileSaving.readLines("traps" + File.separator + lines.get(x)).get(0).replace("TRAP_TYPE:", "").equalsIgnoreCase("MYTHIC_TRAP")) {
-                                if (e.getPlayer().getWorld().getNearbyEntities(locFromCoords(e.getPlayer(), spawnCorner), 1, 1, 1).size() < 1) {
-                                    MythicTrap trap = new MythicTrap(lines.get(x).replace(".trap", ""));
-                                    MobManager mm = MythicMobs.inst().getMobManager();
-                                    MythicMob spawnMob = mm.getMythicMob(trap.getMobName());
-                                    spawnMob.spawn(BukkitAdapter.adapt(locFromCoords(e.getPlayer(), spawnCorner)), Double.valueOf(trap.getLevel()));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
+        if (!playerInDungeon(e.getPlayer())) {
+            return;
+        }
+        if (FileSaving.folderContainsFile("active_dungeons", "noread.check")) {
+            return;
+        }
+        int[] directions = getRoomLocation(e.getPlayer());
+        String currentDun = getCurrentRoom(e.getPlayer());
+        ArrayList<String> lines = FileSaving.readLines("rooms" + File.separator + currentDun + ".placement");
+        for (int x = 0; x < lines.size(); x++) {
+            doSomething(lines, directions, x, e.getPlayer());
         }
     }
 
-    private boolean playerInDungeon(Player player) {
+    private void doSomething(ArrayList<String> lines, int[] directions, int x, Player p) {
+        if (lines.get(x).contains(".trap")) {
+            String pos1 = (lines.get(x + 1).replace("REG1:", ""));
+            int[] trapCorner1 = new int[]{Integer.valueOf(pos1.split(",")[0]), Integer.valueOf(pos1.split(",")[1]), Integer.valueOf(pos1.split(",")[2])};
+            String pos2 = (lines.get(x + 2).replace("REG2:", ""));
+            int[] trapCorner2 = new int[]{Integer.valueOf(pos2.split(",")[0]), Integer.valueOf(pos2.split(",")[1]), Integer.valueOf(pos2.split(",")[2])};
+            if ((directions[0] >= Math.min(trapCorner1[0], trapCorner2[0]) && directions[1] >= Math.min(trapCorner1[1], trapCorner2[1]) && directions[2] >= Math.min(trapCorner1[2], trapCorner2[2]))
+                    && (directions[0] <= Math.max(trapCorner1[0], trapCorner2[0]) && directions[1] <= Math.max(trapCorner1[1], trapCorner2[1]) && directions[2] <= Math.max(trapCorner1[2], trapCorner2[2]))) {
+                String pos3 = (lines.get(x + 3).replace("HAPPEN:", ""));
+                int[] spawnCorner = new int[]{Integer.valueOf(pos3.split(",")[0]), Integer.valueOf(pos3.split(",")[1]), Integer.valueOf(pos3.split(",")[2])};
+                if (FileSaving.readLines("traps" + File.separator + lines.get(x)).get(0).replace("TRAP_TYPE:", "").equalsIgnoreCase("MOB")) {
+                    MobTrap trap = new MobTrap(lines.get(x).replace(".trap", ""));
+                    EntityType type = EntityType.valueOf(trap.getMobType());
+                    if (p.getWorld().getNearbyEntities(locFromCoords(p, spawnCorner), 1, 1, 1).size() < 1) {
+                        LivingEntity mob = (LivingEntity) p.getWorld().spawnEntity(locFromCoords(p, spawnCorner), type);
+                        mob.setMaxHealth(trap.getHealth());
+                        mob.setHealth(trap.getHealth());
+                        if (trap.getMobName() != null) {
+                            mob.setCustomName(trap.getMobName());
+                            mob.setCustomNameVisible(true);
+                        }
+                    }
+                } if (FileSaving.readLines("traps" + File.separator + lines.get(x)).get(0).replace("TRAP_TYPE:", "").equalsIgnoreCase("MYTHIC_TRAP")) {
+                    if (p.getWorld().getNearbyEntities(locFromCoords(p, spawnCorner), 1, 1, 1).size() < 1) {
+                        MythicTrap trap = new MythicTrap(lines.get(x).replace(".trap", ""));
+                        MobManager mm = MythicMobs.inst().getMobManager();
+                        MythicMob spawnMob = mm.getMythicMob(trap.getMobName());
+                        spawnMob.spawn(BukkitAdapter.adapt(locFromCoords(p, spawnCorner)), Double.valueOf(trap.getLevel()));
+                    }
+                }
+            }
+        }
+    }
+
+    public boolean playerInDungeon(Player player) {
         if (!FileSaving.folderContainsFile("active_dungeons", "noread.check")) {
             for (String fileCur : FileSaving.filesInDirectory("active_dungeons")) {
                 for (String curLine : FileSaving.readLines("active_dungeons" + File.separator + fileCur)) {
@@ -126,6 +131,11 @@ public class ConstantEvents implements Listener {
         } return "";
     }
 
+    /**
+     * This is loding the relative location for a player in a room
+     * @param player The related player
+     * @return The array of x y z relative cordinated
+     */
     private int[] getRoomLocation(Player player) {
         for (String fileCur : FileSaving.filesInDirectory("active_dungeons")) {
             for (String curLine : FileSaving.readLines("active_dungeons" + File.separator + fileCur)) {

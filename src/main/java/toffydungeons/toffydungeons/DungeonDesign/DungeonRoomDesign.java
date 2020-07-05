@@ -151,6 +151,12 @@ public class DungeonRoomDesign {
         saveData.add("SOUTH:" + (southDoor.getBlockX() - loc1.getBlockX()) + "," + (southDoor.getBlockY() - loc1.getBlockY()) + "," + (southDoor.getBlockZ() - loc1.getBlockZ()));
         saveData.add("WEST:" + (westDoor.getBlockX() - southDoor.getBlockX()) + "," + (westDoor.getBlockY() -  southDoor.getBlockY()) + "," + (westDoor.getBlockZ() - southDoor.getBlockZ()));
         saveData.add("BORDER:" + (loc2.getBlockX() - southDoor.getBlockX()) + "," + (loc2.getBlockY() -  southDoor.getBlockY()) + "," + (loc2.getBlockZ() - southDoor.getBlockZ()));
+        System.out.println(loc1.getBlockX() - southDoor.getBlockX());
+        System.out.println(loc1.getBlockY() - southDoor.getBlockY());
+        System.out.println(loc1.getBlockZ() - southDoor.getBlockZ());
+        System.out.println(loc2.getBlockX() - southDoor.getBlockX());
+        System.out.println(loc2.getBlockY() - southDoor.getBlockY());
+        System.out.println(loc2.getBlockZ() - southDoor.getBlockZ());
         ArrayList<String> betterData = new ArrayList<>();
         for (String cur : additionalData) {
             if (cur.contains("REG1:") || cur.contains("REG2:") || cur.contains("HAPPEN:")) {
@@ -165,6 +171,17 @@ public class DungeonRoomDesign {
         CalebWorldEditAPI.trySaveSchem(loc1, loc2, this.name, new Vector(loc1.getBlockX() - this.southDoor.getBlockX(), loc1.getBlockY() - this.southDoor.getBlockY(),  loc1.getBlockZ() - this.southDoor.getBlockZ()));
         CalebWorldEditAPI.setBlock(loc1, loc2, Material.AIR);
         return true;
+    }
+
+    private String calcDirection(Location loc1, Location loc2) {
+        int[] totals = new int[]{loc1.getBlockX() - southDoor.getBlockX(),
+                loc1.getBlockY() - southDoor.getBlockY(),
+                loc1.getBlockZ() - southDoor.getBlockZ(),
+                loc2.getBlockX() - southDoor.getBlockX(),
+                loc2.getBlockY() - southDoor.getBlockY(),
+                loc2.getBlockZ() - southDoor.getBlockZ()};
+
+        return "POSX";
     }
 
     public void setCurrentOperation(int operation) {
