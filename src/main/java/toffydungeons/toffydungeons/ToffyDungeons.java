@@ -2,12 +2,15 @@ package toffydungeons.toffydungeons;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import pl.betoncraft.betonquest.BetonQuest;
+import toffydungeons.toffydungeons.API.BetonStuff.DungeonEvent;
+import toffydungeons.toffydungeons.API.BetonStuff.InsideDungeonCondition;
 import toffydungeons.toffydungeons.CurrentEvents.ConstantEvents;
 import toffydungeons.toffydungeons.DungeonDesign.DungeonDesignEvents;
-import toffydungeons.toffydungeons.GUIs.DungeonLayout.GenerationEvents;
-import toffydungeons.toffydungeons.GUIs.DungeonMainMenu;
 import toffydungeons.toffydungeons.DungeonTraps.DungeonTrapType;
 import toffydungeons.toffydungeons.DungeonTraps.TrapEvents;
+import toffydungeons.toffydungeons.GUIs.DungeonLayout.GenerationEvents;
+import toffydungeons.toffydungeons.GUIs.DungeonMainMenu;
 import toffydungeons.toffydungeons.GUIs.InventoryEvents;
 import toffydungeons.toffydungeons.GUIs.ProceduralGeneration.ProceduralEvents;
 import toffydungeons.toffydungeons.commands.TDungeonCommand;
@@ -36,6 +39,12 @@ public final class ToffyDungeons extends JavaPlugin {
             getServer().getPluginManager().registerEvents(designEvents, this);
 
             this.getCommand("TDungeon").setExecutor(new TDungeonCommand(designEvents));
+
+            if (Bukkit.getPluginManager().getPlugin("BetonQuest") != null && BetonQuest.getInstance() != null) {
+                BetonQuest instance = BetonQuest.getInstance();
+                instance.registerEvents("tdungeon", DungeonEvent.class);
+                instance.registerConditions("intdungeon", InsideDungeonCondition.class);
+            }
         }
     }
 
